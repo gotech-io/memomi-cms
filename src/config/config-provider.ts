@@ -9,17 +9,19 @@ export type ConfigProvider = ConfigSchema & { framework: FrameworkConfigProvider
 export const configProvider: ConfigProvider = {} as unknown as ConfigProvider
 
 export function initializeConfig() {
-  const parsedConfig = ConfigSchemaZod.parse(config)
-  Object.assign(configProvider, parsedConfig)
-  configProvider.framework = frameworkConfigProvider
+    const parsedConfig = ConfigSchemaZod.parse(config)
+    Object.assign(configProvider, parsedConfig)
+    configProvider.framework = frameworkConfigProvider
 }
 
 // Config schema
 const ConfigSchemaZod = z.object({
-  loginEmail: z.string().email(),
+    cmsAdminUser: z.string().email(),
+    cmsPassword: z.string()
 })
 
 // Config values
 const config: ConfigSchemaInput = {
-  loginEmail: process.env.LOGIN_EMAIL || 'default@email.com',
+    cmsAdminUser: process.env.CMS_ADMIN_USER || 'olga-manager@walmanrt.com',
+    cmsPassword: process.env.CMS_PASSWORD || '502241114',
 }

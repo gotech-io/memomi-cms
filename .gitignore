@@ -43,3 +43,5 @@ allure-results
 .yarn/cache
 .yarn/install-state.gz
 .testomate
+
+states.json
