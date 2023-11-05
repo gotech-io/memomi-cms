@@ -33,9 +33,8 @@ export class DashboardPage extends PageBase {
         this.adminMailboxClose = page.locator("//div[contains(@class, 'MuiListItemButton-gutters ')]//p[text()='Admin']")
         this.productsMailboxOpen = page.locator("//div[contains(@class, 'MuiListItemButton-gutters ')]//h5[text()='Products']")
         this.productsMailboxClose = page.locator("//div[contains(@class, 'MuiListItemButton-gutters ')]//p[text()='Products']")
-        this.productsWalmartGlasses = page.locator("//div//h5//span[text()='Walmart Glasses']")
-        this.productsApparelSunglasses = page.locator("//div//p//span[text()='Apparel - Sunglasses']")
-
+        this.productsWalmartGlasses = page.locator("//div//span[text()='Walmart Glasses']")
+        this.productsApparelSunglasses = page.locator("//div//span[text()='Apparel - Sunglasses']")
         this.showAllStatuesBtn = page.locator("//button[text()='Show all statues']")
         this.hideUnusedStatusesBtn = page.locator("//button[text()='Hide unused statuses']")
         this.manageUsersBtn = page.locator("//button[text()='Manage users']")
@@ -45,13 +44,12 @@ export class DashboardPage extends PageBase {
 
     async initPage(): Promise<void> {
         await super.initPage()
+        await this.page.waitForLoadState("networkidle")
     }
 
     get pageUrl(): string {
-        if (!this.baseUrl) {
-            throw new Error('Base url is not set')
-        }
-        return this.baseUrl
+        if (!this.baseUrl) throw new Error('Base url is not set')
+        return this.baseUrl + '/dashboard'
     }
 
     public async getCMSVersion() {

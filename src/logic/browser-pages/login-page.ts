@@ -18,9 +18,7 @@ export class LoginPage extends PageBase {
     }
 
     get pageUrl(): string {
-        if (!this.baseUrl) {
-            throw new Error('Base url is not set')
-        }
+        if (!this.baseUrl) throw new Error('Base url is not set')
         return this.baseUrl + '/login'
     }
 

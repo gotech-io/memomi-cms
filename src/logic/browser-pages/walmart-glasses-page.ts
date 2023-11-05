@@ -5,35 +5,36 @@ import { generateColumnLocator } from "../utils.js";
 
 export class WalmartGlassesPage extends PageBase {
     private searchFreeText: Locator
-    private assignedToMeButton: Locator
-    private previewButton: Locator
-    private createNewProductButton: Locator
-    private threeDotsMenuButton: Locator
+    private assignedToMeBtn: Locator
+    private previewBtn: Locator
+    private tableBtn: Locator
+    private createNewProductBtn: Locator
+    private threeDotsMenuBtn: Locator
     private mainCheckbox: Locator
 
     constructor(page: Page) {
         super(page)
         this.searchFreeText = page.locator("//label[@id='outlined-search-label']")
-        this.assignedToMeButton = page.locator("//button[text()='Assigned to me']")
-        this.previewButton = page.locator("//button[text()='Preview']")
-        this.createNewProductButton = page.locator("//button[@id='add-button']")
-        this.threeDotsMenuButton = page.locator("//button[@id='menu-button']")
+        this.assignedToMeBtn = page.locator("//button[text()='Assigned to me']")
+        this.previewBtn = page.locator("//button[text()='Preview']")
+        this.tableBtn = page.locator("//button[text()='Table']")
+        this.createNewProductBtn = page.locator("//button[@id='add-button']")
+        this.threeDotsMenuBtn = page.locator("//button[@id='menu-button']")
         this.mainCheckbox = page.locator("//div[@class='ag-header-row ag-header-row-column']//div[@col-id='_id']//input")
     }
 
     async initPage(): Promise<void> {
         await super.initPage()
+        if (await this.tableBtn.isVisible()) await this.clickTable()
     }
 
     get pageUrl(): string {
-        if (!this.baseUrl) {
-            throw new Error('Base url is not set')
-        }
+        if (!this.baseUrl) throw new Error('Base url is not set')
         return this.baseUrl
     }
 
-    public isTableDataVisible(columns: { colId: WalmartGlassesColumns; text: string }[]) {
-        return this.page.locator(generateColumnLocator(columns)).isVisible()
+    public getTableRowData(columns: { colId: WalmartGlassesColumns; text: string }[]) {
+        return this.page.locator(generateColumnLocator(columns))
     }
 
     public async clickCheckedLine(columns: { colId: WalmartGlassesColumns; text: string }[]) {
@@ -49,19 +50,23 @@ export class WalmartGlassesPage extends PageBase {
     }
 
     public async clickAssignedToMe() {
-        await this.assignedToMeButton.click()
+        await this.assignedToMeBtn.click()
     }
 
     public async clickPreview() {
-        await this.previewButton.click()
+        await this.previewBtn.click()
+    }
+
+    public async clickTable() {
+        await this.tableBtn.click()
     }
 
     public async clickCreateNewProduct() {
-        await this.createNewProductButton.click()
+        await this.createNewProductBtn.click()
     }
 
     public async clickMenuButton() {
-        await this.threeDotsMenuButton.click()
+        await this.threeDotsMenuBtn.click()
     }
 
     public async clickMainCheckbox() {

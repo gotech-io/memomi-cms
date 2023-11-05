@@ -9,14 +9,13 @@ test.describe('Dashboard tests', () => {
         expect(await dashboardPage.getCMSVersion()).toEqual("2.2.1")
     })
 
-    test('Table line', async ({testContext}) => {
+    test.only('Is table row visible', async ({testContext}) => {
         const dashboardPage = await testContext.getPage(DashboardPage, {shouldNavigate: true})
-        await dashboardPage.clickWalmartGlassesLink()
+        await dashboardPage.clickWalmartGlasses()
         const walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
-        const pairs = [
-            { colId: WalmartGlassesColumns.GTIN, text: '00010164351979' },
-            { colId: WalmartGlassesColumns.UpdatedBy, text: 'System' },
-        ];
-        await walmartGlassesPage.clickCheckedLine(pairs);
+
+        await expect(walmartGlassesPage.getTableRowData([
+            {colId: WalmartGlassesColumns.GTIN, text: "00010164351979"},
+            {colId: WalmartGlassesColumns.UpdatedBy, text: "Olga"}])).toBeVisible()
     })
 })
