@@ -1,0 +1,12 @@
+# Ignore everything
+*
+
+# Allow files and directories
+!/.docker
+!/src
+!/assets
+!/tsconfig.json 
+!/tsconfig.build.json 
+!/playwright.config.ts
+!/package.json 
+!/yarn.lock

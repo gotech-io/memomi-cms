@@ -1,0 +1,46 @@
+version: '3.9'
+services:
+  pg_db:
+    image: postgres:15.3-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: template_pass
+      POSTGRES_USER: template_user
+      POSTGRES_DB: template_db
+    ports:
+      - 5433:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - .docker/pg-init.sql:/docker-entrypoint-initdb.d/pg-init.sql
+  mysql_db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: template_root_pass
+      MYSQL_PASSWORD: template_pass
+      MYSQL_USER: template_user
+      MYSQL_DATABASE: template_db
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - .docker/mysql-init.sql:/docker-entrypoint-initdb.d/mysql-init.sql
+  mongo_db:
+    image: mongo:5.0.3
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: template_root_user
+      MONGO_INITDB_ROOT_PASSWORD: template_root_pass
+      MONGO_INITDB_DATABASE: root_db
+      # Notice that these username are only used for mongo-init.js script, not for the database itself
+      # For the DB we will create a template_user, template_pass, template_db from inside the script
+    ports:
+      - 27018:27017
+    volumes:
+      - mongo-data:/data/db
+      - .docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+    command: [--auth]
+volumes:
+  postgres-data:
+  mysql-data:
+  mongo-data:
