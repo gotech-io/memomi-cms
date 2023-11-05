@@ -8,7 +8,7 @@ setup.beforeAll(async () => {
     if (fs.existsSync(configProvider.framework.storageStatesPath)) fs.unlinkSync(configProvider.framework.storageStatesPath)
 })
 
-setup('authenticate', async ({testContext, workerContext}) => {
+setup('Authenticate', async ({testContext, workerContext}) => {
     const loginPage = await testContext.getPage(LoginPage, {shouldNavigate: true})
     await loginPage.performSignIn(configProvider.cmsAdminUser, configProvider.cmsPassword)
     let storageState = await testContext.getStorageState()
