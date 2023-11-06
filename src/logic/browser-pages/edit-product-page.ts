@@ -2,11 +2,12 @@ import { Locator, Page } from '@playwright/test'
 import { PageBase } from '@testomate/framework'
 import { ProductTabs } from '../enum/product-tabs.js'
 import { ProductStatus } from '../enum/product-status.js'
+import { ProductValues } from '../enum/product-values.js'
 
 export class EditProductPage extends PageBase {
   private productTab = (tab: ProductTabs) => `//div[@role='tablist']//a[text()='${tab}']`
   private productStatusItems = (status: ProductStatus) => `//ul[@aria-labelledby='status-select-label-status']//li[@data-value='${status}']`
-  private productValue = (item: ProductStatus) => `//div[contains(@class, 'MuiGrid-grid-md-6 css-iol86l') and ./h6[text()='${item}']]//h6[2]]`
+  private productValue = (value: ProductValues) => `//div[contains(@class, 'MuiGrid-grid-md-6 css-iol86l') and ./h6[text()='${value}']]//h6[2]`
 
   private saveBtn: Locator
   private closeBtn: Locator
@@ -50,7 +51,7 @@ export class EditProductPage extends PageBase {
     await this.trackingSelectStatusMenu.click()
   }
 
-  public async getProductItemValue(item: ProductStatus) {
+  public async getProductValue(item: ProductValues) {
     return await this.page.locator(this.productValue(item)).textContent()
   }
 

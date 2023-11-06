@@ -1,6 +1,6 @@
 import { Locator, Page } from '@playwright/test'
 import { PageBase } from '@testomate/framework'
-import { generateColumnLocator } from '../utils.js'
+import { buildRowLocator } from '../utils.js'
 import { ApparelSunglassesColumns } from '../enum/apparel-sunglasses-columns.js'
 
 export class ApparelSunglassesPage extends PageBase {
@@ -35,15 +35,15 @@ export class ApparelSunglassesPage extends PageBase {
   }
 
   public getTableRowData(columns: { colId: ApparelSunglassesColumns; text: string }[]) {
-    return this.page.locator(generateColumnLocator(columns))
+    return this.page.locator(buildRowLocator(columns))
   }
 
   public async clickCheckedLine(columns: { colId: ApparelSunglassesColumns; text: string }[]) {
-    await this.page.locator(generateColumnLocator(columns) + '//input').click()
+    await this.page.locator(buildRowLocator(columns) + '//input').click()
   }
 
   public async clickEditLine(columns: { colId: ApparelSunglassesColumns; text: string }[]) {
-    await this.page.locator(generateColumnLocator(columns) + "//button[@aria-label='Edit']").click()
+    await this.page.locator(buildRowLocator(columns) + "//button[@aria-label='Edit']").click()
   }
 
   public async fillSearchFreeText(text: string) {

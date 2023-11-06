@@ -1,9 +1,12 @@
 import { Locator, Page } from '@playwright/test'
 import { PageBase } from '@testomate/framework'
 import { WalmartGlassesColumns } from '../enum/walmart-glasses-columns.js'
-import { generateColumnLocator } from '../utils.js'
+import { buildRowLocator } from '../utils.js'
 
 export class WalmartGlassesPage extends PageBase {
+  private walmartGlassesColumn = (column: WalmartGlassesColumns) => `//div[@class='ag-header-row ag-header-row-column']//div[@col-id='${column}']`
+  private columnFilter = (index: string) => `//div[@class='ag-header-cell ag-floating-filter ag-focus-managed' and @aria-colindex=${index}]//input`
+
   private searchFreeText: Locator
   private assignedToMeBtn: Locator
   private previewBtn: Locator
@@ -39,19 +42,34 @@ export class WalmartGlassesPage extends PageBase {
   }
 
   public getTableRowData(columns: { colId: WalmartGlassesColumns; text: string }[]) {
-    return this.page.locator(generateColumnLocator(columns))
+    return this.page.locator(buildRowLocator(columns))
   }
 
-  public async clickCheckedLine(columns: { colId: WalmartGlassesColumns; text: string }[]) {
-    await this.page.locator(generateColumnLocator(columns) + '//input').click()
+  public async clickCheckedRow(columns: { colId: WalmartGlassesColumns; text: string }[]) {
+    await this.page.locator(buildRowLocator(columns) + '//input').click()
   }
 
   public async clickEditLine(columns: { colId: WalmartGlassesColumns; text: string }[]) {
-    await this.page.locator(generateColumnLocator(columns) + "//button[@aria-label='Edit']").click()
+    await this.page.locator(buildRowLocator(columns) + "//button[@aria-label='Edit']").click()
   }
 
   public async fillSearchFreeText(text: string) {
     await this.searchFreeText.fill(text)
+  }
+
+  public async getColumnIndex(column: WalmartGlassesColumns) {
+    return await this.page.locator(this.walmartGlassesColumn(column)).getAttribute('aria-colindex')
+  }
+
+  public async scrollToBeVisible(column: WalmartGlassesColumns) {
+    while (!(await this.page.locator(this.walmartGlassesColumn(column)).isVisible())) {
+      await this.page.mouse.wheel(500, 0) // Fixme!!!
+    }
+  }
+
+  public async filterByColumn(column: WalmartGlassesColumns, text: string) {
+    const getIndex = await this.getColumnIndex(column)
+    if (getIndex !== null) await this.page.locator(this.columnFilter(getIndex)).fill(text)
   }
 
   public async clickAssignedToMe() {
