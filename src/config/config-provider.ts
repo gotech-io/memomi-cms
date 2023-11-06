@@ -17,11 +17,13 @@ export function initializeConfig() {
 // Config schema
 const ConfigSchemaZod = z.object({
     cmsAdminUser: z.string().email(),
-    cmsPassword: z.string()
+    cmsPassword: z.string(),
+    cmsVersion: z.string()
 })
 
 // Config values
 const config: ConfigSchemaInput = {
     cmsAdminUser: process.env.CMS_ADMIN_USER || 'olga-manager@walmanrt.com',
     cmsPassword: process.env.CMS_PASSWORD || '502241114',
+    cmsVersion: process.env.CMS_VERSION || '2.2.6',
 }
