@@ -45,7 +45,7 @@ export class WalmartGlassesPage extends PageBase {
     return this.page.locator(buildRowLocator(columns))
   }
 
-  public async clickCheckedRow(columns: { colId: WalmartGlassesColumns; text: string }[]) {
+  public async clickCheckRow(columns: { colId: WalmartGlassesColumns; text: string }[]) {
     await this.page.locator(buildRowLocator(columns) + '//input').click()
   }
 
