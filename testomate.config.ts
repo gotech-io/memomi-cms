@@ -2,7 +2,6 @@ import { SauceLabsNotifierPlugin, initializeFrameworkConfig } from '@testomate/f
 import dotenv from 'dotenv'
 import path from 'path'
 import { initializeConfig } from './src/config/index.js'
-import { devices } from '@playwright/test'
 
 dotenv.config({path: path.resolve(process.cwd(), '.env')})
 if (process.env.DOTENV_CONFIG_PATH) {
@@ -31,7 +30,7 @@ export default initializeFrameworkConfig({
     playwright: {
         testDir: './src/tests/',
         fullyParallel: true,
-        timeout: 5 * 60 * 1000,
+        timeout: 60 * 1000,
         forbidOnly: false,
         retries: 0,
         workers: 1,
@@ -39,16 +38,6 @@ export default initializeFrameworkConfig({
             trace: 'retain-on-failure',
             headless: false,
         },
-        projects: [
-            {name: 'setup', testMatch: /.*\.setup\.ts/},
-            {
-                name: 'chromium',
-                use: {
-                    ...devices['Desktop Chrome'],
-                },
-                dependencies: ['setup'],
-            },
-        ],
         reporter: [
             ['dot'],
             // [

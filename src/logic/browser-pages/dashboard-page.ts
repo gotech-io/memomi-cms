@@ -24,7 +24,7 @@ export class DashboardPage extends PageBase {
 
     constructor(page: Page) {
         super(page)
-        this.cmsVersion = page.locator("//h5[contains(@class, 'MuiTypography-gutterBottom css-71lg81')]")
+        this.cmsVersion = page.locator("//h5[contains(@class, 'MuiTypography-root MuiTypography-h5')]")
         this.connectedUserBtn = page.locator("//div[contains(@class, 'outlinedPrimary css-9n40nr')]//div[contains(@class, 'Avatar')]")
         this.walmartGlassesLinkBtn = page.locator("//div[contains(@class, 'grid-xs-12 css') and .//span[contains(text(), 'Walmart Glasses')]]//button")
         this.apparelSunglassesLinkBtn = page.locator("//div[contains(@class, 'grid-xs-12 css') and .//span[contains(text(), 'Apparel - Sunglasses')]]//button")
