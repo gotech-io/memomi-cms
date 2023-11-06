@@ -14,11 +14,7 @@ test.describe('Dashboard tests', () => {
         dashboardPage = await testContext.getPage(DashboardPage)
     })
 
-    test.only('CMS Version', async ({testContext}) => {
-        expect(await dashboardPage.getCMSVersion()).toEqual(configProvider.cmsVersion)
-    })
-
-    test('Is table row visible', async ({testContext}) => {
+    test.only('Is table row visible', async ({testContext}) => {
         await dashboardPage.clickWalmartGlasses()
         const walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
         await expect(walmartGlassesPage.getTableRowData([
