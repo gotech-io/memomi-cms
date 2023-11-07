@@ -41,6 +41,7 @@ export default initializeFrameworkConfig({
     },
     reporter: [
       ['dot'],
+      ['html', { open: 'never' }],
       // [
       //     'allure-playwright',
       //     {

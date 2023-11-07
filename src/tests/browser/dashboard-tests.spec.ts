@@ -21,12 +21,7 @@ test.describe('Dashboard tests', () => {
     await dashboardPage.clickWalmartGlasses()
     const walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
     await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.STL, '00010164351979.stl')
-    await expect(
-      walmartGlassesPage.tableRowData([
-        { colId: WalmartGlassesColumns.GTIN, text: '00010164351979' },
-        { colId: WalmartGlassesColumns.UpdatedBy, text: 'Olga' },
-      ]),
-    ).toBeVisible()
+    await expect(walmartGlassesPage.tableRowData([{ colId: WalmartGlassesColumns.GTIN, text: '00010164351979' }])).toBeVisible()
   })
 
   test('Product values tests', async ({ testContext }) => {

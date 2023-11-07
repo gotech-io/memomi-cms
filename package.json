@@ -30,6 +30,7 @@
   "devDependencies": {
     "@playwright/test": "1.38.1",
     "@testomate/cli": "0.0.26",
+    "@types/adm-zip": "^0.5.4",
     "@types/imapflow": "^1.0.13",
     "@types/node": "18.17.1",
     "@types/nodemailer": "^6.4.8",

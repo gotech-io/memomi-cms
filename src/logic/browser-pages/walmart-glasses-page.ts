@@ -2,10 +2,12 @@ import { Locator, Page } from '@playwright/test'
 import { PageBase } from '@testomate/framework'
 import { WalmartGlassesColumns } from '../enum/walmart-glasses-columns.js'
 import { buildRowLocator } from '../utils.js'
+import { DropdownMenuItems } from '../enum/dropdown-menu-items.js'
 
 export class WalmartGlassesPage extends PageBase {
   private walmartGlassesColumn = (column: WalmartGlassesColumns) => `//div[@class='ag-header-row ag-header-row-column']//div[@col-id='${column}']`
   private columnFilter = (index: string) => `//div[@class='ag-header-cell ag-floating-filter ag-focus-managed' and @aria-colindex=${index}]//input`
+  private dropDownMenuItem = (item: DropdownMenuItems) => `//li[text()='${item}']`
 
   private searchFreeText: Locator
   private assignedToMeBtn: Locator
@@ -13,10 +15,11 @@ export class WalmartGlassesPage extends PageBase {
   private tableBtn: Locator
   private refreshBtn: Locator
   private createNewProductBtn: Locator
-  private threeDotsMenuBtn: Locator
+  private dropDownMenuBtn: Locator
   private mainCheckbox: Locator
   private loadingCenter: Locator
   private firstRow: Locator
+  private okBtn: Locator
 
   constructor(page: Page) {
     super(page)
@@ -26,10 +29,11 @@ export class WalmartGlassesPage extends PageBase {
     this.tableBtn = page.locator("//button[text()='Table']")
     this.refreshBtn = page.locator("//button[text()='Refresh']")
     this.createNewProductBtn = page.locator("//button[@id='add-button']")
-    this.threeDotsMenuBtn = page.locator("//button[@id='menu-button']")
+    this.dropDownMenuBtn = page.locator("//button[@id='menu-button']")
     this.mainCheckbox = page.locator("//div[@class='ag-header-row ag-header-row-column']//div[@col-id='_id']//input")
     this.loadingCenter = page.locator("//span[@class='ag-overlay-loading-center']")
     this.firstRow = page.locator("//div[@role='row' and @row-index=0]")
+    this.okBtn = page.locator("//button[text()='OK']")
   }
 
   async initPage(): Promise<void> {
@@ -93,8 +97,21 @@ export class WalmartGlassesPage extends PageBase {
     await this.createNewProductBtn.click()
   }
 
-  public async clickMenuButton() {
-    await this.threeDotsMenuBtn.click()
+  public async clickOk() {
+    await this.okBtn.click()
+  }
+
+  public async clickDropDownMenu() {
+    await this.dropDownMenuBtn.click()
+  }
+
+  public async downloadItem(item: DropdownMenuItems) {
+    await this.clickDropDownMenu()
+    const downloadPromise = this.page.waitForEvent('download')
+    await this.page.locator(this.dropDownMenuItem(item)).click()
+    if (await this.okBtn.isVisible()) await this.clickOk()
+    const download = await downloadPromise
+    await download.saveAs('./downloads/' + download.suggestedFilename())
   }
 
   public async clickMainCheckbox() {
