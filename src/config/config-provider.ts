@@ -1,6 +1,9 @@
 import type { FrameworkConfigProvider } from '@testomate/framework'
 import { frameworkConfigProvider } from '@testomate/framework'
 import { z } from 'zod'
+import dotenv from 'dotenv'
+
+dotenv.config({ path: '.env.secret' })
 
 type ConfigSchema = z.infer<typeof ConfigSchemaZod>
 type ConfigSchemaInput = z.input<typeof ConfigSchemaZod>
@@ -22,7 +25,6 @@ const ConfigSchemaZod = z.object({
   cmsExternalDesigner: z.string().email(),
   cmsSiteOps: z.string().email(),
   cmsPassword: z.string(),
-  cmsVersion: z.string(),
 })
 
 // Config values
@@ -33,5 +35,4 @@ const config: ConfigSchemaInput = {
   cmsExternalDesigner: process.env.CMS_EXTERNAL_DESIGNER_USER || 'olga-external@walmanrt.com',
   cmsSiteOps: process.env.CMS_SITEOPS_USER || 'olga-siteOps@walmanrt.com',
   cmsPassword: process.env.CMS_PASSWORD || '502241114',
-  cmsVersion: process.env.CMS_VERSION || '2.2.6',
 }
