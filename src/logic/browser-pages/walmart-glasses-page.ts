@@ -5,9 +5,12 @@ import { buildRowLocator } from '../utils.js'
 import { DropdownMenuItems } from '../enum/dropdown-menu-items.js'
 
 export class WalmartGlassesPage extends PageBase {
-  private walmartGlassesColumn = (column: WalmartGlassesColumns) => `//div[@class='ag-header-row ag-header-row-column']//div[@col-id='${column}']`
-  private columnFilter = (index: string) => `//div[@class='ag-header-cell ag-floating-filter ag-focus-managed' and @aria-colindex=${index}]//input`
-  private dropDownMenuItem = (item: DropdownMenuItems) => `//li[text()='${item}']`
+  private walmartGlassesColumn = (column: WalmartGlassesColumns) =>
+    this.page.locator(`//div[@class='ag-header-row ag-header-row-column']//div[@col-id='${column}']`)
+  private columnFilter = (index: string) =>
+    this.page.locator(`//div[@class='ag-header-cell ag-floating-filter ag-focus-managed' and @aria-colindex=${index}]//input`)
+
+  private dropDownMenuItem = (item: DropdownMenuItems) => this.page.locator(`//li[text()='${item}']`)
 
   private searchFreeText: Locator
   private assignedToMeBtn: Locator
@@ -64,11 +67,11 @@ export class WalmartGlassesPage extends PageBase {
   }
 
   public async getColumnIndex(column: WalmartGlassesColumns) {
-    return await this.page.locator(this.walmartGlassesColumn(column)).getAttribute('aria-colindex')
+    return await this.walmartGlassesColumn(column).getAttribute('aria-colindex')
   }
 
   public async scrollToVisibleColumn(column: WalmartGlassesColumns, deltaX: number = 150) {
-    while (!(await this.page.locator(this.walmartGlassesColumn(column)).isVisible())) {
+    while (!(await this.walmartGlassesColumn(column).isVisible())) {
       await this.firstRow.hover()
       await this.page.mouse.wheel(deltaX, 0)
     }
@@ -77,7 +80,7 @@ export class WalmartGlassesPage extends PageBase {
   public async filterByColumn(column: WalmartGlassesColumns, text: string) {
     await this.scrollToVisibleColumn(column)
     const getIndex = await this.getColumnIndex(column)
-    if (getIndex !== null) await this.page.locator(this.columnFilter(getIndex)).fill(text)
+    if (getIndex !== null) await this.columnFilter(getIndex).fill(text)
     await this.scrollToVisibleColumn(WalmartGlassesColumns._ID, -150)
   }
 
@@ -108,7 +111,7 @@ export class WalmartGlassesPage extends PageBase {
   public async downloadItem(item: DropdownMenuItems) {
     await this.clickDropDownMenu()
     const downloadPromise = this.page.waitForEvent('download')
-    await this.page.locator(this.dropDownMenuItem(item)).click()
+    await this.dropDownMenuItem(item).click()
     if (await this.okBtn.isVisible()) await this.clickOk()
     const download = await downloadPromise
     await download.saveAs('./downloads/' + download.suggestedFilename())

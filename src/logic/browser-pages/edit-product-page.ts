@@ -5,9 +5,11 @@ import { ProductStatus } from '../enum/product-status.js'
 import { ProductValues } from '../enum/product-values.js'
 
 export class EditProductPage extends PageBase {
-  private productTab = (tab: ProductTabs) => `//div[@role='tablist']//a[text()='${tab}']`
-  private productStatusItems = (status: ProductStatus) => `//ul[@aria-labelledby='status-select-label-status']//li[@data-value='${status}']`
-  private productValue = (value: ProductValues) => `//div[contains(@class, 'MuiGrid-grid-md-6 css-iol86l') and ./h6[text()='${value}']]//h6[2]`
+  private productTab = (tab: ProductTabs) => this.page.locator(`//div[@role='tablist']//a[text()='${tab}']`)
+  private productStatusItems = (status: ProductStatus) =>
+    this.page.locator(`//ul[@aria-labelledby='status-select-label-status']//li[@data-value='${status}']`)
+  private productValue = (value: ProductValues) =>
+    this.page.locator(`//div[contains(@class, 'MuiGrid-grid-md-6 css-iol86l') and ./h6[text()='${value}']]//h6[2]`)
 
   private saveBtn: Locator
   private closeBtn: Locator
@@ -32,7 +34,7 @@ export class EditProductPage extends PageBase {
   }
 
   public async clickTab(tab: ProductTabs) {
-    await this.page.locator(this.productTab(tab)).click()
+    await this.productTab(tab).click()
   }
 
   public async clickSave() {
@@ -52,13 +54,13 @@ export class EditProductPage extends PageBase {
   }
 
   public async getProductValue(item: ProductValues) {
-    return await this.page.locator(this.productValue(item)).textContent()
+    return await this.productValue(item).textContent()
   }
 
   public async setProductStatus(status: ProductStatus) {
     if (await this.trackingSelectStatusMenu.isVisible()) {
       await this.clickSelectStatusMenu()
-      await this.page.locator(this.productStatusItems(status)).click()
+      await this.productStatusItems(status).click()
     }
   }
 }

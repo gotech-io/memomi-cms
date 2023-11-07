@@ -29,10 +29,10 @@ const ConfigSchemaZod = z.object({
 
 // Config values
 const config: ConfigSchemaInput = {
-  cmsAdmin: process.env.CMS_ADMIN_USER || 'olga-manager@walmanrt.com',
-  cmsDesigner: process.env.CMS_DESIGNER_USER || 'olga-designer@walmart.com',
-  cmsQC: process.env.CMS_QC_USER || 'olga-qc@walmart.com',
-  cmsExternalDesigner: process.env.CMS_EXTERNAL_DESIGNER_USER || 'olga-external@walmanrt.com',
-  cmsSiteOps: process.env.CMS_SITEOPS_USER || 'olga-siteOps@walmanrt.com',
-  cmsPassword: process.env.CMS_PASSWORD || '502241114',
+  cmsAdmin: process.env.CMS_ADMIN_USER || 'example@walmart.com',
+  cmsDesigner: process.env.CMS_DESIGNER_USER || 'example@walmart.com',
+  cmsQC: process.env.CMS_QC_USER || 'example@walmart.com',
+  cmsExternalDesigner: process.env.CMS_EXTERNAL_DESIGNER_USER || 'example@walmart.com',
+  cmsSiteOps: process.env.CMS_SITEOPS_USER || 'example@walmart.com',
+  cmsPassword: process.env.CMS_PASSWORD || 'example@walmart.com',
 }

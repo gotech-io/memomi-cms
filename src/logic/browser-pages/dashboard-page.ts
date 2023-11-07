@@ -3,7 +3,7 @@ import { PageBase } from '@testomate/framework'
 import { AdminMailbox } from '../enum/admin-mailbox.js'
 
 export class DashboardPage extends PageBase {
-  private adminMailBoxCategory = (category: AdminMailbox) => `//div//p[text()='${category}'`
+  private adminMailBoxCategory = (category: AdminMailbox) => this.page.locator(`//div//p[text()='${category}'`)
 
   private cmsVersion: Locator
   private connectedUserBtn: Locator
@@ -62,7 +62,7 @@ export class DashboardPage extends PageBase {
 
   public async clickAdminMailBoxCategory(category: AdminMailbox) {
     await this.openAdminMailbox()
-    await this.page.locator(this.adminMailBoxCategory(category)).click()
+    await this.adminMailBoxCategory(category).click()
   }
 
   public async clickWalmartGlassesLink() {
