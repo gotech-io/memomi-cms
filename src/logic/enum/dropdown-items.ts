@@ -1,4 +1,4 @@
-export enum DropdownMenuItems {
+export enum DropdownItems {
   ExportToCSV = 'Export to CSV',
   ExportToExcel = 'Export to Excel',
   ExportToJSON = 'Export to JSON',

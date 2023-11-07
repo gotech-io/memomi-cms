@@ -2,7 +2,7 @@ import { Locator, Page } from '@playwright/test'
 import { PageBase } from '@testomate/framework'
 import { WalmartGlassesColumns } from '../enum/walmart-glasses-columns.js'
 import { buildRowLocator } from '../utils.js'
-import { DropdownMenuItems } from '../enum/dropdown-menu-items.js'
+import { DropdownItems } from '../enum/dropdown-items.js'
 
 export class WalmartGlassesPage extends PageBase {
   private walmartGlassesColumn = (column: WalmartGlassesColumns) =>
@@ -10,7 +10,7 @@ export class WalmartGlassesPage extends PageBase {
   private columnFilter = (index: string) =>
     this.page.locator(`//div[@class='ag-header-cell ag-floating-filter ag-focus-managed' and @aria-colindex=${index}]//input`)
 
-  private dropDownMenuItem = (item: DropdownMenuItems) => this.page.locator(`//li[text()='${item}']`)
+  private dropDownMenuItem = (item: DropdownItems) => this.page.locator(`//li[text()='${item}']`)
 
   private searchFreeText: Locator
   private assignedToMeBtn: Locator
@@ -108,7 +108,7 @@ export class WalmartGlassesPage extends PageBase {
     await this.dropDownMenuBtn.click()
   }
 
-  public async downloadItem(item: DropdownMenuItems) {
+  public async downloadItem(item: DropdownItems) {
     await this.clickDropDownMenu()
     const downloadPromise = this.page.waitForEvent('download')
     await this.dropDownMenuItem(item).click()

@@ -4,7 +4,7 @@ import { WalmartGlassesPage } from '../../logic/browser-pages/walmart-glasses-pa
 import { WalmartGlassesColumns } from '../../logic/enum/walmart-glasses-columns.js'
 import { LoginPage } from '../../logic/browser-pages/login-page.js'
 import { configProvider } from '../../config/index.js'
-import { DropdownMenuItems } from '../../logic/enum/dropdown-menu-items.js'
+import { DropdownItems } from '../../logic/enum/dropdown-items.js'
 import { unzipFile } from '../../logic/utils.js'
 import fs from 'fs'
 
@@ -24,7 +24,7 @@ test.describe('Designer test flows', () => {
     await dashboardPage.clickWalmartGlasses()
     const walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
     await walmartGlassesPage.clickCheckRow([{ colId: WalmartGlassesColumns.GTIN, text: gtin }])
-    await walmartGlassesPage.downloadItem(DropdownMenuItems.ExportAssets)
+    await walmartGlassesPage.downloadItem(DropdownItems.ExportAssets)
     const zipFiles = await unzipFile()
 
     files.forEach(file => {
