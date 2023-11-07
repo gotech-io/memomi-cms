@@ -24,7 +24,6 @@ test.describe('Designer test flows', () => {
     await dashboardPage.clickWalmartGlasses()
     const walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
     await walmartGlassesPage.clickCheckRow([{ colId: WalmartGlassesColumns.GTIN, text: gtin }])
-    await walmartGlassesPage.downloadItem(DropdownMenuItems.ExportToCSV)
     await walmartGlassesPage.downloadItem(DropdownMenuItems.ExportAssets)
     const zipFiles = await unzipFile()
 
