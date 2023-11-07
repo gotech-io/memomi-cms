@@ -17,11 +17,12 @@ test.describe('Dashboard tests', () => {
     dashboardPage = await testContext.getPage(DashboardPage)
   })
 
-  test.only('Is table row visible', async ({ testContext }) => {
+  test('Is table row visible', async ({ testContext }) => {
     await dashboardPage.clickWalmartGlasses()
     const walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
+    await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.STL, '00010164351979.stl')
     await expect(
-      walmartGlassesPage.getTableRowData([
+      walmartGlassesPage.tableRowData([
         { colId: WalmartGlassesColumns.GTIN, text: '00010164351979' },
         { colId: WalmartGlassesColumns.UpdatedBy, text: 'Olga' },
       ]),

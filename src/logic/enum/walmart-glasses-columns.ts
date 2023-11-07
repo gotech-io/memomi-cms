@@ -1,4 +1,5 @@
 export enum WalmartGlassesColumns {
+  _ID = "_id",
   LastUpdate = 'updatedAt',
   UpdatedBy = 'updatedBy',
   GTIN = 'gtin',

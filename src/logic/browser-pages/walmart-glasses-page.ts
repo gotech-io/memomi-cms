@@ -16,6 +16,7 @@ export class WalmartGlassesPage extends PageBase {
   private threeDotsMenuBtn: Locator
   private mainCheckbox: Locator
   private loadingCenter: Locator
+  private firstRow: Locator
 
   constructor(page: Page) {
     super(page)
@@ -28,6 +29,7 @@ export class WalmartGlassesPage extends PageBase {
     this.threeDotsMenuBtn = page.locator("//button[@id='menu-button']")
     this.mainCheckbox = page.locator("//div[@class='ag-header-row ag-header-row-column']//div[@col-id='_id']//input")
     this.loadingCenter = page.locator("//span[@class='ag-overlay-loading-center']")
+    this.firstRow = page.locator("//div[@role='row' and @row-index=0]")
   }
 
   async initPage(): Promise<void> {
@@ -41,7 +43,7 @@ export class WalmartGlassesPage extends PageBase {
     return this.baseUrl
   }
 
-  public getTableRowData(columns: { colId: WalmartGlassesColumns; text: string }[]) {
+  public tableRowData(columns: { colId: WalmartGlassesColumns; text: string }[]) {
     return this.page.locator(buildRowLocator(columns))
   }
 
@@ -61,15 +63,18 @@ export class WalmartGlassesPage extends PageBase {
     return await this.page.locator(this.walmartGlassesColumn(column)).getAttribute('aria-colindex')
   }
 
-  public async scrollToBeVisible(column: WalmartGlassesColumns) {
+  public async scrollToVisibleColumn(column: WalmartGlassesColumns, deltaX: number = 150) {
     while (!(await this.page.locator(this.walmartGlassesColumn(column)).isVisible())) {
-      await this.page.mouse.wheel(500, 0) // Fixme!!!
+      await this.firstRow.hover()
+      await this.page.mouse.wheel(deltaX, 0)
     }
   }
 
   public async filterByColumn(column: WalmartGlassesColumns, text: string) {
+    await this.scrollToVisibleColumn(column)
     const getIndex = await this.getColumnIndex(column)
     if (getIndex !== null) await this.page.locator(this.columnFilter(getIndex)).fill(text)
+    await this.scrollToVisibleColumn(WalmartGlassesColumns._ID, -150)
   }
 
   public async clickAssignedToMe() {
