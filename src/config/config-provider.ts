@@ -16,14 +16,22 @@ export function initializeConfig() {
 
 // Config schema
 const ConfigSchemaZod = z.object({
-  cmsAdminUser: z.string().email(),
+  cmsAdmin: z.string().email(),
+  cmsDesigner: z.string().email(),
+  cmsQC: z.string().email(),
+  cmsExternalDesigner: z.string().email(),
+  cmsSiteOps: z.string().email(),
   cmsPassword: z.string(),
   cmsVersion: z.string(),
 })
 
 // Config values
 const config: ConfigSchemaInput = {
-  cmsAdminUser: process.env.CMS_ADMIN_USER || 'olga-manager@walmanrt.com',
+  cmsAdmin: process.env.CMS_ADMIN_USER || 'olga-manager@walmanrt.com',
+  cmsDesigner: process.env.CMS_DESIGNER_USER || 'olga-designer@walmart.com',
+  cmsQC: process.env.CMS_QC_USER || 'olga-qc@walmart.com',
+  cmsExternalDesigner: process.env.CMS_EXTERNAL_DESIGNER_USER || 'olga-external@walmanrt.com',
+  cmsSiteOps: process.env.CMS_SITEOPS_USER || 'olga-siteOps@walmanrt.com',
   cmsPassword: process.env.CMS_PASSWORD || '502241114',
   cmsVersion: process.env.CMS_VERSION || '2.2.6',
 }

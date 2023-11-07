@@ -13,7 +13,7 @@ test.describe('Dashboard tests', () => {
 
   test.beforeEach(async ({ testContext }) => {
     const loginPage = await testContext.getPage(LoginPage, { shouldNavigate: true })
-    await loginPage.performSignIn(configProvider.cmsAdminUser, configProvider.cmsPassword)
+    await loginPage.performSignIn(configProvider.cmsAdmin, configProvider.cmsPassword)
     dashboardPage = await testContext.getPage(DashboardPage)
   })
 
