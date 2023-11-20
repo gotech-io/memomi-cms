@@ -5,7 +5,7 @@ import { WalmartGlassesColumns } from '../../logic/enum/walmart-glasses-columns.
 import { LoginPage } from '../../logic/browser-pages/login-page.js'
 import { configProvider } from '../../config/index.js'
 import { DropdownItems } from '../../logic/enum/dropdown-items.js'
-import { duplicateCSV, getFilesInFolder, unzipFile } from '../../logic/utils.js'
+import { getFilesInFolder, unzipFile } from '../../logic/utils.js'
 import fs from 'fs'
 import { ImportAssetsPage } from '../../logic/browser-pages/import-assets-page.js'
 import { EditProductPage } from '../../logic/browser-pages/edit-product-page.js'
@@ -41,7 +41,6 @@ test.describe('Designer test flows', () => {
     const files = await getFilesInFolder('src/tests/browser/resources/walmart_auto_glass')
     const images = files.filter(image => image.includes('.jpg'))
 
-    await duplicateCSV('src/tests/browser/resources/walmart-template-glasses.csv', 'downloads/walmart-dynamic-glasses.csv')
     await dashboardPage.clickWalmartGlasses()
 
     const walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
@@ -57,7 +56,7 @@ test.describe('Designer test flows', () => {
     await editProductPage.clickTab(ProductTabs.Images)
 
     for (const image of images) {
-      expect.soft(await editProductPage.isProductImageVisible(image), `The image file ${image} was not successfully uploaded`).toBeTruthy()
+      expect.soft(await editProductPage.isProductImageVisible(image), `The image ${image} was not successfully uploaded`).toBeTruthy()
     }
   })
 })
