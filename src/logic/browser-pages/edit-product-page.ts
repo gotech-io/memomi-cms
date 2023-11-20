@@ -11,6 +11,8 @@ export class EditProductPage extends PageBase {
   private productValue = (value: ProductValues) =>
     this.page.locator(`//div[contains(@class, 'MuiGrid-grid-md-6 css-iol86l') and ./h6[text()='${value}']]//h6[2]`)
 
+  private productImage = (image: string) => this.page.locator(`//img[@title='${image}']`)
+
   private saveBtn: Locator
   private closeBtn: Locator
   private unlockBtn: Locator
@@ -62,5 +64,9 @@ export class EditProductPage extends PageBase {
       await this.clickSelectStatusMenu()
       await this.productStatusItems(status).click()
     }
+  }
+
+  public async isProductImageVisible(image: string) {
+    return await this.productImage(image).isVisible()
   }
 }
