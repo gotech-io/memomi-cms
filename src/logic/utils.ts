@@ -3,9 +3,30 @@ import { ApparelSunglassesColumns } from './enum/apparel-sunglasses-columns.js'
 import * as fs from 'fs'
 import * as path from 'path'
 import AdmZip from 'adm-zip'
+import { promisify } from 'util'
 
 export const delay = async (ms: number) => {
   return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+export const getFilesInFolder = async (folderPath: string): Promise<string[]> => {
+  try {
+    return await fs.promises.readdir(folderPath)
+  } catch (error) {
+    return []
+  }
+}
+
+export const duplicateCSV = async (inputFilePath: string, outputFilePath: string): Promise<void> => {
+  const readFileAsync = promisify(fs.readFile)
+  const writeFileAsync = promisify(fs.writeFile)
+
+  try {
+    const csvContent = await readFileAsync(inputFilePath, 'utf8')
+    await writeFileAsync(outputFilePath, csvContent, 'utf8')
+  } catch (error) {
+    throw error
+  }
 }
 
 export const unzipFile = async (): Promise<string[]> => {

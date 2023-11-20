@@ -110,11 +110,16 @@ export class WalmartGlassesPage extends PageBase {
 
   public async downloadItem(item: DropdownItems) {
     await this.clickDropDownMenu()
-    const downloadPromise = this.page.waitForEvent('download')
-    await this.dropDownMenuItem(item).click()
-    if (await this.okBtn.isVisible()) await this.clickOk()
-    const download = await downloadPromise
-    await download.saveAs('./downloads/' + download.suggestedFilename())
+    if (item.includes('Export')) {
+      const downloadPromise = this.page.waitForEvent('download')
+      await this.dropDownMenuItem(item).click()
+      if (await this.okBtn.isVisible()) await this.clickOk()
+      const download = await downloadPromise
+      await download.saveAs('./downloads/' + download.suggestedFilename())
+    } else {
+      await this.dropDownMenuItem(item).click()
+      if (await this.okBtn.isVisible()) await this.clickOk()
+    }
   }
 
   public async clickMainCheckbox() {

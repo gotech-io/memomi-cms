@@ -5,8 +5,9 @@ import { WalmartGlassesColumns } from '../../logic/enum/walmart-glasses-columns.
 import { LoginPage } from '../../logic/browser-pages/login-page.js'
 import { configProvider } from '../../config/index.js'
 import { DropdownItems } from '../../logic/enum/dropdown-items.js'
-import { unzipFile } from '../../logic/utils.js'
+import { duplicateCSV, unzipFile } from '../../logic/utils.js'
 import fs from 'fs'
+import { ImportAssetsPage } from '../../logic/browser-pages/import-assets-page.js'
 
 test.describe('Designer test flows', () => {
   let dashboardPage: DashboardPage
@@ -30,5 +31,15 @@ test.describe('Designer test flows', () => {
     files.forEach(file => {
       expect.soft(zipFiles.includes(gtin + '/' + gtin + file), `The ZIP file does not contain an ${file} file`).toBeTruthy()
     })
+  })
+
+  test('Import assets', async ({ testContext }) => {
+    await duplicateCSV('src/tests/browser/resources/walmart-template-glasses.csv', 'downloads/walmart-dynamic-glasses.csv')
+    await dashboardPage.clickWalmartGlasses()
+    const walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
+    await walmartGlassesPage.downloadItem(DropdownItems.ImportAssets)
+    const importAssetsPage = await testContext.getPage(ImportAssetsPage)
+    await importAssetsPage.uploadItems()
+    await importAssetsPage.uploadItems()
   })
 })
