@@ -10,13 +10,23 @@ import fs from 'fs'
 import { ImportAssetsPage } from '../../logic/browser-pages/import-assets-page.js'
 import { EditProductPage } from '../../logic/browser-pages/edit-product-page.js'
 import { ProductTabs } from '../../logic/enum/product-tabs.js'
+import { UsersApi } from '../../logic/api/users-api.js'
+import { loginRequest } from '../../logic/api/request/login-request.js'
+import { ProductsApi } from '../../logic/api/products-api.js'
+import { productRequest } from '../../logic/api/request/product-request.js'
 
 test.describe('Designer test flows', () => {
+  let loginPage: LoginPage
   let dashboardPage: DashboardPage
+  let loginApi: UsersApi
+  let productsApi: ProductsApi
 
   test.beforeEach(async ({ testContext }) => {
-    const loginPage = await testContext.getPage(LoginPage, { shouldNavigate: true })
-    await loginPage.performSignIn(configProvider.cmsAdmin, configProvider.cmsPassword)
+    loginPage = await testContext.getPage(LoginPage, { shouldNavigate: true })
+    await loginPage.performSignIn(configProvider.cmsDesigner, configProvider.cmsPassword)
+
+    loginApi = await testContext.getApi(UsersApi)
+    productsApi = await testContext.getApi(ProductsApi)
     dashboardPage = await testContext.getPage(DashboardPage)
   })
 
@@ -38,6 +48,9 @@ test.describe('Designer test flows', () => {
   })
 
   test('Import assets, Upload images', async ({ testContext }) => {
+    const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+    await productsApi.createProduct(productRequest(configProvider.walmartAutomation), loginApiRes.item.token)
+
     const files = await getFilesInFolder('src/tests/browser/resources/walmart_auto_glass')
     const images = files.filter(image => image.includes('.jpg'))
 

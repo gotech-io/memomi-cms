@@ -23,6 +23,8 @@ export class WalmartGlassesPage extends PageBase {
   private loadingCenter: Locator
   private firstRow: Locator
   private okBtn: Locator
+  private newProductId: Locator
+  private createBtn: Locator
 
   constructor(page: Page) {
     super(page)
@@ -37,6 +39,8 @@ export class WalmartGlassesPage extends PageBase {
     this.loadingCenter = page.locator("//span[@class='ag-overlay-loading-center']")
     this.firstRow = page.locator("//div[@role='row' and @row-index=0]")
     this.okBtn = page.locator("//button[text()='OK']")
+    this.newProductId = page.locator("//input[@id='name']")
+    this.createBtn = page.locator("//button[text()='Create']")
   }
 
   async initPage(): Promise<void> {
@@ -98,6 +102,20 @@ export class WalmartGlassesPage extends PageBase {
 
   public async clickCreateNewProduct() {
     await this.createNewProductBtn.click()
+  }
+
+  public async clickCreate() {
+    await this.createBtn.click()
+  }
+
+  public async fillNewProductId(id: string) {
+    await this.newProductId.fill(id)
+  }
+
+  public async createNewProduct(id: string) {
+    await this.clickCreateNewProduct()
+    await this.fillNewProductId(id)
+    await this.clickCreate()
   }
 
   public async clickOk() {

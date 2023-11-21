@@ -26,6 +26,7 @@ const ConfigSchemaZod = z.object({
   cmsExternalDesigner: z.string().email(),
   cmsSiteOps: z.string().email(),
   cmsPassword: z.string(),
+  walmartAutomation: z.string(),
 })
 
 // Config values
@@ -37,4 +38,5 @@ const config: ConfigSchemaInput = {
   cmsExternalDesigner: process.env.CMS_EXTERNAL_DESIGNER_USER || 'example@walmart.com',
   cmsSiteOps: process.env.CMS_SITEOPS_USER || 'example@walmart.com',
   cmsPassword: process.env.CMS_PASSWORD || 'example@walmart.com',
+  walmartAutomation: process.env.WALMART_AUTOMATION || 'walmart-automation',
 }
