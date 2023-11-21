@@ -1,6 +1,6 @@
 import { Locator, Page } from '@playwright/test'
 import { PageBase } from '@testomate/framework'
-import { getFilesInFolder } from '../utils.js'
+import { getAllFiles } from '../utils.js'
 
 export class ImportAssetsPage extends PageBase {
   private uploadFilesInput: Locator
@@ -45,7 +45,7 @@ export class ImportAssetsPage extends PageBase {
 
   public async uploadItems() {
     const path = 'src/tests/browser/resources/walmart_auto_glass'
-    const files = await getFilesInFolder(path)
+    const files = await getAllFiles(path)
     const filePaths = files.map(file => path + '/' + file)
     await this.uploadFilesInput.setInputFiles(filePaths)
     await this.clickStartImport()

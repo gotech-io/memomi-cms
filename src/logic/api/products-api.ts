@@ -9,13 +9,25 @@ export class ProductsApi extends ApiBase {
   }
 
   get apiEndpointUrl(): string {
-    return 'https://cmsdevserverapi.azurewebsites.net/api'
+    return 'https://cmsdevserverapi.azurewebsites.net/api/products'
   }
 
   public async createProduct(productRequest: ProductRequest, token: string): Promise<APIResponse<ProductResponse>> {
-    return this.post<ProductResponse>(`${this.apiEndpointUrl}/products`, {
+    return this.post<ProductResponse>(`${this.apiEndpointUrl}`, {
       data: productRequest,
       headers: { Authorization: `Bearer ${token}` },
     })
+  }
+
+  public async getProduct(gtin: string, token: string): Promise<APIResponse<ProductResponse>> {
+    return this.get<ProductResponse>(`${this.apiEndpointUrl}/${gtin}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+  }
+
+  public async deleteProduct(gtin: string, token: string): Promise<void> {
+    await this.delete(`${this.apiEndpointUrl}/${gtin}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
   }
 }

@@ -9,7 +9,7 @@ export const delay = async (ms: number) => {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-export const getFilesInFolder = async (folderPath: string): Promise<string[]> => {
+export const getAllFiles = async (folderPath: string): Promise<string[]> => {
   try {
     return await fs.promises.readdir(folderPath)
   } catch (error) {
@@ -29,7 +29,7 @@ export const duplicateCSV = async (inputFilePath: string, outputFilePath: string
   }
 }
 
-export const unzipFile = async (): Promise<string[]> => {
+export const unzipFiles = async (): Promise<string[]> => {
   const downloadsDir = './downloads/'
   const zipFiles = fs.readdirSync(downloadsDir).filter(file => file.endsWith('.zip'))
   if (zipFiles.length === 0) throw new Error('No ZIP files found.')
