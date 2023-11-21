@@ -19,6 +19,7 @@ export function initializeConfig() {
 
 // Config schema
 const ConfigSchemaZod = z.object({
+  cmsSystem: z.string().email(),
   cmsAdmin: z.string().email(),
   cmsDesigner: z.string().email(),
   cmsQC: z.string().email(),
@@ -29,6 +30,7 @@ const ConfigSchemaZod = z.object({
 
 // Config values
 const config: ConfigSchemaInput = {
+  cmsSystem: process.env.CMS_SYSTEM_USER || 'example@walmart.com',
   cmsAdmin: process.env.CMS_ADMIN_USER || 'example@walmart.com',
   cmsDesigner: process.env.CMS_DESIGNER_USER || 'example@walmart.com',
   cmsQC: process.env.CMS_QC_USER || 'example@walmart.com',
