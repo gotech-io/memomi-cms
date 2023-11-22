@@ -49,6 +49,7 @@ test.describe('Designer test flows', () => {
   test('Import assets & Upload images', async ({ testContext }) => {
     testContext.addTearDownAction(() => productsApi.deleteProduct(configProvider.walmartAutomationProduct, loginApiRes.item.token))
 
+    const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: configProvider.walmartAutomationProduct }]
     const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
     await productsApi.createProduct(productRequest(configProvider.walmartAutomationProduct), loginApiRes.item.token)
 
@@ -64,12 +65,7 @@ test.describe('Designer test flows', () => {
     await importAssetsPage.importAssets()
 
     await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, configProvider.walmartAutomationProduct)
-    await walmartGlassesPage.clickEditLine([
-      {
-        colId: WalmartGlassesColumns.GTIN,
-        text: configProvider.walmartAutomationProduct,
-      },
-    ])
+    await walmartGlassesPage.clickEditLine(walmartAutoProduct)
 
     const editProductPage = await testContext.getPage(EditProductPage)
     await editProductPage.clickTab(ProductTabs.Images)
