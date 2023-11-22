@@ -38,7 +38,7 @@ test.describe('Designer test flows', () => {
 
     const walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
     await walmartGlassesPage.clickCheckRow([{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }])
-    await walmartGlassesPage.downloadItem(DropdownItems.ExportAssets)
+    await walmartGlassesPage.menuChoice(DropdownItems.ExportAssets)
     const zipFiles = await unzipFiles()
 
     productFiles.forEach(file => {
@@ -58,10 +58,10 @@ test.describe('Designer test flows', () => {
     await dashboardPage.clickWalmartGlasses()
 
     const walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
-    await walmartGlassesPage.downloadItem(DropdownItems.ImportAssets)
+    await walmartGlassesPage.menuChoice(DropdownItems.ImportAssets)
 
     const importAssetsPage = await testContext.getPage(ImportAssetsPage)
-    await importAssetsPage.uploadItems()
+    await importAssetsPage.importAssets()
 
     await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, configProvider.walmartAutomationProduct)
     await walmartGlassesPage.clickEditLine([
@@ -83,10 +83,10 @@ test.describe('Designer test flows', () => {
     await dashboardPage.clickWalmartGlasses()
 
     const walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
-    await walmartGlassesPage.downloadItem(DropdownItems.ImportAssets)
+    await walmartGlassesPage.menuChoice(DropdownItems.ImportAssets)
 
     const importAssetsPage = await testContext.getPage(ImportAssetsPage)
-    await importAssetsPage.uploadNotFoundProduct()
+    await importAssetsPage.importNotFoundProduct()
     await expect(importAssetsPage.isProductNotFound(configProvider.walmartAutomationInvalidProduct)).toBeVisible()
   })
 })

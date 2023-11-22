@@ -122,12 +122,12 @@ export class WalmartGlassesPage extends PageBase {
     await this.okBtn.click()
   }
 
-  public async clickDropDownMenu() {
+  public async clickMenu() {
     await this.dropDownMenuBtn.click()
   }
 
-  public async downloadItem(item: DropdownItems) {
-    await this.clickDropDownMenu()
+  public async menuChoice(item: DropdownItems) {
+    await this.clickMenu()
     if (item.includes('Export')) {
       const downloadPromise = this.page.waitForEvent('download')
       await this.dropDownMenuItem(item).click()

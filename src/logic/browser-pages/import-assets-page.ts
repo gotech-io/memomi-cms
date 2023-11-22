@@ -51,21 +51,18 @@ export class ImportAssetsPage extends PageBase {
     return this.productNotFound(image)
   }
 
-  public async uploadItems() {
+  public async importAssets() {
     const path = configProvider.walmartAutomationResourcesPath
-    const files = await getAllFiles(path)
-    const images = files.filter(image => !image.includes('invalid') && !image.includes('.DS_Store'))
+    const images = (await getAllFiles(path)).filter(image => !image.includes('invalid') && !image.includes('.DS_Store'))
     const filePaths = images.map(file => path + '/' + file)
     await this.uploadFilesInput.setInputFiles(filePaths)
     await this.clickStartImport()
     await this.clickClose()
   }
 
-  public async uploadNotFoundProduct() {
+  public async importNotFoundProduct() {
     const path = configProvider.walmartAutomationResourcesPath
-    const files = await getAllFiles(path)
-    const invalidImage = files.filter(image => image.includes('invalid'))
-    const filePaths = invalidImage.map(file => path + '/' + file)
+    const filePaths = (await getAllFiles(path)).filter(image => image.includes('invalid')).map(file => path + '/' + file)
     await this.uploadFilesInput.setInputFiles(filePaths)
   }
 }
