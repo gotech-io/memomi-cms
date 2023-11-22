@@ -32,7 +32,7 @@ test.describe('Designer test flows', () => {
 
   test('All files can be found after unzipping', async ({ testContext }) => {
     const productGTIN = '00010164351979'
-    const productFiles: string[] = JSON.parse(fs.readFileSync('src/tests/browser/resources/product-files.json', 'utf8')).files
+    const productFiles: string[] = JSON.parse(fs.readFileSync(configProvider.walmartAutomationProductFiles, 'utf8')).files
 
     await dashboardPage.clickWalmartGlasses()
 
@@ -52,8 +52,8 @@ test.describe('Designer test flows', () => {
     const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
     await productsApi.createProduct(productRequest(configProvider.walmartAutomationProduct), loginApiRes.item.token)
 
-    const files = await getAllFiles('src/tests/browser/resources/walmart_auto_glass')
-    const images = files.filter(image => image.includes('.jpg'))
+    const files = await getAllFiles(configProvider.walmartAutomationResourcesPath)
+    const images = files.filter(image => image.includes('.jpg') && !image.includes('invalid'))
 
     await dashboardPage.clickWalmartGlasses()
 
@@ -77,5 +77,16 @@ test.describe('Designer test flows', () => {
     for (const image of images) {
       expect.soft(await editProductPage.isProductImageVisible(image), `The image ${image} was not successfully uploaded`).toBeTruthy()
     }
+  })
+
+  test('Upload image of missing product', async ({ testContext }) => {
+    await dashboardPage.clickWalmartGlasses()
+
+    const walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
+    await walmartGlassesPage.downloadItem(DropdownItems.ImportAssets)
+
+    const importAssetsPage = await testContext.getPage(ImportAssetsPage)
+    await importAssetsPage.uploadNotFoundProduct()
+    await expect(importAssetsPage.isProductNotFound(configProvider.walmartAutomationInvalidProduct)).toBeVisible()
   })
 })

@@ -1,8 +1,12 @@
 import { Locator, Page } from '@playwright/test'
 import { PageBase } from '@testomate/framework'
 import { getAllFiles } from '../utils.js'
+import { configProvider } from '../../config/index.js'
 
 export class ImportAssetsPage extends PageBase {
+  private productNotFound = (image: string) =>
+    this.page.locator(`//div[@data-id='${image}']//div[@data-field='message' and text()='Product not found']`)
+
   private uploadFilesInput: Locator
   private startImportBtn: Locator
   private exportBtn: Locator
@@ -43,12 +47,25 @@ export class ImportAssetsPage extends PageBase {
     await this.closeBtn.click()
   }
 
+  public isProductNotFound(image: string) {
+    return this.productNotFound(image)
+  }
+
   public async uploadItems() {
-    const path = 'src/tests/browser/resources/walmart_auto_glass'
+    const path = configProvider.walmartAutomationResourcesPath
     const files = await getAllFiles(path)
-    const filePaths = files.map(file => path + '/' + file)
+    const images = files.filter(image => !image.includes('invalid') && !image.includes('.DS_Store'))
+    const filePaths = images.map(file => path + '/' + file)
     await this.uploadFilesInput.setInputFiles(filePaths)
     await this.clickStartImport()
     await this.clickClose()
+  }
+
+  public async uploadNotFoundProduct() {
+    const path = configProvider.walmartAutomationResourcesPath
+    const files = await getAllFiles(path)
+    const invalidImage = files.filter(image => image.includes('invalid'))
+    const filePaths = invalidImage.map(file => path + '/' + file)
+    await this.uploadFilesInput.setInputFiles(filePaths)
   }
 }
