@@ -24,9 +24,6 @@ test.describe('Designer test flows', () => {
   test.beforeEach(async ({ testContext }) => {
     loginPage = await testContext.getPage(LoginPage, { shouldNavigate: true })
     await loginPage.performSignIn(configProvider.cmsDesigner, configProvider.cmsPassword)
-
-    loginApi = await testContext.getApi(UsersApi)
-    productsApi = await testContext.getApi(ProductsApi)
     dashboardPage = await testContext.getPage(DashboardPage)
   })
 
@@ -47,6 +44,8 @@ test.describe('Designer test flows', () => {
   })
 
   test('Import assets & Upload images', async ({ testContext }) => {
+    loginApi = await testContext.getApi(UsersApi)
+    productsApi = await testContext.getApi(ProductsApi)
     testContext.addTearDownAction(() => productsApi.deleteProduct(configProvider.walmartAutomationProduct, loginApiRes.item.token))
 
     const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: configProvider.walmartAutomationProduct }]
