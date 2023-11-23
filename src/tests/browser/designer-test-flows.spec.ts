@@ -5,7 +5,7 @@ import { WalmartGlassesColumns } from '../../logic/enum/walmart-glasses-columns.
 import { LoginPage } from '../../logic/browser-pages/login-page.js'
 import { configProvider } from '../../config/index.js'
 import { DropdownItems } from '../../logic/enum/dropdown-items.js'
-import { getAllFiles, unzipFiles } from '../../logic/utils.js'
+import { deleteFolder, duplicateFolder, generateProductGtin, getAllFiles, unzipFiles } from '../../logic/utils.js'
 import fs from 'fs'
 import { ImportAssetsPage } from '../../logic/browser-pages/import-assets-page.js'
 import { EditProductPage } from '../../logic/browser-pages/edit-product-page.js'
@@ -44,15 +44,22 @@ test.describe('Designer test flows', () => {
   })
 
   test('Import assets & Upload images', async ({ testContext }) => {
+    testContext.addTearDownAction(() => {
+      void deleteFolder(configProvider.walmartAutomationGeneratePath + productGTIN)
+      return productsApi.deleteProduct(productGTIN, loginApiRes.item.token)
+    })
+
     loginApi = await testContext.getApi(UsersApi)
     productsApi = await testContext.getApi(ProductsApi)
-    testContext.addTearDownAction(() => productsApi.deleteProduct(configProvider.walmartAutomationProduct, loginApiRes.item.token))
 
-    const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: configProvider.walmartAutomationProduct }]
+    const productGTIN = generateProductGtin()
+    await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGTIN)
+    const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
+
     const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
-    await productsApi.createProduct(productRequest(configProvider.walmartAutomationProduct), loginApiRes.item.token)
+    await productsApi.createProduct(productRequest(productGTIN), loginApiRes.item.token)
 
-    const files = await getAllFiles(configProvider.walmartAutomationResourcesPath)
+    const files = await getAllFiles(configProvider.walmartAutomationGeneratePath + productGTIN + '/')
     const images = files.filter(image => image.includes('.jpg') && !image.includes('invalid'))
 
     await dashboardPage.clickWalmartGlasses()
@@ -61,7 +68,7 @@ test.describe('Designer test flows', () => {
     await walmartGlassesPage.menuChoice(DropdownItems.ImportAssets)
 
     const importAssetsPage = await testContext.getPage(ImportAssetsPage)
-    await importAssetsPage.importAssets()
+    await importAssetsPage.importAssets(productGTIN)
 
     await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, configProvider.walmartAutomationProduct)
     await walmartGlassesPage.clickEditLine(walmartAutoProduct)

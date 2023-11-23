@@ -51,8 +51,8 @@ export class ImportAssetsPage extends PageBase {
     return this.productNotFound(image)
   }
 
-  public async importAssets() {
-    const path = configProvider.walmartAutomationResourcesPath
+  public async importAssets(gtin: string) {
+    const path = configProvider.walmartAutomationGeneratePath + gtin + '/'
     const images = (await getAllFiles(path)).filter(image => !image.includes('invalid') && !image.includes('.DS_Store'))
     const filePaths = images.map(file => path + '/' + file)
     await this.uploadFilesInput.setInputFiles(filePaths)

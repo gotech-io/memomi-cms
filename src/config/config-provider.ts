@@ -30,6 +30,7 @@ const ConfigSchemaZod = z.object({
   walmartAutomationProductFiles: z.string(),
   walmartAutomationInvalidProduct: z.string(),
   walmartAutomationResourcesPath: z.string(),
+  walmartAutomationGeneratePath: z.string(),
 })
 
 // Config values
@@ -45,4 +46,5 @@ const config: ConfigSchemaInput = {
   walmartAutomationProductFiles: process.env.WALMART_AUTOMATION_PRODUCT_FILES || 'src/tests/browser/resources/product-files.json',
   walmartAutomationInvalidProduct: process.env.WALMART_AUTOMATION_INVALID_PRODUCT || 'walmart-invalid_angle.jpg',
   walmartAutomationResourcesPath: process.env.WALMART_AUTOMATION_RESOURCES_PATH || 'src/tests/browser/resources/walmart_auto_glass',
+  walmartAutomationGeneratePath: process.env.WALMART_AUTOMATION_GENERATE_PATH || 'downloads/',
 }

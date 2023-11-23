@@ -4,6 +4,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import AdmZip from 'adm-zip'
 import { promisify } from 'util'
+import { configProvider } from '../config/index.js'
 
 export const delay = async (ms: number) => {
   return new Promise(resolve => setTimeout(resolve, ms))
@@ -66,3 +67,54 @@ export const buildRowLocator = (
     text: string
   }[],
 ): string => `//div[@role="row" and ${columns.map(column => `./div[@col-id="${column.colId}" and text()="${column.text}"]`).join(' and ')}]`
+
+export const randomString = (length: number): string => {
+  const characters = '0123456789abcdefghijklmnopqrstuvwxyz'
+  let result = ''
+
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length)
+    result += characters.charAt(randomIndex)
+  }
+
+  return result
+}
+
+export const duplicateFolder = async (sourceFolderPath: string, suffix: string): Promise<void> => {
+  const destinationFolderPath = `downloads/${suffix}`
+  await fs.promises.mkdir(destinationFolderPath)
+  const files = await fs.promises.readdir(sourceFolderPath)
+
+  await Promise.all(
+    files.map(async file => {
+      const sourceFilePath = path.join(sourceFolderPath, file)
+      const destinationFileName = file.replace('walmart-automation', suffix)
+      const destinationFilePath = path.join(destinationFolderPath, destinationFileName)
+      await fs.promises.copyFile(sourceFilePath, destinationFilePath)
+    }),
+  )
+}
+
+export const deleteFolder = async (path: string): Promise<void> => {
+  if (await fs.promises.stat(path).then(stats => stats.isDirectory())) {
+    const files = await fs.promises.readdir(path)
+
+    await Promise.all(
+      files.map(async file => {
+        const curPath = `${path}/${file}`
+        const stats = await fs.promises.stat(curPath)
+
+        if (stats.isDirectory()) {
+          await deleteFolder(curPath)
+        } else {
+          await fs.promises.unlink(curPath)
+        }
+      }),
+    )
+    await fs.promises.rmdir(path)
+  }
+}
+
+export const generateProductGtin = (): string => {
+  return configProvider.walmartAutomationProduct + '-' + randomString(5)
+}
