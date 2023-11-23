@@ -146,6 +146,7 @@ export class WalmartGlassesPage extends PageBase {
 
   public async clickRefresh() {
     await this.refreshBtn.click()
+    await this.initPage()
   }
 
   public async waitForLoadingCenterDetachment() {

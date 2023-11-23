@@ -122,10 +122,11 @@ test.describe('Designer test flows', () => {
 
     const editProductPage = await testContext.getPage(EditProductPage)
     await editProductPage.clickTab(ProductTabs.Tracking)
-    await editProductPage.clickSelectStatusMenu()
     await editProductPage.setProductStatus(ProductStatus.InDesign)
     await editProductPage.clickSave()
     await editProductPage.clickClose()
+
+    await walmartGlassesPage.clickRefresh()
 
     await expect(
       walmartGlassesPage.tableRowData([
