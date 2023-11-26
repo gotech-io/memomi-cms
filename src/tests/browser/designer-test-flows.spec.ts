@@ -122,7 +122,6 @@ test.describe('Designer test flows', () => {
     editProductPage = await testContext.getPage(EditProductPage)
     await editProductPage.clickTab(ProductTabs.Tracking)
     await editProductPage.setProductStatus(ProductStatus.InDesign)
-    await editProductPage.clickSave()
     await editProductPage.clickClose()
 
     await walmartGlassesPage.clickRefresh()
@@ -160,7 +159,6 @@ test.describe('Designer test flows', () => {
     editProductPage = await testContext.getPage(EditProductPage)
     await editProductPage.clickTab(ProductTabs.Tracking)
     await editProductPage.setProductPriority(ProductPriority.P3)
-    await editProductPage.clickSave()
     await editProductPage.clickClose()
 
     await walmartGlassesPage.clickRefresh()
@@ -169,6 +167,43 @@ test.describe('Designer test flows', () => {
       walmartGlassesPage.tableRowData([
         { colId: WalmartGlassesColumns.GTIN, text: productGTIN },
         { colId: WalmartGlassesColumns.Priority, text: ProductPriority.P3 },
+      ]),
+    ).toBeVisible()
+  })
+
+  test('Change product designer', async ({ testContext }) => {
+    testContext.addTearDownAction(() => {
+      void deleteFolder(configProvider.walmartAutomationGeneratePath + productGTIN)
+      return productsApi.deleteProduct(productGTIN, loginApiRes.item.token)
+    })
+
+    loginApi = await testContext.getApi(UsersApi)
+    productsApi = await testContext.getApi(ProductsApi)
+
+    const productGTIN = generateProductGtin()
+    await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGTIN)
+    const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
+
+    const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+    await productsApi.createProduct(productRequest(productGTIN), loginApiRes.item.token)
+
+    await dashboardPage.clickWalmartGlasses()
+
+    walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
+    await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGTIN)
+    await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+
+    editProductPage = await testContext.getPage(EditProductPage)
+    await editProductPage.clickTab(ProductTabs.Tracking)
+    await editProductPage.setProductDesigner('Olga (designer)')
+    await editProductPage.clickClose()
+
+    await walmartGlassesPage.clickRefresh()
+
+    await expect(
+      walmartGlassesPage.tableRowData([
+        { colId: WalmartGlassesColumns.GTIN, text: productGTIN },
+        { colId: WalmartGlassesColumns.Designer, text: 'Olga (designer)' },
       ]),
     ).toBeVisible()
   })

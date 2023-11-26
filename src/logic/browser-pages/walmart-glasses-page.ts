@@ -7,6 +7,7 @@ import { DropdownItems } from '../enum/dropdown-items.js'
 export class WalmartGlassesPage extends PageBase {
   private walmartGlassesColumn = (column: WalmartGlassesColumns) =>
     this.page.locator(`//div[@class='ag-header-row ag-header-row-column']//div[@col-id='${column}']`)
+
   private columnFilter = (index: string) =>
     this.page.locator(`//div[@class='ag-header-cell ag-floating-filter ag-focus-managed' and @aria-colindex=${index}]//input`)
 
