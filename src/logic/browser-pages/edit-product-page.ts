@@ -32,6 +32,9 @@ export class EditProductPage extends PageBase {
   private trackingSelectDesignerMenu: Locator
   private trackingSelectTagMenu: Locator
   private materialType: Locator
+  private teflonId: Locator
+  private frameType: Locator
+  private hingeType: Locator
 
   constructor(page: Page) {
     super(page)
@@ -43,6 +46,9 @@ export class EditProductPage extends PageBase {
     this.trackingSelectDesignerMenu = page.locator("//div[@id='outlined-adornment-designer']")
     this.trackingSelectTagMenu = page.locator("//div[@id='value-list-select-tag']")
     this.materialType = page.locator("//input[@id='text-form-materialTypeFront']")
+    this.teflonId = page.locator("//input[@id='text-form-teflonId']")
+    this.frameType = page.locator("//input[@id='text-form-frameType']")
+    this.hingeType = page.locator("//input[@id='text-form-hingeType']")
   }
 
   async initPage(): Promise<void> {
@@ -133,5 +139,32 @@ export class EditProductPage extends PageBase {
 
   public async getMaterialType() {
     return await this.materialType.getAttribute('value')
+  }
+
+  public async setTeflonId(id: string) {
+    await this.teflonId.fill(id)
+    await this.clickSave()
+  }
+
+  public async getTeflonId() {
+    return await this.teflonId.getAttribute('value')
+  }
+
+  public async setFrameType(type: string) {
+    await this.frameType.fill(type)
+    await this.clickSave()
+  }
+
+  public async getFrameType() {
+    return await this.frameType.getAttribute('value')
+  }
+
+  public async setHingeType(type: string) {
+    await this.hingeType.fill(type)
+    await this.clickSave()
+  }
+
+  public async getHingeType() {
+    return await this.hingeType.getAttribute('value')
   }
 }

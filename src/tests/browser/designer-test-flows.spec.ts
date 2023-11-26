@@ -98,209 +98,141 @@ test.describe('Designer test flows', () => {
     await expect(importAssetsPage.isProductNotFound(configProvider.walmartAutomationInvalidProduct)).toBeVisible()
   })
 
-  test('Change product status', async ({ testContext }) => {
-    testContext.addTearDownAction(() => {
-      return productsApi.deleteProduct(productGTIN, loginApiRes.item.token)
+  test.describe('Edit product, Tracking values', () => {
+    const productGTIN = generateProductGtin()
+
+    test.beforeEach(async ({ testContext }) => {
+      testContext.addTearDownAction(() => {
+        return productsApi.deleteProduct(productGTIN, loginApiRes.item.token)
+      })
+
+      loginApi = await testContext.getApi(UsersApi)
+      productsApi = await testContext.getApi(ProductsApi)
+
+      const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
+      const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+      await productsApi.createProduct(productRequest(productGTIN), loginApiRes.item.token)
+
+      await dashboardPage.clickWalmartGlasses()
+
+      walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
+      await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGTIN)
+      await walmartGlassesPage.clickEditLine(walmartAutoProduct)
     })
 
-    loginApi = await testContext.getApi(UsersApi)
-    productsApi = await testContext.getApi(ProductsApi)
+    test('Change product status', async ({ testContext }) => {
+      editProductPage = await testContext.getPage(EditProductPage)
+      await editProductPage.clickTab(ProductTabs.Tracking)
+      await editProductPage.setProductStatus(ProductStatus.InDesign)
+      await editProductPage.clickClose()
 
-    const productGTIN = generateProductGtin()
-    const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
+      await walmartGlassesPage.clickRefresh()
 
-    const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
-    await productsApi.createProduct(productRequest(productGTIN), loginApiRes.item.token)
+      await expect(
+        walmartGlassesPage.tableRowData([
+          { colId: WalmartGlassesColumns.GTIN, text: productGTIN },
+          { colId: WalmartGlassesColumns.Status, text: ProductStatus.InDesign },
+        ]),
+      ).toBeVisible()
+    })
 
-    await dashboardPage.clickWalmartGlasses()
+    test('Change product priority', async ({ testContext }) => {
+      editProductPage = await testContext.getPage(EditProductPage)
+      await editProductPage.clickTab(ProductTabs.Tracking)
+      await editProductPage.setProductPriority(ProductPriority.P3)
+      await editProductPage.clickClose()
 
-    walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
-    await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGTIN)
-    await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+      await walmartGlassesPage.clickRefresh()
 
-    editProductPage = await testContext.getPage(EditProductPage)
-    await editProductPage.clickTab(ProductTabs.Tracking)
-    await editProductPage.setProductStatus(ProductStatus.InDesign)
-    await editProductPage.clickClose()
+      await expect(
+        walmartGlassesPage.tableRowData([
+          { colId: WalmartGlassesColumns.GTIN, text: productGTIN },
+          { colId: WalmartGlassesColumns.Priority, text: ProductPriority.P3 },
+        ]),
+      ).toBeVisible()
+    })
 
-    await walmartGlassesPage.clickRefresh()
+    test('Change product designer', async ({ testContext }) => {
+      editProductPage = await testContext.getPage(EditProductPage)
+      await editProductPage.clickTab(ProductTabs.Tracking)
+      await editProductPage.setProductDesigner('Olga (designer)')
+      await editProductPage.clickClose()
 
-    await expect(
-      walmartGlassesPage.tableRowData([
-        { colId: WalmartGlassesColumns.GTIN, text: productGTIN },
-        { colId: WalmartGlassesColumns.Status, text: ProductStatus.InDesign },
-      ]),
-    ).toBeVisible()
+      await walmartGlassesPage.clickRefresh()
+
+      await expect(
+        walmartGlassesPage.tableRowData([
+          { colId: WalmartGlassesColumns.GTIN, text: productGTIN },
+          { colId: WalmartGlassesColumns.Designer, text: 'Olga (designer)' },
+        ]),
+      ).toBeVisible()
+    })
+
+    test('Change product tag', async ({ testContext }) => {
+      editProductPage = await testContext.getPage(EditProductPage)
+      await editProductPage.clickTab(ProductTabs.Tracking)
+      await editProductPage.setProductTag('Need to complete')
+      await editProductPage.clickClose()
+
+      await walmartGlassesPage.clickRefresh()
+
+      await expect(
+        walmartGlassesPage.tableRowData([
+          { colId: WalmartGlassesColumns.GTIN, text: productGTIN },
+          { colId: WalmartGlassesColumns.Tag, text: 'Need to complete' },
+        ]),
+      ).toBeVisible()
+    })
+
+    test('Product tracking values', async ({ testContext }) => {
+      const trackingValues = [
+        { key: ProductValues.GTIN, value: productGTIN },
+        { key: ProductValues.MerchantsQC, value: 'Unassigned' },
+        { key: ProductValues.Calibration, value: '' },
+      ]
+
+      editProductPage = await testContext.getPage(EditProductPage)
+      await editProductPage.clickTab(ProductTabs.Tracking)
+
+      for (const item of trackingValues) {
+        expect.soft(await editProductPage.getProductValue(item.key)).toEqual(item.value)
+      }
+    })
   })
 
-  test('Change product priority', async ({ testContext }) => {
-    testContext.addTearDownAction(() => {
-      return productsApi.deleteProduct(productGTIN, loginApiRes.item.token)
+  test.describe('Edit product, Item info values', () => {
+    const productGTIN = generateProductGtin()
+
+    test.beforeEach(async ({ testContext }) => {
+      testContext.addTearDownAction(() => {
+        return productsApi.deleteProduct(productGTIN, loginApiRes.item.token)
+      })
+
+      loginApi = await testContext.getApi(UsersApi)
+      productsApi = await testContext.getApi(ProductsApi)
+
+      const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
+      const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+      await productsApi.createProduct(productRequest(productGTIN), loginApiRes.item.token)
+
+      await dashboardPage.clickWalmartGlasses()
+
+      walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
+      await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGTIN)
+      await walmartGlassesPage.clickEditLine(walmartAutoProduct)
     })
 
-    loginApi = await testContext.getApi(UsersApi)
-    productsApi = await testContext.getApi(ProductsApi)
+    test('Set material type', async ({ testContext }) => {
+      editProductPage = await testContext.getPage(EditProductPage)
+      await editProductPage.clickTab(ProductTabs.ItemInfo)
+      await editProductPage.setMaterialType('testingMaterialType')
+      const getMaterialType = await editProductPage.getMaterialType()
+      await editProductPage.clickClose()
 
-    const productGTIN = generateProductGtin()
-    const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
+      await walmartGlassesPage.clickRefresh()
 
-    const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
-    await productsApi.createProduct(productRequest(productGTIN), loginApiRes.item.token)
-
-    await dashboardPage.clickWalmartGlasses()
-
-    walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
-    await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGTIN)
-    await walmartGlassesPage.clickEditLine(walmartAutoProduct)
-
-    editProductPage = await testContext.getPage(EditProductPage)
-    await editProductPage.clickTab(ProductTabs.Tracking)
-    await editProductPage.setProductPriority(ProductPriority.P3)
-    await editProductPage.clickClose()
-
-    await walmartGlassesPage.clickRefresh()
-
-    await expect(
-      walmartGlassesPage.tableRowData([
-        { colId: WalmartGlassesColumns.GTIN, text: productGTIN },
-        { colId: WalmartGlassesColumns.Priority, text: ProductPriority.P3 },
-      ]),
-    ).toBeVisible()
-  })
-
-  test('Change product designer', async ({ testContext }) => {
-    testContext.addTearDownAction(() => {
-      return productsApi.deleteProduct(productGTIN, loginApiRes.item.token)
+      expect.soft(getMaterialType).toEqual('testingMaterialType')
+      expect.soft(await walmartGlassesPage.tableColumnData(productGTIN, WalmartGlassesColumns.MaterialType)).toEqual('testingMaterialType')
     })
-
-    loginApi = await testContext.getApi(UsersApi)
-    productsApi = await testContext.getApi(ProductsApi)
-
-    const productGTIN = generateProductGtin()
-    const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
-
-    const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
-    await productsApi.createProduct(productRequest(productGTIN), loginApiRes.item.token)
-
-    await dashboardPage.clickWalmartGlasses()
-
-    walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
-    await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGTIN)
-    await walmartGlassesPage.clickEditLine(walmartAutoProduct)
-
-    editProductPage = await testContext.getPage(EditProductPage)
-    await editProductPage.clickTab(ProductTabs.Tracking)
-    await editProductPage.setProductDesigner('Olga (designer)')
-    await editProductPage.clickClose()
-
-    await walmartGlassesPage.clickRefresh()
-
-    await expect(
-      walmartGlassesPage.tableRowData([
-        { colId: WalmartGlassesColumns.GTIN, text: productGTIN },
-        { colId: WalmartGlassesColumns.Designer, text: 'Olga (designer)' },
-      ]),
-    ).toBeVisible()
-  })
-
-  test('Change product tag', async ({ testContext }) => {
-    testContext.addTearDownAction(() => {
-      return productsApi.deleteProduct(productGTIN, loginApiRes.item.token)
-    })
-
-    loginApi = await testContext.getApi(UsersApi)
-    productsApi = await testContext.getApi(ProductsApi)
-
-    const productGTIN = generateProductGtin()
-    const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
-
-    const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
-    await productsApi.createProduct(productRequest(productGTIN), loginApiRes.item.token)
-
-    await dashboardPage.clickWalmartGlasses()
-
-    walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
-    await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGTIN)
-    await walmartGlassesPage.clickEditLine(walmartAutoProduct)
-
-    editProductPage = await testContext.getPage(EditProductPage)
-    await editProductPage.clickTab(ProductTabs.Tracking)
-    await editProductPage.setProductTag('Need to complete')
-    await editProductPage.clickClose()
-
-    await walmartGlassesPage.clickRefresh()
-
-    await expect(
-      walmartGlassesPage.tableRowData([
-        { colId: WalmartGlassesColumns.GTIN, text: productGTIN },
-        { colId: WalmartGlassesColumns.Tag, text: 'Need to complete' },
-      ]),
-    ).toBeVisible()
-  })
-
-  test('Product tracking values', async ({ testContext }) => {
-    testContext.addTearDownAction(() => {
-      return productsApi.deleteProduct(productGTIN, loginApiRes.item.token)
-    })
-
-    loginApi = await testContext.getApi(UsersApi)
-    productsApi = await testContext.getApi(ProductsApi)
-
-    const productGTIN = generateProductGtin()
-    const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
-
-    const trackingValues = [
-      { key: ProductValues.GTIN, value: productGTIN },
-      { key: ProductValues.MerchantsQC, value: 'Unassigned' },
-      { key: ProductValues.Calibration, value: '' },
-    ]
-
-    const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
-    await productsApi.createProduct(productRequest(productGTIN), loginApiRes.item.token)
-
-    await dashboardPage.clickWalmartGlasses()
-
-    walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
-    await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGTIN)
-    await walmartGlassesPage.clickEditLine(walmartAutoProduct)
-
-    editProductPage = await testContext.getPage(EditProductPage)
-    await editProductPage.clickTab(ProductTabs.Tracking)
-
-    for (const item of trackingValues) {
-      expect.soft(await editProductPage.getProductValue(item.key)).toEqual(item.value)
-    }
-  })
-
-  test('Product item info, Set material type', async ({ testContext }) => {
-    testContext.addTearDownAction(() => {
-      return productsApi.deleteProduct(productGTIN, loginApiRes.item.token)
-    })
-
-    loginApi = await testContext.getApi(UsersApi)
-    productsApi = await testContext.getApi(ProductsApi)
-
-    const productGTIN = generateProductGtin()
-    const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
-
-    const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
-    await productsApi.createProduct(productRequest(productGTIN), loginApiRes.item.token)
-
-    await dashboardPage.clickWalmartGlasses()
-
-    walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
-    await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGTIN)
-    await walmartGlassesPage.clickEditLine(walmartAutoProduct)
-
-    editProductPage = await testContext.getPage(EditProductPage)
-    await editProductPage.clickTab(ProductTabs.ItemInfo)
-    await editProductPage.setMaterialType('testingMaterialType')
-    const getMaterialType = await editProductPage.getMaterialType()
-    await editProductPage.clickClose()
-
-    await walmartGlassesPage.clickRefresh()
-
-    expect.soft(getMaterialType).toEqual('testingMaterialType')
-    expect.soft(await walmartGlassesPage.tableColumnData(productGTIN, WalmartGlassesColumns.MaterialType)).toEqual('testingMaterialType')
   })
 })

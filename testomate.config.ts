@@ -37,6 +37,7 @@ export default initializeFrameworkConfig({
     use: {
       viewport: { width: 1920, height: 1080 },
       trace: 'retain-on-failure',
+      screenshot: 'only-on-failure',
       headless: false,
     },
     reporter: [
