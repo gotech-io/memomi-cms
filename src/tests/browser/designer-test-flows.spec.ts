@@ -16,6 +16,7 @@ import { ProductsApi } from '../../logic/api/products-api.js'
 import { productRequest } from '../../logic/api/request/product-request.js'
 import { ProductStatus } from '../../logic/enum/product-status.js'
 import { ProductPriority } from '../../logic/enum/product-priority.js'
+import { ProductValues } from '../../logic/enum/product-values.js'
 
 test.describe('Designer test flows', () => {
   let loginPage: LoginPage
@@ -243,5 +244,41 @@ test.describe('Designer test flows', () => {
         { colId: WalmartGlassesColumns.Tag, text: 'Need to complete' },
       ]),
     ).toBeVisible()
+  })
+
+  test('Product tracking values', async ({ testContext }) => {
+    testContext.addTearDownAction(() => {
+      void deleteFolder(configProvider.walmartAutomationGeneratePath + productGTIN)
+      return productsApi.deleteProduct(productGTIN, loginApiRes.item.token)
+    })
+
+    loginApi = await testContext.getApi(UsersApi)
+    productsApi = await testContext.getApi(ProductsApi)
+
+    const productGTIN = generateProductGtin()
+    await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGTIN)
+    const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
+
+    const trackingValues = [
+      { key: ProductValues.GTIN, value: productGTIN },
+      { key: ProductValues.MerchantsQC, value: 'Unassigned' },
+      { key: ProductValues.Calibration, value: '' },
+    ]
+
+    const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+    await productsApi.createProduct(productRequest(productGTIN), loginApiRes.item.token)
+
+    await dashboardPage.clickWalmartGlasses()
+
+    walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
+    await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGTIN)
+    await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+
+    editProductPage = await testContext.getPage(EditProductPage)
+    await editProductPage.clickTab(ProductTabs.Tracking)
+
+    for (const item of trackingValues) {
+      expect.soft(await editProductPage.getProductValue(item.key)).toEqual(item.value)
+    }
   })
 })
