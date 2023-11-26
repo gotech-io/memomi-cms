@@ -100,7 +100,6 @@ test.describe('Designer test flows', () => {
 
   test('Change product status', async ({ testContext }) => {
     testContext.addTearDownAction(() => {
-      void deleteFolder(configProvider.walmartAutomationGeneratePath + productGTIN)
       return productsApi.deleteProduct(productGTIN, loginApiRes.item.token)
     })
 
@@ -108,7 +107,6 @@ test.describe('Designer test flows', () => {
     productsApi = await testContext.getApi(ProductsApi)
 
     const productGTIN = generateProductGtin()
-    await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGTIN)
     const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
 
     const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
@@ -137,7 +135,6 @@ test.describe('Designer test flows', () => {
 
   test('Change product priority', async ({ testContext }) => {
     testContext.addTearDownAction(() => {
-      void deleteFolder(configProvider.walmartAutomationGeneratePath + productGTIN)
       return productsApi.deleteProduct(productGTIN, loginApiRes.item.token)
     })
 
@@ -145,7 +142,6 @@ test.describe('Designer test flows', () => {
     productsApi = await testContext.getApi(ProductsApi)
 
     const productGTIN = generateProductGtin()
-    await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGTIN)
     const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
 
     const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
@@ -174,7 +170,6 @@ test.describe('Designer test flows', () => {
 
   test('Change product designer', async ({ testContext }) => {
     testContext.addTearDownAction(() => {
-      void deleteFolder(configProvider.walmartAutomationGeneratePath + productGTIN)
       return productsApi.deleteProduct(productGTIN, loginApiRes.item.token)
     })
 
@@ -182,7 +177,6 @@ test.describe('Designer test flows', () => {
     productsApi = await testContext.getApi(ProductsApi)
 
     const productGTIN = generateProductGtin()
-    await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGTIN)
     const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
 
     const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
@@ -211,7 +205,6 @@ test.describe('Designer test flows', () => {
 
   test('Change product tag', async ({ testContext }) => {
     testContext.addTearDownAction(() => {
-      void deleteFolder(configProvider.walmartAutomationGeneratePath + productGTIN)
       return productsApi.deleteProduct(productGTIN, loginApiRes.item.token)
     })
 
@@ -219,7 +212,6 @@ test.describe('Designer test flows', () => {
     productsApi = await testContext.getApi(ProductsApi)
 
     const productGTIN = generateProductGtin()
-    await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGTIN)
     const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
 
     const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
@@ -248,7 +240,6 @@ test.describe('Designer test flows', () => {
 
   test('Product tracking values', async ({ testContext }) => {
     testContext.addTearDownAction(() => {
-      void deleteFolder(configProvider.walmartAutomationGeneratePath + productGTIN)
       return productsApi.deleteProduct(productGTIN, loginApiRes.item.token)
     })
 
@@ -256,7 +247,6 @@ test.describe('Designer test flows', () => {
     productsApi = await testContext.getApi(ProductsApi)
 
     const productGTIN = generateProductGtin()
-    await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGTIN)
     const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
 
     const trackingValues = [
