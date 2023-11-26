@@ -3,7 +3,13 @@ import { PageBase } from '@testomate/framework'
 
 export class UsersPage extends PageBase {
   private userRowData = (email: string, name: string) =>
-    `//div[@role='row' and ./div[@col-id='email' and text()='${email}'] and ./div[@col-id='name' and text()='${name}']]`
+    this.page.locator(`//div[@role='row' and ./div[@col-id='email' and text()='${email}'] and ./div[@col-id='name' and text()='${name}']]`)
+
+  private editUserBtn = (email: string, name: string) => this.userRowData(email, name).locator("//button[@aria-label='Edit']")
+
+  private updateUserPasswordBtn = (email: string, name: string) => this.userRowData(email, name).locator("//button[@aria-label='Update Password']")
+
+  private deleteUserBtn = (email: string, name: string) => this.userRowData(email, name).locator("//button[@aria-label='Delete']")
 
   private searchInput: Locator
   private loadingCenter: Locator
@@ -24,20 +30,16 @@ export class UsersPage extends PageBase {
     return this.baseUrl
   }
 
-  public getUserDataByEmailAndNameString(email: string, name: string) {
-    return this.userRowData(email, name)
-  }
-
   public async editUser(email: string, name: string) {
-    await this.page.locator(this.getUserDataByEmailAndNameString(email, name) + "//button[@aria-label='Edit']").click()
+    await this.editUserBtn(email, name).click()
   }
 
   public async updateUserPassword(email: string, name: string) {
-    await this.page.locator(this.getUserDataByEmailAndNameString(email, name) + "//button[@aria-label='Update Password']").click()
+    await this.updateUserPasswordBtn(email, name).click()
   }
 
   public async deleteUser(email: string, name: string) {
-    await this.page.locator(this.getUserDataByEmailAndNameString(email, name) + "//button[@aria-label='Delete']").click()
+    await this.deleteUserBtn(email, name).click()
   }
 
   public async fillSearchInput(input: string) {
