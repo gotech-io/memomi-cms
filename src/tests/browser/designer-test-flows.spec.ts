@@ -99,7 +99,7 @@ test.describe('Designer test flows', () => {
   })
 
   test.describe('Edit product, Tracking values', () => {
-    const productGTIN = generateProductGtin()
+    let productGTIN: string
 
     test.beforeEach(async ({ testContext }) => {
       testContext.addTearDownAction(() => {
@@ -108,6 +108,7 @@ test.describe('Designer test flows', () => {
 
       loginApi = await testContext.getApi(UsersApi)
       productsApi = await testContext.getApi(ProductsApi)
+      productGTIN = generateProductGtin()
 
       const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
       const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
@@ -201,7 +202,7 @@ test.describe('Designer test flows', () => {
   })
 
   test.describe('Edit product, Item info values', () => {
-    const productGTIN = generateProductGtin()
+    let productGTIN: string
 
     test.beforeEach(async ({ testContext }) => {
       testContext.addTearDownAction(() => {
@@ -210,6 +211,7 @@ test.describe('Designer test flows', () => {
 
       loginApi = await testContext.getApi(UsersApi)
       productsApi = await testContext.getApi(ProductsApi)
+      productGTIN = generateProductGtin()
 
       const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
       const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
@@ -233,6 +235,45 @@ test.describe('Designer test flows', () => {
 
       expect.soft(getMaterialType).toEqual('testingMaterialType')
       expect.soft(await walmartGlassesPage.tableColumnData(productGTIN, WalmartGlassesColumns.MaterialType)).toEqual('testingMaterialType')
+    })
+
+    test('Set teflon id', async ({ testContext }) => {
+      editProductPage = await testContext.getPage(EditProductPage)
+      await editProductPage.clickTab(ProductTabs.ItemInfo)
+      await editProductPage.setTeflonId('testingTeflonId')
+      const getTeflonId = await editProductPage.getTeflonId()
+      await editProductPage.clickClose()
+
+      await walmartGlassesPage.clickRefresh()
+
+      expect.soft(getTeflonId).toEqual('testingTeflonId')
+      expect.soft(await walmartGlassesPage.tableColumnData(productGTIN, WalmartGlassesColumns.TeflonId)).toEqual('testingTeflonId')
+    })
+
+    test('Set frame type', async ({ testContext }) => {
+      editProductPage = await testContext.getPage(EditProductPage)
+      await editProductPage.clickTab(ProductTabs.ItemInfo)
+      await editProductPage.setFrameType('testingFrameType')
+      const getFrameType = await editProductPage.getFrameType()
+      await editProductPage.clickClose()
+
+      await walmartGlassesPage.clickRefresh()
+
+      expect.soft(getFrameType).toEqual('testingFrameType')
+      expect.soft(await walmartGlassesPage.tableColumnData(productGTIN, WalmartGlassesColumns.FrameType)).toEqual('testingFrameType')
+    })
+
+    test('Set hinge type', async ({ testContext }) => {
+      editProductPage = await testContext.getPage(EditProductPage)
+      await editProductPage.clickTab(ProductTabs.ItemInfo)
+      await editProductPage.setHingeType('testingHingeType')
+      const getHingeType = await editProductPage.getHingeType()
+      await editProductPage.clickClose()
+
+      await walmartGlassesPage.clickRefresh()
+
+      expect.soft(getHingeType).toEqual('testingHingeType')
+      expect.soft(await walmartGlassesPage.tableColumnData(productGTIN, WalmartGlassesColumns.HingeType)).toEqual('testingHingeType')
     })
   })
 })
