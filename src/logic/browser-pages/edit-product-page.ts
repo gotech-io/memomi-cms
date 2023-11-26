@@ -31,6 +31,7 @@ export class EditProductPage extends PageBase {
   private trackingSelectPriorityMenu: Locator
   private trackingSelectDesignerMenu: Locator
   private trackingSelectTagMenu: Locator
+  private materialType: Locator
 
   constructor(page: Page) {
     super(page)
@@ -41,6 +42,7 @@ export class EditProductPage extends PageBase {
     this.trackingSelectPriorityMenu = page.locator("//div[@id='value-list-select-priority']")
     this.trackingSelectDesignerMenu = page.locator("//div[@id='outlined-adornment-designer']")
     this.trackingSelectTagMenu = page.locator("//div[@id='value-list-select-tag']")
+    this.materialType = page.locator("//input[@id='text-form-materialTypeFront']")
   }
 
   async initPage(): Promise<void> {
@@ -122,5 +124,14 @@ export class EditProductPage extends PageBase {
 
   public async isProductImageVisible(image: string) {
     return await this.productImage(image).isVisible()
+  }
+
+  public async setMaterialType(type: string) {
+    await this.materialType.fill(type)
+    await this.clickSave()
+  }
+
+  public async getMaterialType() {
+    return await this.materialType.getAttribute('value')
   }
 }

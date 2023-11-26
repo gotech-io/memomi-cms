@@ -13,6 +13,9 @@ export class WalmartGlassesPage extends PageBase {
 
   private dropDownMenuItem = (item: DropdownItems) => this.page.locator(`//li[text()='${item}']`)
 
+  private columnData = (gtin: string, colId: WalmartGlassesColumns) =>
+    this.page.locator(`//div[@role="row" and ./div[@col-id="gtin" and text()="${gtin}"]]//div[@col-id='${colId}']`)
+
   private searchFreeText: Locator
   private assignedToMeBtn: Locator
   private previewBtn: Locator
@@ -57,6 +60,11 @@ export class WalmartGlassesPage extends PageBase {
 
   public tableRowData(columns: { colId: WalmartGlassesColumns; text: string }[]) {
     return this.page.locator(buildRowLocator(columns))
+  }
+
+  public async tableColumnData(gtin: string, colId: WalmartGlassesColumns) {
+    await this.scrollToVisibleColumn(colId)
+    return this.columnData(gtin, colId).textContent()
   }
 
   public async clickCheckRow(columns: { colId: WalmartGlassesColumns; text: string }[]) {
