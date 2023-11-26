@@ -207,4 +207,41 @@ test.describe('Designer test flows', () => {
       ]),
     ).toBeVisible()
   })
+
+  test('Change product tag', async ({ testContext }) => {
+    testContext.addTearDownAction(() => {
+      void deleteFolder(configProvider.walmartAutomationGeneratePath + productGTIN)
+      return productsApi.deleteProduct(productGTIN, loginApiRes.item.token)
+    })
+
+    loginApi = await testContext.getApi(UsersApi)
+    productsApi = await testContext.getApi(ProductsApi)
+
+    const productGTIN = generateProductGtin()
+    await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGTIN)
+    const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
+
+    const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+    await productsApi.createProduct(productRequest(productGTIN), loginApiRes.item.token)
+
+    await dashboardPage.clickWalmartGlasses()
+
+    walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
+    await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGTIN)
+    await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+
+    editProductPage = await testContext.getPage(EditProductPage)
+    await editProductPage.clickTab(ProductTabs.Tracking)
+    await editProductPage.setProductTag('Need to complete')
+    await editProductPage.clickClose()
+
+    await walmartGlassesPage.clickRefresh()
+
+    await expect(
+      walmartGlassesPage.tableRowData([
+        { colId: WalmartGlassesColumns.GTIN, text: productGTIN },
+        { colId: WalmartGlassesColumns.Tag, text: 'Need to complete' },
+      ]),
+    ).toBeVisible()
+  })
 })
