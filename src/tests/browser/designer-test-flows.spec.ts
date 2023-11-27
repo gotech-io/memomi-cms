@@ -59,11 +59,11 @@ test.describe('Designer test flows', () => {
     productsApi = await testContext.getApi(ProductsApi)
 
     const productGTIN = generateProductGtin()
-    await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGTIN)
-    const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
-
     const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
     await productsApi.createProduct(productRequest(productGTIN), loginApiRes.item.token)
+
+    await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGTIN)
+    const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
 
     const files = await getAllFiles(configProvider.walmartAutomationGeneratePath + productGTIN + '/')
     const images = files.filter(image => image.includes('.jpg') && !image.includes('invalid'))
@@ -119,11 +119,11 @@ test.describe('Designer test flows', () => {
       walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
       await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGTIN)
       await walmartGlassesPage.clickEditLine(walmartAutoProduct)
-    })
-
-    test('Change product status', async ({ testContext }) => {
       editProductPage = await testContext.getPage(EditProductPage)
       await editProductPage.clickTab(ProductTabs.Tracking)
+    })
+
+    test('Change product status', async () => {
       await editProductPage.setProductStatus(ProductStatus.InDesign)
       await editProductPage.clickClose()
 
@@ -137,9 +137,7 @@ test.describe('Designer test flows', () => {
       ).toBeVisible()
     })
 
-    test('Change product priority', async ({ testContext }) => {
-      editProductPage = await testContext.getPage(EditProductPage)
-      await editProductPage.clickTab(ProductTabs.Tracking)
+    test('Change product priority', async () => {
       await editProductPage.setProductPriority(ProductPriority.P3)
       await editProductPage.clickClose()
 
@@ -153,9 +151,7 @@ test.describe('Designer test flows', () => {
       ).toBeVisible()
     })
 
-    test('Change product designer', async ({ testContext }) => {
-      editProductPage = await testContext.getPage(EditProductPage)
-      await editProductPage.clickTab(ProductTabs.Tracking)
+    test('Change product designer', async () => {
       await editProductPage.setProductDesigner('Olga (designer)')
       await editProductPage.clickClose()
 
@@ -169,9 +165,7 @@ test.describe('Designer test flows', () => {
       ).toBeVisible()
     })
 
-    test('Change product tag', async ({ testContext }) => {
-      editProductPage = await testContext.getPage(EditProductPage)
-      await editProductPage.clickTab(ProductTabs.Tracking)
+    test('Change product tag', async () => {
       await editProductPage.setProductTag('Need to complete')
       await editProductPage.clickClose()
 
@@ -185,15 +179,12 @@ test.describe('Designer test flows', () => {
       ).toBeVisible()
     })
 
-    test('Product tracking values', async ({ testContext }) => {
+    test('Product tracking values', async () => {
       const trackingValues = [
         { key: ProductValues.GTIN, value: productGTIN },
         { key: ProductValues.MerchantsQC, value: 'Unassigned' },
         { key: ProductValues.Calibration, value: '' },
       ]
-
-      editProductPage = await testContext.getPage(EditProductPage)
-      await editProductPage.clickTab(ProductTabs.Tracking)
 
       for (const item of trackingValues) {
         expect.soft(await editProductPage.getProductValue(item.key)).toEqual(item.value)
@@ -222,11 +213,11 @@ test.describe('Designer test flows', () => {
       walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
       await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGTIN)
       await walmartGlassesPage.clickEditLine(walmartAutoProduct)
-    })
-
-    test('Set material type', async ({ testContext }) => {
       editProductPage = await testContext.getPage(EditProductPage)
       await editProductPage.clickTab(ProductTabs.ItemInfo)
+    })
+
+    test('Set material type', async () => {
       await editProductPage.setMaterialType('testingMaterialType')
       const getMaterialType = await editProductPage.getMaterialType()
       await editProductPage.clickClose()
@@ -237,9 +228,7 @@ test.describe('Designer test flows', () => {
       expect.soft(await walmartGlassesPage.tableColumnData(productGTIN, WalmartGlassesColumns.MaterialType)).toEqual('testingMaterialType')
     })
 
-    test('Set teflon id', async ({ testContext }) => {
-      editProductPage = await testContext.getPage(EditProductPage)
-      await editProductPage.clickTab(ProductTabs.ItemInfo)
+    test('Set teflon id', async () => {
       await editProductPage.setTeflonId('testingTeflonId')
       const getTeflonId = await editProductPage.getTeflonId()
       await editProductPage.clickClose()
@@ -250,9 +239,7 @@ test.describe('Designer test flows', () => {
       expect.soft(await walmartGlassesPage.tableColumnData(productGTIN, WalmartGlassesColumns.TeflonId)).toEqual('testingTeflonId')
     })
 
-    test('Set frame type', async ({ testContext }) => {
-      editProductPage = await testContext.getPage(EditProductPage)
-      await editProductPage.clickTab(ProductTabs.ItemInfo)
+    test('Set frame type', async () => {
       await editProductPage.setFrameType('testingFrameType')
       const getFrameType = await editProductPage.getFrameType()
       await editProductPage.clickClose()
@@ -263,9 +250,7 @@ test.describe('Designer test flows', () => {
       expect.soft(await walmartGlassesPage.tableColumnData(productGTIN, WalmartGlassesColumns.FrameType)).toEqual('testingFrameType')
     })
 
-    test('Set hinge type', async ({ testContext }) => {
-      editProductPage = await testContext.getPage(EditProductPage)
-      await editProductPage.clickTab(ProductTabs.ItemInfo)
+    test('Set hinge type', async () => {
       await editProductPage.setHingeType('testingHingeType')
       const getHingeType = await editProductPage.getHingeType()
       await editProductPage.clickClose()

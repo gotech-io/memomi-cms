@@ -118,3 +118,25 @@ export const deleteFolder = async (path: string): Promise<void> => {
 export const generateProductGtin = (): string => {
   return configProvider.walmartAutomationProduct + '-' + randomString(5)
 }
+
+export const waitForResult = async <T>(
+  action: () => Promise<T>,
+  expected: T,
+  retries: number,
+  sleep: number,
+  preAction?: () => Promise<T>,
+): Promise<T> => {
+  let actualResult: T = await action()
+  let retryCount = 0
+  while (actualResult != expected && retryCount < retries) {
+    if (preAction) {
+      await preAction()
+    }
+    actualResult = await action()
+    if (actualResult != expected) {
+      retryCount++
+      await delay(sleep)
+    }
+  }
+  return actualResult
+}

@@ -35,6 +35,7 @@ export class EditProductPage extends PageBase {
   private teflonId: Locator
   private frameType: Locator
   private hingeType: Locator
+  private productUpdatedAlert: Locator
 
   constructor(page: Page) {
     super(page)
@@ -49,6 +50,7 @@ export class EditProductPage extends PageBase {
     this.teflonId = page.locator("//input[@id='text-form-teflonId']")
     this.frameType = page.locator("//input[@id='text-form-frameType']")
     this.hingeType = page.locator("//input[@id='text-form-hingeType']")
+    this.productUpdatedAlert = page.locator("//div[contains(@class, 'message css') and text()='Product updated']")
   }
 
   async initPage(): Promise<void> {
@@ -66,6 +68,7 @@ export class EditProductPage extends PageBase {
 
   public async clickSave() {
     await this.saveBtn.click()
+    await this.waitForProductUpdatedAlert()
   }
 
   public async clickClose() {
@@ -166,5 +169,9 @@ export class EditProductPage extends PageBase {
 
   public async getHingeType() {
     return await this.hingeType.getAttribute('value')
+  }
+
+  public async waitForProductUpdatedAlert() {
+    await this.productUpdatedAlert.waitFor({ state: 'visible' })
   }
 }
