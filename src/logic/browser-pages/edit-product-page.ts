@@ -28,6 +28,10 @@ export class EditProductPage extends PageBase {
   private productImage = (image: string) => this.page.locator(`//img[@title='${image}']`)
 
   private uploadImageInput = (image: ProductFiles) => this.page.locator(`//div[./h6[text()='${image}']]//input[@name='file']`)
+  private deleteImageBtn = (image: ProductFiles) =>
+    this.page.locator(`//div[./h6[text()='${image}']]//button[./*[local-name()='svg' and @data-testid='DeleteIcon']]`)
+
+  private uploadComplete = (image: ProductFiles) => this.page.locator(`//div[./h6[text()='${image}']]//div[text()='100%']`)
 
   private saveBtn: Locator
   private closeBtn: Locator
@@ -186,5 +190,11 @@ export class EditProductPage extends PageBase {
       .filter(image => image.includes(imageMap) && !image.includes('invalid') && !image.includes('.DS_Store'))
       .map(file => path + '/' + file)
     await this.uploadImageInput(uploadImage).setInputFiles(filePaths)
+    await this.uploadComplete(uploadImage).waitFor({ state: 'visible' })
+  }
+
+  public async deleteImage(image: ProductFiles) {
+    await this.deleteImageBtn(image).click()
+    await this.uploadComplete(image).waitFor({ state: 'detached' })
   }
 }

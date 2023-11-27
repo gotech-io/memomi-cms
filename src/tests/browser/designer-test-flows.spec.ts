@@ -300,5 +300,13 @@ test.describe('Designer test flows', () => {
         `Image: ${imageMap[randomProductFile]} was not successfully uploaded`,
       ).toBeVisible()
     })
+
+    test('Delete image', async () => {
+      const imageMap = Object.fromEntries(Object.entries(ProductFiles).map(([key, value]) => [value, `_${key.toLowerCase()}.jpg`]))
+      const randomProductFile = getRandomProductFile()
+      await editProductPage.uploadImage(randomProductFile, productGTIN, imageMap[randomProductFile])
+      await editProductPage.deleteImage(randomProductFile)
+      await expect(editProductPage.isProductImageVisible(productGTIN + imageMap[randomProductFile])).toBeHidden()
+    })
   })
 })
