@@ -4,6 +4,9 @@ import { ProductTabs } from '../enum/product-tabs.js'
 import { ProductStatus } from '../enum/product-status.js'
 import { ProductValues } from '../enum/product-values.js'
 import { ProductPriority } from '../enum/product-priority.js'
+import { configProvider } from '../../config/index.js'
+import { getAllFiles } from '../utils.js'
+import { ProductFiles } from '../enum/product-files.js'
 
 export class EditProductPage extends PageBase {
   private productTab = (tab: ProductTabs) => this.page.locator(`//div[@role='tablist']//a[text()='${tab}']`)
@@ -23,6 +26,8 @@ export class EditProductPage extends PageBase {
   private productTagItems = (tag: string) => this.page.locator(`//ul[@aria-labelledby='value-list-select-label-tag']//li[@data-value='${tag}']`)
 
   private productImage = (image: string) => this.page.locator(`//img[@title='${image}']`)
+
+  private uploadImageInput = (image: ProductFiles) => this.page.locator(`//div[./h6[text()='${image}']]//input[@name='file']`)
 
   private saveBtn: Locator
   private closeBtn: Locator
@@ -131,8 +136,8 @@ export class EditProductPage extends PageBase {
     }
   }
 
-  public async isProductImageVisible(image: string) {
-    return await this.productImage(image).isVisible()
+  public isProductImageVisible(image: string) {
+    return this.productImage(image)
   }
 
   public async setMaterialType(type: string) {
@@ -173,5 +178,13 @@ export class EditProductPage extends PageBase {
 
   public async waitForProductUpdatedAlert() {
     await this.productUpdatedAlert.waitFor({ state: 'visible' })
+  }
+
+  public async uploadImage(uploadImage: ProductFiles, gtin: string, imageMap: string) {
+    const path = configProvider.walmartAutomationGeneratePath + gtin + '/'
+    const filePaths = (await getAllFiles(path))
+      .filter(image => image.includes(imageMap) && !image.includes('invalid') && !image.includes('.DS_Store'))
+      .map(file => path + '/' + file)
+    await this.uploadImageInput(uploadImage).setInputFiles(filePaths)
   }
 }

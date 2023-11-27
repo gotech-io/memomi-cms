@@ -17,6 +17,7 @@ import { productRequest } from '../../logic/api/request/product-request.js'
 import { ProductStatus } from '../../logic/enum/product-status.js'
 import { ProductPriority } from '../../logic/enum/product-priority.js'
 import { ProductValues } from '../../logic/enum/product-values.js'
+import { getRandomProductFile, ProductFiles } from '../../logic/enum/product-files.js'
 
 test.describe('Designer test flows', () => {
   let loginPage: LoginPage
@@ -259,6 +260,45 @@ test.describe('Designer test flows', () => {
 
       expect.soft(getHingeType).toEqual('testingHingeType')
       expect.soft(await walmartGlassesPage.tableColumnData(productGTIN, WalmartGlassesColumns.HingeType)).toEqual('testingHingeType')
+    })
+  })
+
+  test.describe('Edit product, Images', () => {
+    let productGTIN: string
+
+    test.beforeEach(async ({ testContext }) => {
+      testContext.addTearDownAction(() => {
+        void deleteFolder(configProvider.walmartAutomationGeneratePath + productGTIN)
+        return productsApi.deleteProduct(productGTIN, loginApiRes.item.token)
+      })
+
+      loginApi = await testContext.getApi(UsersApi)
+      productsApi = await testContext.getApi(ProductsApi)
+      productGTIN = generateProductGtin()
+
+      await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGTIN)
+      const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
+      const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+      await productsApi.createProduct(productRequest(productGTIN), loginApiRes.item.token)
+
+      await dashboardPage.clickWalmartGlasses()
+
+      walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
+      await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGTIN)
+      await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+      editProductPage = await testContext.getPage(EditProductPage)
+      await editProductPage.clickTab(ProductTabs.Images)
+    })
+
+    test('Upload image', async () => {
+      const imageMap = Object.fromEntries(Object.entries(ProductFiles).map(([key, value]) => [value, `_${key.toLowerCase()}.jpg`]))
+      const randomProductFile = getRandomProductFile()
+      await editProductPage.uploadImage(randomProductFile, productGTIN, imageMap[randomProductFile])
+
+      await expect(
+        editProductPage.isProductImageVisible(productGTIN + imageMap[randomProductFile]),
+        `Image: ${imageMap[randomProductFile]} was not successfully uploaded`,
+      ).toBeVisible()
     })
   })
 })
