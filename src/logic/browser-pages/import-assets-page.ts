@@ -9,6 +9,9 @@ export class ImportAssetsPage extends PageBase {
       `//div[@role='row' and ./div[@col-id='productId'] and ./div[@col-id='fileName' and text()='${image}'] and ./div[text()='Product not found']]`,
     )
 
+  private readyBtn = (uploads: number) => this.page.locator(`//button[text()='Ready (${uploads})']`)
+  private updatedBtn = (uploads: number) => this.page.locator(`//button[text()='Updated (${uploads})']`)
+
   private uploadFilesInput: Locator
   private startImportBtn: Locator
   private exportBtn: Locator
@@ -38,11 +41,10 @@ export class ImportAssetsPage extends PageBase {
   }
 
   public async clickStartImport(uploads: number) {
+    await this.readyBtn(uploads).waitFor({ state: 'attached' })
     await this.startImportBtn.click()
-    await this.waitForUploads(uploads)
-
-    await this.startImportBtn.click()
-    await this.waitForUploads(uploads)
+    await this.readyBtn(uploads).waitFor({ state: 'detached' })
+    await this.updatedBtn(uploads).waitFor({ state: 'attached' })
   }
 
   public async waitForUploads(uploads: number) {
@@ -68,8 +70,9 @@ export class ImportAssetsPage extends PageBase {
     const images = (await getAllFiles(path)).filter(image => !image.includes('invalid') && !image.includes('.DS_Store'))
     const filePaths = images.map(file => path + '/' + file)
     await this.uploadFilesInput.waitFor({ state: 'attached' })
-    await delay(1000) // Fixme: Page loads into the database slowly.
+    await delay(500) // Fixme: Loading products takes too long.
     await this.uploadFilesInput.setInputFiles(filePaths)
+    await delay(500) // Fixme: Remove delay.
     await this.clickStartImport(filePaths.length)
     await this.clickClose()
   }
