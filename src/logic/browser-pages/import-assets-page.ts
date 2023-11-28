@@ -1,7 +1,8 @@
 import { Locator, Page } from '@playwright/test'
 import { PageBase } from '@testomate/framework'
-import { delay, getAllFiles, waitForResult } from '../utils.js'
+import { getAllFiles } from '../utils.js'
 import { configProvider } from '../../config/index.js'
+import { AssetsButtons } from '../enum/assets-buttons.js'
 
 export class ImportAssetsPage extends PageBase {
   private productNotFound = (image: string) =>
@@ -9,15 +10,12 @@ export class ImportAssetsPage extends PageBase {
       `//div[@role='row' and ./div[@col-id='productId'] and ./div[@col-id='fileName' and text()='${image}'] and ./div[text()='Product not found']]`,
     )
 
-  private readyBtn = (uploads: number) => this.page.locator(`//button[text()='Ready (${uploads})']`)
-  private updatedBtn = (uploads: number) => this.page.locator(`//button[text()='Updated (${uploads})']`)
+  private infoButton = (button: AssetsButtons, uploads: number) => this.page.locator(`//button[text()='${button} (${uploads})']`)
 
   private uploadFilesInput: Locator
   private startImportBtn: Locator
   private exportBtn: Locator
   private closeBtn: Locator
-  private progressbar: Locator
-  private uploadResult: Locator
 
   constructor(page: Page) {
     super(page)
@@ -25,8 +23,6 @@ export class ImportAssetsPage extends PageBase {
     this.startImportBtn = page.locator("//button[text()='Start Import']")
     this.exportBtn = page.locator("//button[text()='Export']")
     this.closeBtn = page.locator("//button[text()='Close']")
-    this.progressbar = page.locator("//span[@role='progressbar']")
-    this.uploadResult = page.locator("//div[@col-id='message' and text()='Done']")
   }
 
   async initPage(): Promise<void> {
@@ -41,16 +37,11 @@ export class ImportAssetsPage extends PageBase {
   }
 
   public async clickStartImport(uploads: number) {
-    await this.readyBtn(uploads).waitFor({ state: 'attached' })
-    await this.startImportBtn.click()
-    await this.readyBtn(uploads).waitFor({ state: 'detached' })
-    await this.updatedBtn(uploads).waitFor({ state: 'attached' })
-  }
-
-  public async waitForUploads(uploads: number) {
-    await this.progressbar.waitFor({ state: 'attached' })
-    await this.progressbar.waitFor({ state: 'detached' })
-    await waitForResult(() => this.uploadResult.count(), uploads, 10, 500)
+    await this.infoButton(AssetsButtons.All, uploads).waitFor({ state: 'attached' })
+    await this.infoButton(AssetsButtons.Ready, uploads).waitFor({ state: 'attached' })
+    await this.startImportBtn.click({ delay: 500 })
+    await this.infoButton(AssetsButtons.Ready, uploads).waitFor({ state: 'detached', timeout: 30000 })
+    await this.infoButton(AssetsButtons.Updated, uploads).waitFor({ state: 'attached' })
   }
 
   public async clickExport() {
@@ -66,13 +57,11 @@ export class ImportAssetsPage extends PageBase {
   }
 
   public async importAssets(gtin: string) {
+    await this.page.waitForResponse(response => response.url().endsWith('/ids') && response.status() === 200)
     const path = configProvider.walmartAutomationGeneratePath + gtin + '/'
     const images = (await getAllFiles(path)).filter(image => !image.includes('invalid') && !image.includes('.DS_Store'))
     const filePaths = images.map(file => path + '/' + file)
-    await this.uploadFilesInput.waitFor({ state: 'attached' })
-    await delay(500) // Fixme: Loading products takes too long.
     await this.uploadFilesInput.setInputFiles(filePaths)
-    await delay(500) // Fixme: Remove delay.
     await this.clickStartImport(filePaths.length)
     await this.clickClose()
   }
@@ -80,7 +69,7 @@ export class ImportAssetsPage extends PageBase {
   public async importNotFoundProduct() {
     const path = configProvider.walmartAutomationResourcesPath
     const filePaths = (await getAllFiles(path)).filter(image => image.includes('invalid')).map(file => path + '/' + file)
-    await this.uploadFilesInput.waitFor({ state: 'attached' })
     await this.uploadFilesInput.setInputFiles(filePaths)
+    await this.infoButton(AssetsButtons.Errors, filePaths.length).waitFor({ state: 'attached' })
   }
 }

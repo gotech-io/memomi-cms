@@ -30,7 +30,7 @@ export default initializeFrameworkConfig({
   playwright: {
     testDir: './src/tests/',
     fullyParallel: true,
-    timeout: 120 * 1000,
+    timeout: 60 * 1000,
     forbidOnly: false,
     retries: 0,
     workers: 1,
