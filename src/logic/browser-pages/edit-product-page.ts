@@ -195,6 +195,6 @@ export class EditProductPage extends PageBase {
 
   public async deleteImage(image: ProductFiles) {
     await this.deleteImageBtn(image).click()
-    await this.uploadComplete(image).waitFor({ state: 'detached' }) // Fixme: A real bug with a low priority, Uncomment when the bug is fixed.
+    await this.uploadComplete(image).waitFor({ state: 'detached' }) // Fixme: A real bug with a low priority.
   }
 }
