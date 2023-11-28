@@ -7,6 +7,7 @@ import { ProductPriority } from '../enum/product-priority.js'
 import { configProvider } from '../../config/index.js'
 import { getAllFiles, waitForStringInResult } from '../utils.js'
 import { ProductFiles } from '../enum/product-files.js'
+import { Product3dModel } from '../enum/product-3d-model.js'
 
 export class EditProductPage extends PageBase {
   private productTab = (tab: ProductTabs) => this.page.locator(`//div[@role='tablist']//a[text()='${tab}']`)
@@ -37,7 +38,11 @@ export class EditProductPage extends PageBase {
 
   private imageUrl = (image: ProductFiles) => this.page.locator(`//div[./h6[text()='${image}']]//a`)
 
-  private uploadComplete = (image: ProductFiles) => this.page.locator(`//div[./h6[text()='${image}']]//div[text()='100%']`)
+  private uploadComplete = (file: ProductFiles | Product3dModel) => this.page.locator(`//div[./h6[text()='${file}']]//div[text()='100%']`)
+
+  private uploadStlInput = (stl: Product3dModel) => this.page.locator(`//div[./h6[text()='${stl}']]//input[@name='file']`)
+
+  private fieldInput = (file: ProductFiles | Product3dModel) => this.page.locator(`//div[./h6[text()='${file}']]//input[@id='filled-helperText']`)
 
   private saveBtn: Locator
   private closeBtn: Locator
@@ -82,7 +87,7 @@ export class EditProductPage extends PageBase {
   }
 
   public async clickSave() {
-    await this.saveBtn.click()
+    await this.saveBtn.click({ delay: 1000 })
     await this.waitForProductUpdatedAlert()
   }
 
@@ -224,5 +229,19 @@ export class EditProductPage extends PageBase {
           .map(page => page.url()),
       ),
     ]
+  }
+
+  public async uploadStl(gtin: string) {
+    const uploadStl: Product3dModel = Product3dModel.STL
+    const path = configProvider.walmartAutomationGeneratePath + gtin + '/'
+    const filePaths = (await getAllFiles(path))
+      .filter(image => image.includes('.stl') && !image.includes('invalid') && !image.includes('.DS_Store'))
+      .map(file => path + '/' + file)
+    await this.uploadStlInput(uploadStl).setInputFiles(filePaths)
+    await this.uploadComplete(uploadStl).waitFor({ state: 'visible' })
+  }
+
+  public async uploadInput(file: ProductFiles | Product3dModel) {
+    return String(await this.fieldInput(file).getAttribute('value'))
   }
 }

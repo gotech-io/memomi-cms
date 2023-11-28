@@ -18,6 +18,7 @@ import { ProductStatus } from '../../logic/enum/product-status.js'
 import { ProductPriority } from '../../logic/enum/product-priority.js'
 import { ProductValues } from '../../logic/enum/product-values.js'
 import { getRandomProductFile, ProductFiles } from '../../logic/enum/product-files.js'
+import { Product3dModel } from '../../logic/enum/product-3d-model.js'
 
 test.describe('Designer test flows', () => {
   let loginPage: LoginPage
@@ -35,38 +36,38 @@ test.describe('Designer test flows', () => {
   })
 
   test('All files can be found after unzipping', async ({ testContext }) => {
-    const productGTIN = '00010164351979'
+    const productGtin = '00010164351979'
     const productFiles: string[] = JSON.parse(fs.readFileSync(configProvider.walmartAutomationProductFiles, 'utf8')).files
 
     await dashboardPage.clickWalmartGlasses()
 
     walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
-    await walmartGlassesPage.clickCheckRow([{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }])
+    await walmartGlassesPage.clickCheckRow([{ colId: WalmartGlassesColumns.GTIN, text: productGtin }])
     await walmartGlassesPage.menuChoice(DropdownItems.ExportAssets)
     const zipFiles = await unzipFiles()
 
     productFiles.forEach(file => {
-      expect.soft(zipFiles.includes(productGTIN + '/' + productGTIN + file), `The ZIP file does not contain an ${file} file`).toBeTruthy()
+      expect.soft(zipFiles.includes(productGtin + '/' + productGtin + file), `The ZIP file does not contain an ${file} file`).toBeTruthy()
     })
   })
 
   test('Import assets & Upload images', async ({ testContext }) => {
     testContext.addTearDownAction(() => {
-      void deleteFolder(configProvider.walmartAutomationGeneratePath + productGTIN)
-      return productsApi.deleteProduct(productGTIN, loginApiRes.item.token)
+      void deleteFolder(configProvider.walmartAutomationGeneratePath + productGtin)
+      return productsApi.deleteProduct(productGtin, loginApiRes.item.token)
     })
 
     loginApi = await testContext.getApi(UsersApi)
     productsApi = await testContext.getApi(ProductsApi)
 
-    const productGTIN = generateProductGtin()
+    const productGtin = generateProductGtin()
     const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
-    await productsApi.createProduct(productRequest(productGTIN), loginApiRes.item.token)
+    await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
 
-    await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGTIN)
-    const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
+    await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGtin)
+    const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
 
-    const files = await getAllFiles(configProvider.walmartAutomationGeneratePath + productGTIN + '/')
+    const files = await getAllFiles(configProvider.walmartAutomationGeneratePath + productGtin + '/')
     const images = files.filter(image => image.includes('.jpg') && !image.includes('invalid'))
 
     await dashboardPage.clickWalmartGlasses()
@@ -75,9 +76,9 @@ test.describe('Designer test flows', () => {
     await walmartGlassesPage.menuChoice(DropdownItems.ImportAssets)
 
     importAssetsPage = await testContext.getPage(ImportAssetsPage)
-    await importAssetsPage.importAssets(productGTIN)
+    await importAssetsPage.importAssets(productGtin)
 
-    await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGTIN)
+    await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGtin)
     await walmartGlassesPage.clickEditLine(walmartAutoProduct)
 
     editProductPage = await testContext.getPage(EditProductPage)
@@ -100,26 +101,27 @@ test.describe('Designer test flows', () => {
   })
 
   test.describe('Edit product, Tracking values', () => {
-    let productGTIN: string
+    let productGtin: string
 
     test.beforeEach(async ({ testContext }) => {
       testContext.addTearDownAction(() => {
-        return productsApi.deleteProduct(productGTIN, loginApiRes.item.token)
+        return productsApi.deleteProduct(productGtin, loginApiRes.item.token)
       })
 
       loginApi = await testContext.getApi(UsersApi)
       productsApi = await testContext.getApi(ProductsApi)
-      productGTIN = generateProductGtin()
+      productGtin = generateProductGtin()
 
-      const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
+      const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
       const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
-      await productsApi.createProduct(productRequest(productGTIN), loginApiRes.item.token)
+      await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
 
       await dashboardPage.clickWalmartGlasses()
 
       walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
-      await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGTIN)
+      await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGtin)
       await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+
       editProductPage = await testContext.getPage(EditProductPage)
       await editProductPage.clickTab(ProductTabs.Tracking)
     })
@@ -132,7 +134,7 @@ test.describe('Designer test flows', () => {
 
       await expect(
         walmartGlassesPage.tableRowData([
-          { colId: WalmartGlassesColumns.GTIN, text: productGTIN },
+          { colId: WalmartGlassesColumns.GTIN, text: productGtin },
           { colId: WalmartGlassesColumns.Status, text: ProductStatus.InDesign },
         ]),
       ).toBeVisible()
@@ -146,7 +148,7 @@ test.describe('Designer test flows', () => {
 
       await expect(
         walmartGlassesPage.tableRowData([
-          { colId: WalmartGlassesColumns.GTIN, text: productGTIN },
+          { colId: WalmartGlassesColumns.GTIN, text: productGtin },
           { colId: WalmartGlassesColumns.Priority, text: ProductPriority.P3 },
         ]),
       ).toBeVisible()
@@ -160,7 +162,7 @@ test.describe('Designer test flows', () => {
 
       await expect(
         walmartGlassesPage.tableRowData([
-          { colId: WalmartGlassesColumns.GTIN, text: productGTIN },
+          { colId: WalmartGlassesColumns.GTIN, text: productGtin },
           { colId: WalmartGlassesColumns.Designer, text: 'Olga (designer)' },
         ]),
       ).toBeVisible()
@@ -174,7 +176,7 @@ test.describe('Designer test flows', () => {
 
       await expect(
         walmartGlassesPage.tableRowData([
-          { colId: WalmartGlassesColumns.GTIN, text: productGTIN },
+          { colId: WalmartGlassesColumns.GTIN, text: productGtin },
           { colId: WalmartGlassesColumns.Tag, text: 'Need to complete' },
         ]),
       ).toBeVisible()
@@ -182,7 +184,7 @@ test.describe('Designer test flows', () => {
 
     test('Product tracking values', async () => {
       const trackingValues = [
-        { key: ProductValues.GTIN, value: productGTIN },
+        { key: ProductValues.GTIN, value: productGtin },
         { key: ProductValues.MerchantsQC, value: 'Unassigned' },
         { key: ProductValues.Calibration, value: '' },
       ]
@@ -194,26 +196,28 @@ test.describe('Designer test flows', () => {
   })
 
   test.describe('Edit product, Item info values', () => {
-    let productGTIN: string
+    let productGtin: string
+    let walmartAutoProduct: { text: string; colId: WalmartGlassesColumns }[]
 
     test.beforeEach(async ({ testContext }) => {
       testContext.addTearDownAction(() => {
-        return productsApi.deleteProduct(productGTIN, loginApiRes.item.token)
+        return productsApi.deleteProduct(productGtin, loginApiRes.item.token)
       })
 
       loginApi = await testContext.getApi(UsersApi)
       productsApi = await testContext.getApi(ProductsApi)
-      productGTIN = generateProductGtin()
+      productGtin = generateProductGtin()
 
-      const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
+      walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
       const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
-      await productsApi.createProduct(productRequest(productGTIN), loginApiRes.item.token)
+      await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
 
       await dashboardPage.clickWalmartGlasses()
 
       walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
-      await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGTIN)
+      await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGtin)
       await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+
       editProductPage = await testContext.getPage(EditProductPage)
       await editProductPage.clickTab(ProductTabs.ItemInfo)
     })
@@ -226,7 +230,7 @@ test.describe('Designer test flows', () => {
       await walmartGlassesPage.clickRefresh()
 
       expect.soft(getMaterialType).toEqual('testingMaterialType')
-      expect.soft(await walmartGlassesPage.tableColumnData(productGTIN, WalmartGlassesColumns.MaterialType)).toEqual('testingMaterialType')
+      expect.soft(await walmartGlassesPage.tableColumnData(productGtin, WalmartGlassesColumns.MaterialType)).toEqual('testingMaterialType')
     })
 
     test('Set teflon id', async () => {
@@ -237,18 +241,18 @@ test.describe('Designer test flows', () => {
       await walmartGlassesPage.clickRefresh()
 
       expect.soft(getTeflonId).toEqual('testingTeflonId')
-      expect.soft(await walmartGlassesPage.tableColumnData(productGTIN, WalmartGlassesColumns.TeflonId)).toEqual('testingTeflonId')
+      expect.soft(await walmartGlassesPage.tableColumnData(productGtin, WalmartGlassesColumns.TeflonId)).toEqual('testingTeflonId')
     })
 
     test('Set frame type', async () => {
-      await editProductPage.setFrameType('testingFrameType')
+      await editProductPage.setFrameType('AUTO_FRAME_TYPE')
       const getFrameType = await editProductPage.getFrameType()
       await editProductPage.clickClose()
 
-      await walmartGlassesPage.clickRefresh()
+      await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+      await editProductPage.clickTab(ProductTabs.ItemInfo)
 
-      expect.soft(getFrameType).toEqual('testingFrameType')
-      expect.soft(await walmartGlassesPage.tableColumnData(productGTIN, WalmartGlassesColumns.FrameType)).toEqual('testingFrameType')
+      expect(await editProductPage.getFrameType()).toEqual(getFrameType)
     })
 
     test('Set hinge type', async () => {
@@ -259,54 +263,96 @@ test.describe('Designer test flows', () => {
       await walmartGlassesPage.clickRefresh()
 
       expect.soft(getHingeType).toEqual('testingHingeType')
-      expect.soft(await walmartGlassesPage.tableColumnData(productGTIN, WalmartGlassesColumns.HingeType)).toEqual('testingHingeType')
+      expect.soft(await walmartGlassesPage.tableColumnData(productGtin, WalmartGlassesColumns.HingeType)).toEqual('testingHingeType')
     })
   })
 
   test.describe('Edit product, Images', () => {
-    let productGTIN: string
+    let productGtin: string
     let productImageMap: { [productFile: string]: string }
     let randomProductFile: ProductFiles
 
     test.beforeEach(async ({ testContext }) => {
       testContext.addTearDownAction(() => {
-        void deleteFolder(configProvider.walmartAutomationGeneratePath + productGTIN)
-        return productsApi.deleteProduct(productGTIN, loginApiRes.item.token)
+        void deleteFolder(configProvider.walmartAutomationGeneratePath + productGtin)
+        return productsApi.deleteProduct(productGtin, loginApiRes.item.token)
       })
 
       loginApi = await testContext.getApi(UsersApi)
       productsApi = await testContext.getApi(ProductsApi)
-      productGTIN = generateProductGtin()
+      productGtin = generateProductGtin()
       productImageMap = Object.fromEntries(Object.entries(ProductFiles).map(([key, value]) => [value, `_${key.toLowerCase()}.jpg`]))
       randomProductFile = getRandomProductFile()
 
-      await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGTIN)
-      const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
+      await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGtin)
+      const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
       const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
-      await productsApi.createProduct(productRequest(productGTIN), loginApiRes.item.token)
+      await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
 
       await dashboardPage.clickWalmartGlasses()
 
       walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
-      await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGTIN)
+      await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGtin)
       await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+
       editProductPage = await testContext.getPage(EditProductPage)
       await editProductPage.clickTab(ProductTabs.Images)
-      await editProductPage.uploadImage(randomProductFile, productGTIN, productImageMap[randomProductFile])
+      await editProductPage.uploadImage(randomProductFile, productGtin, productImageMap[randomProductFile])
     })
 
     test('Upload image', async () => {
-      await expect(editProductPage.isProductImageVisible(productGTIN + productImageMap[randomProductFile])).toBeVisible()
+      await expect(editProductPage.isProductImageVisible(productGtin + productImageMap[randomProductFile])).toBeVisible()
     })
 
     test('Delete image', async () => {
       await editProductPage.deleteImage(randomProductFile)
-      await expect(editProductPage.isProductImageVisible(productGTIN + productImageMap[randomProductFile])).toBeHidden()
+      await expect(editProductPage.isProductImageVisible(productGtin + productImageMap[randomProductFile])).toBeHidden()
     })
 
     test('Open image in a new tab', async () => {
       await editProductPage.openInANewTab(randomProductFile)
       expect(await editProductPage.fetchTabUrls()).toContain(await editProductPage.imageNewTabUrl(randomProductFile))
+    })
+  })
+
+  test.describe('Edit product, 3D Model', () => {
+    let productGtin: string
+    let fieldLabel: string
+    let walmartAutoProduct: { text: string; colId: WalmartGlassesColumns }[]
+
+    test.beforeEach(async ({ testContext }) => {
+      testContext.addTearDownAction(() => {
+        void deleteFolder(configProvider.walmartAutomationGeneratePath + productGtin)
+        return productsApi.deleteProduct(productGtin, loginApiRes.item.token)
+      })
+
+      loginApi = await testContext.getApi(UsersApi)
+      productsApi = await testContext.getApi(ProductsApi)
+      productGtin = generateProductGtin()
+
+      await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGtin)
+      walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
+      const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+      await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
+
+      await dashboardPage.clickWalmartGlasses()
+
+      walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
+      await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGtin)
+      await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+      editProductPage = await testContext.getPage(EditProductPage)
+      await editProductPage.clickTab(ProductTabs.Model_3D)
+      await editProductPage.uploadStl(productGtin)
+      fieldLabel = await editProductPage.uploadInput(Product3dModel.STL)
+
+      await editProductPage.clickSave()
+      await editProductPage.clickClose()
+    })
+
+    test('Upload stl', async () => {
+      await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+      await editProductPage.clickTab(ProductTabs.Model_3D)
+      expect(await editProductPage.uploadInput(Product3dModel.STL)).toEqual(fieldLabel)
     })
   })
 })
