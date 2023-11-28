@@ -265,7 +265,7 @@ test.describe('Designer test flows', () => {
 
   test.describe('Edit product, Images', () => {
     let productGTIN: string
-    let imageMap: { [key: string]: string }
+    let productImageMap: { [productFile: string]: string }
     let randomProductFile: ProductFiles
 
     test.beforeEach(async ({ testContext }) => {
@@ -277,7 +277,7 @@ test.describe('Designer test flows', () => {
       loginApi = await testContext.getApi(UsersApi)
       productsApi = await testContext.getApi(ProductsApi)
       productGTIN = generateProductGtin()
-      imageMap = Object.fromEntries(Object.entries(ProductFiles).map(([key, value]) => [value, `_${key.toLowerCase()}.jpg`]))
+      productImageMap = Object.fromEntries(Object.entries(ProductFiles).map(([key, value]) => [value, `_${key.toLowerCase()}.jpg`]))
       randomProductFile = getRandomProductFile()
 
       await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGTIN)
@@ -292,16 +292,16 @@ test.describe('Designer test flows', () => {
       await walmartGlassesPage.clickEditLine(walmartAutoProduct)
       editProductPage = await testContext.getPage(EditProductPage)
       await editProductPage.clickTab(ProductTabs.Images)
-      await editProductPage.uploadImage(randomProductFile, productGTIN, imageMap[randomProductFile])
+      await editProductPage.uploadImage(randomProductFile, productGTIN, productImageMap[randomProductFile])
     })
 
     test('Upload image', async () => {
-      await expect(editProductPage.isProductImageVisible(productGTIN + imageMap[randomProductFile])).toBeVisible()
+      await expect(editProductPage.isProductImageVisible(productGTIN + productImageMap[randomProductFile])).toBeVisible()
     })
 
     test('Delete image', async () => {
       await editProductPage.deleteImage(randomProductFile)
-      await expect(editProductPage.isProductImageVisible(productGTIN + imageMap[randomProductFile])).toBeHidden()
+      await expect(editProductPage.isProductImageVisible(productGTIN + productImageMap[randomProductFile])).toBeHidden()
     })
   })
 })
