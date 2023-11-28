@@ -84,7 +84,7 @@ test.describe('Designer test flows', () => {
     await editProductPage.clickTab(ProductTabs.Images)
 
     for (const image of images) {
-      expect.soft(await editProductPage.isProductImageVisible(image), `The image ${image} was not successfully uploaded`).toBeTruthy()
+      await expect.soft(editProductPage.isProductImageVisible(image)).toBeVisible()
     }
   })
 
