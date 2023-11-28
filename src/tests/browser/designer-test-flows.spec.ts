@@ -265,6 +265,8 @@ test.describe('Designer test flows', () => {
 
   test.describe('Edit product, Images', () => {
     let productGTIN: string
+    let imageMap: { [key: string]: string }
+    let randomProductFile: ProductFiles
 
     test.beforeEach(async ({ testContext }) => {
       testContext.addTearDownAction(() => {
@@ -275,6 +277,8 @@ test.describe('Designer test flows', () => {
       loginApi = await testContext.getApi(UsersApi)
       productsApi = await testContext.getApi(ProductsApi)
       productGTIN = generateProductGtin()
+      imageMap = Object.fromEntries(Object.entries(ProductFiles).map(([key, value]) => [value, `_${key.toLowerCase()}.jpg`]))
+      randomProductFile = getRandomProductFile()
 
       await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGTIN)
       const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGTIN }]
@@ -288,23 +292,14 @@ test.describe('Designer test flows', () => {
       await walmartGlassesPage.clickEditLine(walmartAutoProduct)
       editProductPage = await testContext.getPage(EditProductPage)
       await editProductPage.clickTab(ProductTabs.Images)
+      await editProductPage.uploadImage(randomProductFile, productGTIN, imageMap[randomProductFile])
     })
 
     test('Upload image', async () => {
-      const imageMap = Object.fromEntries(Object.entries(ProductFiles).map(([key, value]) => [value, `_${key.toLowerCase()}.jpg`]))
-      const randomProductFile = getRandomProductFile()
-      await editProductPage.uploadImage(randomProductFile, productGTIN, imageMap[randomProductFile])
-
-      await expect(
-        editProductPage.isProductImageVisible(productGTIN + imageMap[randomProductFile]),
-        `Image: ${imageMap[randomProductFile]} was not successfully uploaded`,
-      ).toBeVisible()
+      await expect(editProductPage.isProductImageVisible(productGTIN + imageMap[randomProductFile])).toBeVisible()
     })
 
     test('Delete image', async () => {
-      const imageMap = Object.fromEntries(Object.entries(ProductFiles).map(([key, value]) => [value, `_${key.toLowerCase()}.jpg`]))
-      const randomProductFile = getRandomProductFile()
-      await editProductPage.uploadImage(randomProductFile, productGTIN, imageMap[randomProductFile])
       await editProductPage.deleteImage(randomProductFile)
       await expect(editProductPage.isProductImageVisible(productGTIN + imageMap[randomProductFile])).toBeHidden()
     })
