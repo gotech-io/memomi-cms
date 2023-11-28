@@ -303,5 +303,10 @@ test.describe('Designer test flows', () => {
       await editProductPage.deleteImage(randomProductFile)
       await expect(editProductPage.isProductImageVisible(productGTIN + productImageMap[randomProductFile])).toBeHidden()
     })
+
+    test('Open image in a new tab', async () => {
+      await editProductPage.openInANewTab(randomProductFile)
+      expect(await editProductPage.fetchTabUrls()).toContain(await editProductPage.imageNewTabUrl(randomProductFile))
+    })
   })
 })

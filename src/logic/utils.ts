@@ -119,21 +119,15 @@ export const generateProductGtin = (): string => {
   return configProvider.walmartAutomationProduct + '-' + randomString(5)
 }
 
-export const waitForResult = async <T>(
-  action: () => Promise<T>,
-  expected: T,
-  retries: number,
-  sleep: number,
-  preAction?: () => Promise<T>,
-): Promise<T> => {
-  let actualResult: T = await action()
+export const waitForStringInResult = async <T>(action: () => Promise<T>, expected: string, retries: number, sleep: number): Promise<string> => {
+  let actualResult: string = String(await action())
   let retryCount = 0
-  while (actualResult != expected && retryCount < retries) {
-    if (preAction) {
-      await preAction()
-    }
-    actualResult = await action()
-    if (actualResult != expected) {
+
+  const includesExpected = (result: string) => result.includes(expected)
+
+  while (!includesExpected(actualResult) && retryCount < retries) {
+    actualResult = String(await action())
+    if (!includesExpected(actualResult)) {
       retryCount++
       await delay(sleep)
     }

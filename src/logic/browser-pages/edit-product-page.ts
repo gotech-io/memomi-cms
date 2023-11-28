@@ -5,7 +5,7 @@ import { ProductStatus } from '../enum/product-status.js'
 import { ProductValues } from '../enum/product-values.js'
 import { ProductPriority } from '../enum/product-priority.js'
 import { configProvider } from '../../config/index.js'
-import { getAllFiles } from '../utils.js'
+import { getAllFiles, waitForStringInResult } from '../utils.js'
 import { ProductFiles } from '../enum/product-files.js'
 
 export class EditProductPage extends PageBase {
@@ -28,8 +28,14 @@ export class EditProductPage extends PageBase {
   private productImage = (image: string) => this.page.locator(`//img[@title='${image}']`)
 
   private uploadImageInput = (image: ProductFiles) => this.page.locator(`//div[./h6[text()='${image}']]//input[@name='file']`)
+
   private deleteImageBtn = (image: ProductFiles) =>
     this.page.locator(`//div[./h6[text()='${image}']]//button[./*[local-name()='svg' and @data-testid='DeleteIcon']]`)
+
+  private openInNewTabBtn = (image: ProductFiles) =>
+    this.page.locator(`//div[./h6[text()='${image}']]//button[./*[local-name()='svg' and @data-testid='OpenInNewIcon']]`)
+
+  private imageUrl = (image: ProductFiles) => this.page.locator(`//div[./h6[text()='${image}']]//a`)
 
   private uploadComplete = (image: ProductFiles) => this.page.locator(`//div[./h6[text()='${image}']]//div[text()='100%']`)
 
@@ -196,5 +202,27 @@ export class EditProductPage extends PageBase {
   public async deleteImage(image: ProductFiles) {
     await this.deleteImageBtn(image).click()
     await this.uploadComplete(image).waitFor({ state: 'detached' }) // Fixme: A real bug with a low priority.
+  }
+
+  public async openInANewTab(image: ProductFiles) {
+    await waitForStringInResult(() => this.imageNewTabUrl(image), 'https://cmsdevserverapi.azurewebsites.net/api/download/', 10, 500)
+    const waitForEvent = this.page.waitForEvent('popup')
+    await this.openInNewTabBtn(image).click()
+    await waitForEvent
+  }
+
+  public async imageNewTabUrl(image: ProductFiles) {
+    return await this.imageUrl(image).getAttribute('href')
+  }
+
+  fetchTabUrls = async () => {
+    return [
+      ...new Set(
+        this.page
+          .context()
+          .pages()
+          .map(page => page.url()),
+      ),
+    ]
   }
 }
