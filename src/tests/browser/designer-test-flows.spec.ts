@@ -202,7 +202,7 @@ test.describe('Designer test flows', () => {
 
       await walmartGlassesPage.clickEditLine(walmartAutoProduct)
       await editProductPage.clickTab(ProductTabs.ItemInfo)
-      expect.soft(await editProductPage.getMaterialType()).toEqual(getMaterialType)
+      expect(await editProductPage.getMaterialType()).toEqual(getMaterialType)
     })
 
     test('Set teflon id', async () => {
@@ -212,7 +212,7 @@ test.describe('Designer test flows', () => {
 
       await walmartGlassesPage.clickEditLine(walmartAutoProduct)
       await editProductPage.clickTab(ProductTabs.ItemInfo)
-      expect.soft(await editProductPage.getTeflonId()).toEqual(getTeflonId)
+      expect(await editProductPage.getTeflonId()).toEqual(getTeflonId)
     })
 
     test('Set frame type', async () => {
@@ -232,7 +232,7 @@ test.describe('Designer test flows', () => {
 
       await walmartGlassesPage.clickEditLine(walmartAutoProduct)
       await editProductPage.clickTab(ProductTabs.ItemInfo)
-      expect.soft(await editProductPage.getHingeType()).toEqual(getHingeType)
+      expect(await editProductPage.getHingeType()).toEqual(getHingeType)
     })
   })
 
