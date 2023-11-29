@@ -270,7 +270,7 @@ test.describe('Designer test flows', () => {
     })
 
     test('Delete image', async () => {
-      await editProductPage.deleteImage(randomProductFile)
+      await editProductPage.deleteFile(randomProductFile)
       await editProductPage.clickSaveThenClose()
 
       await walmartGlassesPage.clickEditLine(walmartAutoProduct)
@@ -312,12 +312,21 @@ test.describe('Designer test flows', () => {
       await editProductPage.uploadStl(productGtin)
       fieldLabel = await editProductPage.uploadInput(Product3dModel.STL)
       await editProductPage.clickSaveThenClose()
+      await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+      await editProductPage.clickTab(ProductTabs.Model_3D)
     })
 
     test('Upload stl', async () => {
+      expect(await editProductPage.uploadInput(Product3dModel.STL)).toEqual(fieldLabel)
+    })
+
+    test('Delete stl', async () => {
+      await editProductPage.deleteFile(Product3dModel.STL)
+      await editProductPage.clickSaveThenClose()
+
       await walmartGlassesPage.clickEditLine(walmartAutoProduct)
       await editProductPage.clickTab(ProductTabs.Model_3D)
-      expect(await editProductPage.uploadInput(Product3dModel.STL)).toEqual(fieldLabel)
+      expect(await editProductPage.uploadInput(Product3dModel.STL)).toEqual('')
     })
   })
 })

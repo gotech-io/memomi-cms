@@ -30,8 +30,8 @@ export class EditProductPage extends PageBase {
 
   private uploadImageInput = (image: ProductFiles) => this.page.locator(`//div[./h6[text()='${image}']]//input[@name='file']`)
 
-  private deleteImageBtn = (image: ProductFiles) =>
-    this.page.locator(`//div[./h6[text()='${image}']]//button[./*[local-name()='svg' and @data-testid='DeleteIcon']]`)
+  private deleteFileBtn = (file: ProductFiles | Product3dModel) =>
+    this.page.locator(`//div[./h6[text()='${file}']]//button[./*[local-name()='svg' and @data-testid='DeleteIcon']]`)
 
   private openInNewTabBtn = (image: ProductFiles) =>
     this.page.locator(`//div[./h6[text()='${image}']]//button[./*[local-name()='svg' and @data-testid='OpenInNewIcon']]`)
@@ -217,19 +217,17 @@ export class EditProductPage extends PageBase {
     await this.productUpdatedAlert.waitFor({ state: 'visible' })
   }
 
-  public async uploadImage(uploadImage: ProductFiles, gtin: string, imageMap: string) {
+  public async uploadImage(uploadImage: ProductFiles, gtin: string, prefix: string) {
     const path = configProvider.walmartAutomationGeneratePath + gtin + '/'
-    const filePaths = (await getAllFiles(path))
-      .filter(image => image.includes(imageMap) && !image.includes('invalid') && !image.includes('.DS_Store'))
-      .map(file => path + '/' + file)
+    const filePaths = (await getAllFiles(path)).filter(image => image.includes(prefix)).map(file => path + '/' + file)
     await this.uploadImageInput(uploadImage).setInputFiles(filePaths)
     await this.page.waitForResponse(response => response.url().includes('api/upload/') && response.status() === 200)
     await this.uploadComplete(uploadImage).waitFor({ state: 'visible' })
   }
 
-  public async deleteImage(image: ProductFiles) {
-    await this.deleteImageBtn(image).click()
-    await this.uploadComplete(image).waitFor({ state: 'detached' }) // Fixme: A real bug with a low priority.
+  public async deleteFile(file: ProductFiles | Product3dModel) {
+    await this.deleteFileBtn(file).click()
+    await this.uploadComplete(file).waitFor({ state: 'detached' }) // Fixme: A real bug with a low priority.
   }
 
   public async openInANewTab(image: ProductFiles) {
@@ -257,9 +255,7 @@ export class EditProductPage extends PageBase {
   public async uploadStl(gtin: string) {
     const uploadStl: Product3dModel = Product3dModel.STL
     const path = configProvider.walmartAutomationGeneratePath + gtin + '/'
-    const filePaths = (await getAllFiles(path))
-      .filter(image => image.includes('.stl') && !image.includes('invalid') && !image.includes('.DS_Store'))
-      .map(file => path + '/' + file)
+    const filePaths = (await getAllFiles(path)).filter(image => image.includes('.stl')).map(file => path + '/' + file)
     await this.uploadStlInput(uploadStl).setInputFiles(filePaths)
     await this.page.waitForResponse(response => response.url().endsWith('/stl') && response.status() === 200)
     await this.uploadComplete(uploadStl).waitFor({ state: 'visible' })
