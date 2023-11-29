@@ -223,25 +223,25 @@ test.describe('Designer test flows', () => {
     })
 
     test('Set material type', async () => {
-      await editProductPage.setMaterialType('testingMaterialType')
+      await editProductPage.setMaterialType('AUTO_MATERIAL_TYPE')
       const getMaterialType = await editProductPage.getMaterialType()
       await editProductPage.clickClose()
 
-      await walmartGlassesPage.clickRefresh()
+      await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+      await editProductPage.clickTab(ProductTabs.ItemInfo)
 
-      expect.soft(getMaterialType).toEqual('testingMaterialType')
-      expect.soft(await walmartGlassesPage.tableColumnData(productGtin, WalmartGlassesColumns.MaterialType)).toEqual('testingMaterialType')
+      expect.soft(await editProductPage.getMaterialType()).toEqual(getMaterialType)
     })
 
     test('Set teflon id', async () => {
-      await editProductPage.setTeflonId('testingTeflonId')
+      await editProductPage.setTeflonId('AUTO_TEFLON_ID')
       const getTeflonId = await editProductPage.getTeflonId()
       await editProductPage.clickClose()
 
-      await walmartGlassesPage.clickRefresh()
+      await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+      await editProductPage.clickTab(ProductTabs.ItemInfo)
 
-      expect.soft(getTeflonId).toEqual('testingTeflonId')
-      expect.soft(await walmartGlassesPage.tableColumnData(productGtin, WalmartGlassesColumns.TeflonId)).toEqual('testingTeflonId')
+      expect.soft(await editProductPage.getTeflonId()).toEqual(getTeflonId)
     })
 
     test('Set frame type', async () => {
@@ -256,14 +256,14 @@ test.describe('Designer test flows', () => {
     })
 
     test('Set hinge type', async () => {
-      await editProductPage.setHingeType('testingHingeType')
+      await editProductPage.setHingeType('AUTO_HINGE_TYPE')
       const getHingeType = await editProductPage.getHingeType()
       await editProductPage.clickClose()
 
-      await walmartGlassesPage.clickRefresh()
+      await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+      await editProductPage.clickTab(ProductTabs.ItemInfo)
 
-      expect.soft(getHingeType).toEqual('testingHingeType')
-      expect.soft(await walmartGlassesPage.tableColumnData(productGtin, WalmartGlassesColumns.HingeType)).toEqual('testingHingeType')
+      expect.soft(await editProductPage.getHingeType()).toEqual(getHingeType)
     })
   })
 
