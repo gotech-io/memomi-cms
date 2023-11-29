@@ -36,12 +36,8 @@ export class ImportAssetsPage extends PageBase {
     return this.baseUrl
   }
 
-  public async clickStartImport(uploads: number) {
-    await this.infoButton(AssetsButtons.All, uploads).waitFor({ state: 'attached' })
-    await this.infoButton(AssetsButtons.Ready, uploads).waitFor({ state: 'attached' })
-    await this.startImportBtn.click({ delay: 500 })
-    await this.infoButton(AssetsButtons.Ready, uploads).waitFor({ state: 'detached', timeout: 30000 })
-    await this.infoButton(AssetsButtons.Updated, uploads).waitFor({ state: 'attached' })
+  public async clickStartImport() {
+    await this.startImportBtn.click()
   }
 
   public async clickExport() {
@@ -62,7 +58,8 @@ export class ImportAssetsPage extends PageBase {
     const images = (await getAllFiles(path)).filter(image => !image.includes('invalid') && !image.includes('.DS_Store'))
     const filePaths = images.map(file => path + '/' + file)
     await this.uploadFilesInput.setInputFiles(filePaths)
-    await this.clickStartImport(filePaths.length)
+    await this.page.waitForResponse(response => response.url().endsWith('/list') && response.status() === 200)
+    await this.clickStartImport()
     await this.clickClose()
   }
 
