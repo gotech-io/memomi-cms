@@ -223,6 +223,7 @@ export class EditProductPage extends PageBase {
       .filter(image => image.includes(imageMap) && !image.includes('invalid') && !image.includes('.DS_Store'))
       .map(file => path + '/' + file)
     await this.uploadImageInput(uploadImage).setInputFiles(filePaths)
+    await this.page.waitForResponse(response => response.url().includes('api/upload/') && response.status() === 200)
     await this.uploadComplete(uploadImage).waitFor({ state: 'visible' })
   }
 
