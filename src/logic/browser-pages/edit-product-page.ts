@@ -87,8 +87,14 @@ export class EditProductPage extends PageBase {
   }
 
   public async clickSave() {
-    await this.saveBtn.click({ delay: 1000 })
+    await this.saveBtn.click()
+    await this.page.waitForResponse(response => response.url().includes('api/products/update/') && response.status() === 200)
     await this.waitForProductUpdatedAlert()
+  }
+
+  public async clickSaveThenClose() {
+    await this.clickSave()
+    await this.clickClose()
   }
 
   public async clickClose() {
@@ -123,7 +129,6 @@ export class EditProductPage extends PageBase {
     if (await this.trackingSelectStatusMenu.isVisible()) {
       await this.clickSelectStatusMenu()
       await this.productStatusItems(status).click()
-      await this.clickSave()
     }
   }
 
@@ -131,7 +136,6 @@ export class EditProductPage extends PageBase {
     if (await this.trackingSelectPriorityMenu.isVisible()) {
       await this.clickSelectPriorityMenu()
       await this.productPriorityItems(priority).click()
-      await this.clickSave()
     }
   }
 
@@ -139,7 +143,6 @@ export class EditProductPage extends PageBase {
     if (await this.trackingSelectDesignerMenu.isVisible()) {
       await this.clickSelectDesignerMenu()
       await this.productDesignerItems(designer).click()
-      await this.clickSave()
     }
   }
 
@@ -147,7 +150,6 @@ export class EditProductPage extends PageBase {
     if (await this.trackingSelectTagMenu.isVisible()) {
       await this.clickSelectTagMenu()
       await this.productTagItems(tag).click()
-      await this.clickSave()
     }
   }
 
@@ -157,7 +159,6 @@ export class EditProductPage extends PageBase {
 
   public async setMaterialType(type: string) {
     await this.materialType.fill(type)
-    await this.clickSave()
   }
 
   public async getMaterialType() {
@@ -166,7 +167,6 @@ export class EditProductPage extends PageBase {
 
   public async setTeflonId(id: string) {
     await this.teflonId.fill(id)
-    await this.clickSave()
   }
 
   public async getTeflonId() {
@@ -175,7 +175,6 @@ export class EditProductPage extends PageBase {
 
   public async setFrameType(type: string) {
     await this.frameType.fill(type)
-    await this.clickSave()
   }
 
   public async getFrameType() {
@@ -184,7 +183,6 @@ export class EditProductPage extends PageBase {
 
   public async setHingeType(type: string) {
     await this.hingeType.fill(type)
-    await this.clickSave()
   }
 
   public async getHingeType() {
@@ -238,6 +236,7 @@ export class EditProductPage extends PageBase {
       .filter(image => image.includes('.stl') && !image.includes('invalid') && !image.includes('.DS_Store'))
       .map(file => path + '/' + file)
     await this.uploadStlInput(uploadStl).setInputFiles(filePaths)
+    await this.page.waitForResponse(response => response.url().endsWith('/stl') && response.status() === 200)
     await this.uploadComplete(uploadStl).waitFor({ state: 'visible' })
   }
 

@@ -128,7 +128,7 @@ test.describe('Designer test flows', () => {
 
     test('Change product status', async () => {
       await editProductPage.setProductStatus(ProductStatus.InDesign)
-      await editProductPage.clickClose()
+      await editProductPage.clickSaveThenClose()
 
       await walmartGlassesPage.clickRefresh()
 
@@ -142,7 +142,7 @@ test.describe('Designer test flows', () => {
 
     test('Change product priority', async () => {
       await editProductPage.setProductPriority(ProductPriority.P3)
-      await editProductPage.clickClose()
+      await editProductPage.clickSaveThenClose()
 
       await walmartGlassesPage.clickRefresh()
 
@@ -156,7 +156,7 @@ test.describe('Designer test flows', () => {
 
     test('Change product designer', async () => {
       await editProductPage.setProductDesigner('Olga (designer)')
-      await editProductPage.clickClose()
+      await editProductPage.clickSaveThenClose()
 
       await walmartGlassesPage.clickRefresh()
 
@@ -170,7 +170,7 @@ test.describe('Designer test flows', () => {
 
     test('Change product tag', async () => {
       await editProductPage.setProductTag('Need to complete')
-      await editProductPage.clickClose()
+      await editProductPage.clickSaveThenClose()
 
       await walmartGlassesPage.clickRefresh()
 
@@ -225,44 +225,40 @@ test.describe('Designer test flows', () => {
     test('Set material type', async () => {
       await editProductPage.setMaterialType('AUTO_MATERIAL_TYPE')
       const getMaterialType = await editProductPage.getMaterialType()
-      await editProductPage.clickClose()
+      await editProductPage.clickSaveThenClose()
 
       await walmartGlassesPage.clickEditLine(walmartAutoProduct)
       await editProductPage.clickTab(ProductTabs.ItemInfo)
-
       expect.soft(await editProductPage.getMaterialType()).toEqual(getMaterialType)
     })
 
     test('Set teflon id', async () => {
       await editProductPage.setTeflonId('AUTO_TEFLON_ID')
       const getTeflonId = await editProductPage.getTeflonId()
-      await editProductPage.clickClose()
+      await editProductPage.clickSaveThenClose()
 
       await walmartGlassesPage.clickEditLine(walmartAutoProduct)
       await editProductPage.clickTab(ProductTabs.ItemInfo)
-
       expect.soft(await editProductPage.getTeflonId()).toEqual(getTeflonId)
     })
 
     test('Set frame type', async () => {
       await editProductPage.setFrameType('AUTO_FRAME_TYPE')
       const getFrameType = await editProductPage.getFrameType()
-      await editProductPage.clickClose()
+      await editProductPage.clickSaveThenClose()
 
       await walmartGlassesPage.clickEditLine(walmartAutoProduct)
       await editProductPage.clickTab(ProductTabs.ItemInfo)
-
       expect(await editProductPage.getFrameType()).toEqual(getFrameType)
     })
 
     test('Set hinge type', async () => {
       await editProductPage.setHingeType('AUTO_HINGE_TYPE')
       const getHingeType = await editProductPage.getHingeType()
-      await editProductPage.clickClose()
+      await editProductPage.clickSaveThenClose()
 
       await walmartGlassesPage.clickEditLine(walmartAutoProduct)
       await editProductPage.clickTab(ProductTabs.ItemInfo)
-
       expect.soft(await editProductPage.getHingeType()).toEqual(getHingeType)
     })
   })
@@ -271,6 +267,7 @@ test.describe('Designer test flows', () => {
     let productGtin: string
     let productImageMap: { [productFile: string]: string }
     let randomProductFile: ProductFiles
+    let walmartAutoProduct: { text: string; colId: WalmartGlassesColumns }[]
 
     test.beforeEach(async ({ testContext }) => {
       testContext.addTearDownAction(() => {
@@ -285,7 +282,7 @@ test.describe('Designer test flows', () => {
       randomProductFile = getRandomProductFile()
 
       await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGtin)
-      const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
+      walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
       const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
       await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
 
@@ -301,11 +298,18 @@ test.describe('Designer test flows', () => {
     })
 
     test('Upload image', async () => {
+      await editProductPage.clickSaveThenClose()
+      await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+      await editProductPage.clickTab(ProductTabs.Images)
       await expect(editProductPage.isProductImageVisible(productGtin + productImageMap[randomProductFile])).toBeVisible()
     })
 
     test('Delete image', async () => {
       await editProductPage.deleteImage(randomProductFile)
+      await editProductPage.clickSaveThenClose()
+
+      await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+      await editProductPage.clickTab(ProductTabs.Images)
       await expect(editProductPage.isProductImageVisible(productGtin + productImageMap[randomProductFile])).toBeHidden()
     })
 
@@ -340,13 +344,12 @@ test.describe('Designer test flows', () => {
       walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
       await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGtin)
       await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+
       editProductPage = await testContext.getPage(EditProductPage)
       await editProductPage.clickTab(ProductTabs.Model_3D)
       await editProductPage.uploadStl(productGtin)
       fieldLabel = await editProductPage.uploadInput(Product3dModel.STL)
-
-      await editProductPage.clickSave()
-      await editProductPage.clickClose()
+      await editProductPage.clickSaveThenClose()
     })
 
     test('Upload stl', async () => {
