@@ -28,26 +28,31 @@ test.describe('Designer test flows', () => {
   let importAssetsPage: ImportAssetsPage
   let loginApi: UsersApi
   let productsApi: ProductsApi
+  let walmartAutoProduct: { text: string; colId: WalmartGlassesColumns }[]
+  let productGtin: string
 
   test.beforeEach(async ({ testContext }) => {
     loginPage = await testContext.getPage(LoginPage, { shouldNavigate: true })
     await loginPage.performSignIn(configProvider.cmsDesigner, configProvider.cmsPassword)
     dashboardPage = await testContext.getPage(DashboardPage)
+    productGtin = generateProductGtin()
   })
 
   test('All files can be found after unzipping', async ({ testContext }) => {
-    const productGtin = '00010164351979'
+    const specificProductGtin = '00010164351979'
     const productFiles: string[] = JSON.parse(fs.readFileSync(configProvider.walmartAutomationProductFiles, 'utf8')).files
 
     await dashboardPage.clickWalmartGlasses()
 
     walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
-    await walmartGlassesPage.clickCheckRow([{ colId: WalmartGlassesColumns.GTIN, text: productGtin }])
+    await walmartGlassesPage.clickCheckRow([{ colId: WalmartGlassesColumns.GTIN, text: specificProductGtin }])
     await walmartGlassesPage.menuChoice(DropdownItems.ExportAssets)
     const zipFiles = await unzipFiles()
 
     productFiles.forEach(file => {
-      expect.soft(zipFiles.includes(productGtin + '/' + productGtin + file), `The ZIP file does not contain an ${file} file`).toBeTruthy()
+      expect
+        .soft(zipFiles.includes(specificProductGtin + '/' + specificProductGtin + file), `The ZIP file does not contain an ${file} file`)
+        .toBeTruthy()
     })
   })
 
@@ -60,7 +65,6 @@ test.describe('Designer test flows', () => {
     loginApi = await testContext.getApi(UsersApi)
     productsApi = await testContext.getApi(ProductsApi)
 
-    const productGtin = generateProductGtin()
     const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
     await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
 
@@ -101,9 +105,6 @@ test.describe('Designer test flows', () => {
   })
 
   test.describe('Edit product, Tracking values', () => {
-    let productGtin: string
-    let walmartAutoProduct: { text: string; colId: WalmartGlassesColumns }[]
-
     test.beforeEach(async ({ testContext }) => {
       testContext.addTearDownAction(() => {
         return productsApi.deleteProduct(productGtin, loginApiRes.item.token)
@@ -111,7 +112,6 @@ test.describe('Designer test flows', () => {
 
       loginApi = await testContext.getApi(UsersApi)
       productsApi = await testContext.getApi(ProductsApi)
-      productGtin = generateProductGtin()
 
       walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
       const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
@@ -169,9 +169,6 @@ test.describe('Designer test flows', () => {
   })
 
   test.describe('Edit product, Item info values', () => {
-    let productGtin: string
-    let walmartAutoProduct: { text: string; colId: WalmartGlassesColumns }[]
-
     test.beforeEach(async ({ testContext }) => {
       testContext.addTearDownAction(() => {
         return productsApi.deleteProduct(productGtin, loginApiRes.item.token)
@@ -179,7 +176,6 @@ test.describe('Designer test flows', () => {
 
       loginApi = await testContext.getApi(UsersApi)
       productsApi = await testContext.getApi(ProductsApi)
-      productGtin = generateProductGtin()
 
       walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
       const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
@@ -237,10 +233,8 @@ test.describe('Designer test flows', () => {
   })
 
   test.describe('Edit product, Images', () => {
-    let productGtin: string
     let productImageMap: { [productFile: string]: string }
     let randomProductFile: ProductFiles
-    let walmartAutoProduct: { text: string; colId: WalmartGlassesColumns }[]
 
     test.beforeEach(async ({ testContext }) => {
       testContext.addTearDownAction(() => {
@@ -250,7 +244,6 @@ test.describe('Designer test flows', () => {
 
       loginApi = await testContext.getApi(UsersApi)
       productsApi = await testContext.getApi(ProductsApi)
-      productGtin = generateProductGtin()
       productImageMap = Object.fromEntries(Object.entries(ProductFiles).map(([key, value]) => [value, `_${key.toLowerCase()}.jpg`]))
       randomProductFile = getRandomProductFile()
 
@@ -293,9 +286,7 @@ test.describe('Designer test flows', () => {
   })
 
   test.describe('Edit product, 3D Model', () => {
-    let productGtin: string
     let fieldLabel: string
-    let walmartAutoProduct: { text: string; colId: WalmartGlassesColumns }[]
 
     test.beforeEach(async ({ testContext }) => {
       testContext.addTearDownAction(() => {
@@ -305,7 +296,6 @@ test.describe('Designer test flows', () => {
 
       loginApi = await testContext.getApi(UsersApi)
       productsApi = await testContext.getApi(ProductsApi)
-      productGtin = generateProductGtin()
 
       await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGtin)
       walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
