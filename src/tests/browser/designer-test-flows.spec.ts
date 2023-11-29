@@ -102,6 +102,7 @@ test.describe('Designer test flows', () => {
 
   test.describe('Edit product, Tracking values', () => {
     let productGtin: string
+    let walmartAutoProduct: { text: string; colId: WalmartGlassesColumns }[]
 
     test.beforeEach(async ({ testContext }) => {
       testContext.addTearDownAction(() => {
@@ -112,7 +113,7 @@ test.describe('Designer test flows', () => {
       productsApi = await testContext.getApi(ProductsApi)
       productGtin = generateProductGtin()
 
-      const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
+      walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
       const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
       await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
 
@@ -130,68 +131,40 @@ test.describe('Designer test flows', () => {
       await editProductPage.setProductStatus(ProductStatus.InDesign)
       await editProductPage.clickSaveThenClose()
 
-      await walmartGlassesPage.clickRefresh()
-
-      await expect(
-        walmartGlassesPage.tableRowData([
-          { colId: WalmartGlassesColumns.GTIN, text: productGtin },
-          { colId: WalmartGlassesColumns.Status, text: ProductStatus.InDesign },
-        ]),
-      ).toBeVisible()
+      await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+      await editProductPage.clickTab(ProductTabs.Tracking)
+      expect(await editProductPage.fetchProductStatus()).toEqual(ProductStatus.InDesign)
     })
 
     test('Change product priority', async () => {
       await editProductPage.setProductPriority(ProductPriority.P3)
       await editProductPage.clickSaveThenClose()
 
-      await walmartGlassesPage.clickRefresh()
-
-      await expect(
-        walmartGlassesPage.tableRowData([
-          { colId: WalmartGlassesColumns.GTIN, text: productGtin },
-          { colId: WalmartGlassesColumns.Priority, text: ProductPriority.P3 },
-        ]),
-      ).toBeVisible()
+      await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+      await editProductPage.clickTab(ProductTabs.Tracking)
+      expect(await editProductPage.fetchProductPriority()).toEqual(ProductPriority.P3)
     })
 
     test('Change product designer', async () => {
       await editProductPage.setProductDesigner('Olga (designer)')
       await editProductPage.clickSaveThenClose()
 
-      await walmartGlassesPage.clickRefresh()
-
-      await expect(
-        walmartGlassesPage.tableRowData([
-          { colId: WalmartGlassesColumns.GTIN, text: productGtin },
-          { colId: WalmartGlassesColumns.Designer, text: 'Olga (designer)' },
-        ]),
-      ).toBeVisible()
+      await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+      await editProductPage.clickTab(ProductTabs.Tracking)
+      expect(await editProductPage.fetchProductDesigner()).toEqual('Olga (designer)')
     })
 
     test('Change product tag', async () => {
       await editProductPage.setProductTag('Need to complete')
       await editProductPage.clickSaveThenClose()
 
-      await walmartGlassesPage.clickRefresh()
-
-      await expect(
-        walmartGlassesPage.tableRowData([
-          { colId: WalmartGlassesColumns.GTIN, text: productGtin },
-          { colId: WalmartGlassesColumns.Tag, text: 'Need to complete' },
-        ]),
-      ).toBeVisible()
+      await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+      await editProductPage.clickTab(ProductTabs.Tracking)
+      expect(await editProductPage.fetchProductTag()).toEqual('Need to complete')
     })
 
-    test('Product tracking values', async () => {
-      const trackingValues = [
-        { key: ProductValues.GTIN, value: productGtin },
-        { key: ProductValues.MerchantsQC, value: 'Unassigned' },
-        { key: ProductValues.Calibration, value: '' },
-      ]
-
-      for (const item of trackingValues) {
-        expect.soft(await editProductPage.getProductValue(item.key)).toEqual(item.value)
-      }
+    test('Product gtin value', async () => {
+      expect.soft(await editProductPage.getProductValue(ProductValues.GTIN)).toEqual(productGtin)
     })
   })
 

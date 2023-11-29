@@ -56,6 +56,10 @@ export class EditProductPage extends PageBase {
   private frameType: Locator
   private hingeType: Locator
   private productUpdatedAlert: Locator
+  private productStatusValue: Locator
+  private productPriorityValue: Locator
+  private productDesignerValue: Locator
+  private productTagValue: Locator
 
   constructor(page: Page) {
     super(page)
@@ -71,6 +75,10 @@ export class EditProductPage extends PageBase {
     this.frameType = page.locator("//input[@id='text-form-frameType']")
     this.hingeType = page.locator("//input[@id='text-form-hingeType']")
     this.productUpdatedAlert = page.locator("//div[contains(@class, 'message css') and text()='Product updated']")
+    this.productStatusValue = page.locator("//div[./div[@id='status-select-status']]//input[@name='status']")
+    this.productPriorityValue = page.locator("//div[./div[@id='value-list-select-priority']]//input[@name='priority']")
+    this.productDesignerValue = page.locator("//div[./div[@id='outlined-adornment-designer']]//input[@name='designer']")
+    this.productTagValue = page.locator("//div[./div[@id='value-list-select-tag']]//input[@name='tag']")
   }
 
   async initPage(): Promise<void> {
@@ -109,16 +117,32 @@ export class EditProductPage extends PageBase {
     await this.trackingSelectStatusMenu.click()
   }
 
+  public async fetchProductStatus() {
+    return this.productStatusValue.getAttribute('value')
+  }
+
   public async clickSelectPriorityMenu() {
     await this.trackingSelectPriorityMenu.click()
+  }
+
+  public async fetchProductPriority() {
+    return this.productPriorityValue.getAttribute('value')
   }
 
   public async clickSelectDesignerMenu() {
     await this.trackingSelectDesignerMenu.click()
   }
 
+  public async fetchProductDesigner() {
+    return this.productDesignerValue.getAttribute('value')
+  }
+
   public async clickSelectTagMenu() {
     await this.trackingSelectTagMenu.click()
+  }
+
+  public async fetchProductTag() {
+    return this.productTagValue.getAttribute('value')
   }
 
   public async getProductValue(item: ProductValues) {
