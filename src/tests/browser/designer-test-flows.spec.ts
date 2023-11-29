@@ -67,10 +67,9 @@ test.describe('Designer test flows', () => {
 
     const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
     await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
-
-    await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGtin)
     const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
 
+    await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGtin)
     const files = await getAllFiles(configProvider.walmartAutomationGeneratePath + productGtin + '/')
     const images = files.filter(image => image.includes('.jpg') && !image.includes('invalid'))
 
@@ -112,8 +111,8 @@ test.describe('Designer test flows', () => {
 
       loginApi = await testContext.getApi(UsersApi)
       productsApi = await testContext.getApi(ProductsApi)
-
       walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
+
       const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
       await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
 
@@ -176,8 +175,8 @@ test.describe('Designer test flows', () => {
 
       loginApi = await testContext.getApi(UsersApi)
       productsApi = await testContext.getApi(ProductsApi)
-
       walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
+
       const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
       await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
 
@@ -244,11 +243,11 @@ test.describe('Designer test flows', () => {
 
       loginApi = await testContext.getApi(UsersApi)
       productsApi = await testContext.getApi(ProductsApi)
+      walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
       productImageMap = Object.fromEntries(Object.entries(ProductFiles).map(([key, value]) => [value, `_${key.toLowerCase()}.jpg`]))
       randomProductFile = getRandomProductFile()
 
       await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGtin)
-      walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
       const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
       await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
 
@@ -296,9 +295,9 @@ test.describe('Designer test flows', () => {
 
       loginApi = await testContext.getApi(UsersApi)
       productsApi = await testContext.getApi(ProductsApi)
+      walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
 
       await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGtin)
-      walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
       const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
       await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
 
