@@ -44,6 +44,16 @@ export class EditProductPage extends PageBase {
 
   private fieldInput = (file: ProductFiles | Product3dModel) => this.page.locator(`//div[./h6[text()='${file}']]//input[@id='filled-helperText']`)
 
+  private getComment = (comment: string) =>
+    this.page.locator(
+      `//div[contains(@class, 'MuiBox-root css')]//div[contains(@class, 'MuiGrid-container MuiGrid-spacing-xs-0')]//div[text()='${comment}']`,
+    )
+
+  private deleteCommentBtn = (comment: string) =>
+    this.page.locator(
+      `//div[contains(@class, 'MuiBox-root css')]//div[contains(@class, 'MuiGrid-container MuiGrid-spacing-xs-0') and ./div//div[text()='${comment}']]//button`,
+    )
+
   private saveBtn: Locator
   private closeBtn: Locator
   private unlockBtn: Locator
@@ -60,6 +70,12 @@ export class EditProductPage extends PageBase {
   private productPriorityValue: Locator
   private productDesignerValue: Locator
   private productTagValue: Locator
+  private commentsBtn: Locator
+  private addCommentBtn: Locator
+  private addCommentInput: Locator
+  private addBtn: Locator
+  private numComment: Locator
+  private commentDeleted: Locator
 
   constructor(page: Page) {
     super(page)
@@ -79,6 +95,12 @@ export class EditProductPage extends PageBase {
     this.productPriorityValue = page.locator("//div[./div[@id='value-list-select-priority']]//input[@name='priority']")
     this.productDesignerValue = page.locator("//div[./div[@id='outlined-adornment-designer']]//input[@name='designer']")
     this.productTagValue = page.locator("//div[./div[@id='value-list-select-tag']]//input[@name='tag']")
+    this.commentsBtn = page.locator("//button[@aria-label='Comments']")
+    this.addCommentBtn = page.locator("//button[text()='Add Comment']")
+    this.addCommentInput = page.locator("//input[@placeholder='Add comment']")
+    this.addBtn = page.locator("//button[text()='Add']")
+    this.numComment = this.commentsBtn.locator('//span[text()]')
+    this.commentDeleted = page.locator("//div//span[text()='Comment deleted ']")
   }
 
   async initPage(): Promise<void> {
@@ -227,7 +249,7 @@ export class EditProductPage extends PageBase {
 
   public async deleteFile(file: ProductFiles | Product3dModel) {
     await this.deleteFileBtn(file).click()
-    await this.uploadComplete(file).waitFor({ state: 'detached' }) // Fixme: A real bug with a low priority.
+    await this.uploadComplete(file).waitFor({ state: 'detached' }) // Todo: A real bug with a low priority.
   }
 
   public async openInANewTab(image: ProductFiles) {
@@ -263,5 +285,32 @@ export class EditProductPage extends PageBase {
 
   public async uploadInput(file: ProductFiles | Product3dModel) {
     return String(await this.fieldInput(file).getAttribute('value'))
+  }
+
+  public async addComment(comment: string) {
+    if (!(await this.addCommentBtn.isVisible())) {
+      await this.commentsBtn.click()
+    }
+    await this.addCommentBtn.click()
+    await this.addCommentInput.fill(comment)
+    await this.addBtn.click()
+  }
+
+  public isCommentVisible(comment: string) {
+    return this.getComment(comment)
+  }
+
+  public async fetchComments() {
+    const comment = await this.numComment.textContent()
+    return comment !== null ? parseInt(comment, 10) : undefined
+  }
+
+  public async deleteComment(comment: string) {
+    await this.deleteCommentBtn(comment).click()
+    await this.commentDeleted.waitFor({ state: 'attached' })
+  }
+
+  public isCommentDeleted() {
+    return this.commentDeleted
   }
 }

@@ -329,4 +329,43 @@ test.describe('Designer test flows', () => {
       expect(await editProductPage.uploadInput(Product3dModel.STL)).toEqual('')
     })
   })
+
+  test.describe('Edit product, Validation', () => {
+    const fillComment: string = 'Automation comment'
+
+    test.beforeEach(async ({ testContext }) => {
+      testContext.addTearDownAction(() => {
+        return productsApi.deleteProduct(productGtin, loginApiRes.item.token)
+      })
+
+      loginApi = await testContext.getApi(UsersApi)
+      productsApi = await testContext.getApi(ProductsApi)
+      walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
+
+      const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+      await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
+
+      await dashboardPage.clickWalmartGlasses()
+
+      walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
+      await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGtin)
+      await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+
+      editProductPage = await testContext.getPage(EditProductPage)
+      await editProductPage.clickTab(ProductTabs.Validation)
+      await editProductPage.addComment(fillComment)
+    })
+
+    test('Add comment', async () => {
+      await expect.soft(editProductPage.isCommentVisible(fillComment)).toBeVisible()
+      expect.soft(await editProductPage.fetchComments()).toEqual(1)
+    })
+
+    test('Delete comment', async () => {
+      await editProductPage.deleteComment(fillComment)
+      await expect.soft(editProductPage.isCommentVisible(fillComment)).toBeHidden()
+      await expect.soft(editProductPage.isCommentDeleted()).toBeVisible()
+      expect.soft(await editProductPage.fetchComments()).toEqual(0) // Todo: A real bug with a low priority.
+    })
+  })
 })
