@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@testomate/framework": "0.0.26",
+    "csv-writer": "^1.6.0",
     "dotenv": "^16.3.1",
     "drizzle-orm": "0.28.6",
     "envalid": "^7.3.1",
