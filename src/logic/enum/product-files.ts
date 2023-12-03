@@ -13,3 +13,7 @@ export const getRandomProductFile = (): ProductFiles => {
   const randomIndex = Math.floor(Math.random() * productFilesValues.length)
   return productFilesValues[randomIndex]
 }
+
+export const getProductFilesList = (): ProductFiles[] => {
+  return Object.values(ProductFiles)
+}

@@ -17,8 +17,9 @@ import { productRequest } from '../../logic/api/request/product-request.js'
 import { ProductStatus } from '../../logic/enum/product-status.js'
 import { ProductPriority } from '../../logic/enum/product-priority.js'
 import { ProductValues } from '../../logic/enum/product-values.js'
-import { getRandomProductFile, ProductFiles } from '../../logic/enum/product-files.js'
+import { getProductFilesList, getRandomProductFile, ProductFiles } from '../../logic/enum/product-files.js'
 import { Product3dModel } from '../../logic/enum/product-3d-model.js'
+import { ExportAssetsPopup } from '../../logic/browser-pages/export-assets-popup.js'
 
 test.describe('Designer test flows', () => {
   let loginPage: LoginPage
@@ -47,6 +48,10 @@ test.describe('Designer test flows', () => {
       walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
       await walmartGlassesPage.clickCheckRow([{ colId: WalmartGlassesColumns.GTIN, text: specificProductGtin }])
       await walmartGlassesPage.menuChoice(DropdownItems.ExportAssets)
+
+      const exportAssetsPopup = await testContext.getPage(ExportAssetsPopup)
+      const selectAssets = [...getProductFilesList(), Product3dModel.STL]
+      await exportAssetsPopup.selectAssets(selectAssets)
       const zipFiles = await unzipFiles()
 
       productFiles.forEach(file => {
