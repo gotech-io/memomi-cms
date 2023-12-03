@@ -21,6 +21,8 @@ export class EditProductPage extends PageBase {
   private productValue = (value: ProductValues) =>
     this.page.locator(`//div[contains(@class, 'MuiGrid-grid-md-6 css-iol86l') and ./h6[text()='${value}']]//h6[2]`)
 
+  private productInputValue = (value: ProductValues) => this.page.locator(`//div[./label[text()='${value}']]//input`)
+
   private productDesignerItems = (designer: string) =>
     this.page.locator(`//ul[@aria-labelledby='outlined-adornment-user']//li[@data-value='${designer}']`)
 
@@ -169,6 +171,11 @@ export class EditProductPage extends PageBase {
 
   public async getProductValue(item: ProductValues) {
     return await this.productValue(item).textContent()
+  }
+
+  public async getProductInputValue(item: ProductValues) {
+    const attributeValue = await this.productInputValue(item).getAttribute('value')
+    return attributeValue !== null ? parseInt(attributeValue, 10) : undefined
   }
 
   public async setProductStatus(status: ProductStatus) {

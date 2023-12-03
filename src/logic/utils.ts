@@ -5,6 +5,8 @@ import * as path from 'path'
 import AdmZip from 'adm-zip'
 import { promisify } from 'util'
 import { configProvider } from '../config/index.js'
+import { createObjectCsvWriter } from 'csv-writer'
+import { CSVData, CSVHeader } from './enum/csv-types.js'
 
 export const delay = async (ms: number) => {
   return new Promise(resolve => setTimeout(resolve, ms))
@@ -133,4 +135,19 @@ export const waitForStringInResult = async <T>(action: () => Promise<T>, expecte
     }
   }
   return actualResult
+}
+
+export const createCSV = async (csvFilePath: string, csvHeader: CSVHeader[], CSVData: CSVData[]) => {
+  const fullCsvFilePath = `downloads/${csvFilePath}/${csvFilePath}.csv`
+  const directoryPath = path.dirname(fullCsvFilePath)
+
+  if (!fs.existsSync(directoryPath)) fs.mkdirSync(directoryPath, { recursive: true })
+
+  const csvWriter = createObjectCsvWriter({
+    path: fullCsvFilePath,
+    header: csvHeader,
+    append: false,
+  })
+
+  await csvWriter.writeRecords(CSVData)
 }
