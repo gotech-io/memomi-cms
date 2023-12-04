@@ -249,6 +249,7 @@ export class EditProductPage extends PageBase {
   public async uploadImage(uploadImage: ProductFiles, gtin: string, prefix: string) {
     const path = configProvider.walmartAutomationGeneratePath + gtin + '/'
     const filePaths = (await getAllFiles(path)).filter(image => image.includes(prefix)).map(file => path + '/' + file)
+    if (filePaths.length > 1) throw new Error(`Upload file: ${filePaths}, Non-multiple file input can only accept single file.`)
     await this.uploadImageInput(uploadImage).setInputFiles(filePaths)
     await this.page.waitForResponse(response => response.url().includes('api/upload/') && response.status() === 200)
     await this.uploadComplete(uploadImage).waitFor({ state: 'visible' })
@@ -257,6 +258,10 @@ export class EditProductPage extends PageBase {
   public async deleteFile(file: ProductFiles | Product3dModel) {
     await this.deleteFileBtn(file).click()
     await this.uploadComplete(file).waitFor({ state: 'detached' }) // Todo: A real bug with a low priority.
+  }
+
+  public isUploadCompleteVisible(file: ProductFiles | Product3dModel) {
+    return this.uploadComplete(file)
   }
 
   public async openInANewTab(image: ProductFiles) {

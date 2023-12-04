@@ -266,6 +266,9 @@ test.describe('Designer test flows', () => {
     })
 
     test('Delete image', async () => {
+      await editProductPage.clickSaveThenClose()
+      await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+      await editProductPage.clickTab(ProductTabs.Images)
       await editProductPage.deleteFile(randomProductFile)
       await editProductPage.clickSaveThenClose()
 
@@ -277,6 +280,11 @@ test.describe('Designer test flows', () => {
     test('Open image in a new tab', async () => {
       await editProductPage.openInANewTab(randomProductFile)
       expect(await editProductPage.fetchTabUrls()).toContain(await editProductPage.imageNewTabUrl(randomProductFile))
+    })
+
+    test('Upload image loader', async () => {
+      await editProductPage.deleteFile(randomProductFile)
+      await expect(editProductPage.isUploadCompleteVisible(randomProductFile)).toBeHidden()
     })
   })
 
@@ -305,22 +313,30 @@ test.describe('Designer test flows', () => {
       await editProductPage.clickTab(ProductTabs.Model_3D)
       await editProductPage.uploadStl(productGtin)
       fieldLabel = await editProductPage.uploadInput(Product3dModel.STL)
-      await editProductPage.clickSaveThenClose()
-      await walmartGlassesPage.clickEditLine(walmartAutoProduct)
-      await editProductPage.clickTab(ProductTabs.Model_3D)
     })
 
     test('Upload stl', async () => {
+      await editProductPage.clickSaveThenClose()
+      await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+      await editProductPage.clickTab(ProductTabs.Model_3D)
       expect(await editProductPage.uploadInput(Product3dModel.STL)).toEqual(fieldLabel)
     })
 
     test('Delete stl', async () => {
+      await editProductPage.clickSaveThenClose()
+      await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+      await editProductPage.clickTab(ProductTabs.Model_3D)
       await editProductPage.deleteFile(Product3dModel.STL)
       await editProductPage.clickSaveThenClose()
 
       await walmartGlassesPage.clickEditLine(walmartAutoProduct)
       await editProductPage.clickTab(ProductTabs.Model_3D)
       expect(await editProductPage.uploadInput(Product3dModel.STL)).toEqual('')
+    })
+
+    test('Upload stl loader', async () => {
+      await editProductPage.deleteFile(Product3dModel.STL)
+      await expect(editProductPage.isUploadCompleteVisible(Product3dModel.STL)).toBeHidden()
     })
   })
 
