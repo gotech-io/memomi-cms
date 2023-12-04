@@ -35,8 +35,9 @@ test.describe('Admin test flows', () => {
 
   test.describe('Import values from CSV file', () => {
     const IOSRotation = {
-      [ProductValues.IOSRotationX]: 10,
+      [ProductValues.IOSRotationX]: 3,
       [ProductValues.IOSRotationY]: 5,
+      [ProductValues.IOSRotationZ]: 10,
     }
 
     test.beforeEach(async ({ testContext }) => {
@@ -58,12 +59,14 @@ test.describe('Admin test flows', () => {
           { id: ProductValues.GTIN, title: ProductValues.GTIN },
           { id: ProductValues.IOSRotationX, title: ProductValues.IOSRotationX },
           { id: ProductValues.IOSRotationY, title: ProductValues.IOSRotationY },
+          { id: ProductValues.IOSRotationZ, title: ProductValues.IOSRotationZ },
         ],
         [
           {
             [ProductValues.GTIN]: productGtin,
             [ProductValues.IOSRotationX]: IOSRotation[ProductValues.IOSRotationX],
             [ProductValues.IOSRotationY]: IOSRotation[ProductValues.IOSRotationY],
+            [ProductValues.IOSRotationZ]: IOSRotation[ProductValues.IOSRotationZ],
           },
         ],
       )
@@ -84,6 +87,7 @@ test.describe('Admin test flows', () => {
     test('Import CSV file & Edit product value', async () => {
       expect.soft(await editProductPage.getProductInputValue(ProductValues.IOSRotationX)).toEqual(IOSRotation[ProductValues.IOSRotationX])
       expect.soft(await editProductPage.getProductInputValue(ProductValues.IOSRotationY)).toEqual(IOSRotation[ProductValues.IOSRotationY])
+      expect.soft(await editProductPage.getProductInputValue(ProductValues.IOSRotationZ)).toEqual(IOSRotation[ProductValues.IOSRotationZ])
     })
   })
 })
