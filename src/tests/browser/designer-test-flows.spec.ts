@@ -376,4 +376,36 @@ test.describe('Designer test flows', () => {
       expect.soft(await editProductPage.fetchComments()).toEqual(0) // Todo: A real bug with a low priority.
     })
   })
+
+  test.describe('Edit product, Timeline', () => {
+    const actualStatus = ProductStatus.Unassigned
+    const updateStatus = ProductStatus.InDesign
+
+    test.beforeEach(async ({ testContext }) => {
+      testContext.addTearDownAction(() => {
+        return productsApi.deleteProduct(productGtin, loginApiRes.item.token)
+      })
+
+      loginApi = await testContext.getApi(UsersApi)
+      productsApi = await testContext.getApi(ProductsApi)
+      walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
+
+      const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+      await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
+
+      walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
+      await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGtin)
+      await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+
+      editProductPage = await testContext.getPage(EditProductPage)
+      await editProductPage.clickTab(ProductTabs.Tracking)
+    })
+
+    test('Timeline, Status changed', async () => {
+      await editProductPage.setProductStatus(updateStatus)
+      await editProductPage.clickSave()
+      await editProductPage.clickTab(ProductTabs.Timeline)
+      expect(await editProductPage.isTimelineStatusChanged(actualStatus, updateStatus)).toBeTruthy()
+    })
+  })
 })

@@ -56,6 +56,9 @@ export class EditProductPage extends PageBase {
       `//div[contains(@class, 'MuiBox-root css')]//div[contains(@class, 'MuiGrid-container MuiGrid-spacing-xs-0') and ./div//div[text()='${comment}']]//button`,
     )
 
+  private timelineStatusChanged = (fromStatus: ProductStatus, toStatus: ProductStatus) =>
+    this.page.locator(`//div[./h1[text()='Status changed'] and ./p[text()="Changed from '${fromStatus}' to '${toStatus}'"]]`)
+
   private saveBtn: Locator
   private closeBtn: Locator
   private unlockBtn: Locator
@@ -147,7 +150,7 @@ export class EditProductPage extends PageBase {
   }
 
   public async fetchProductStatus() {
-    return this.productStatusValue.getAttribute('value')
+    return await this.productStatusValue.getAttribute('value')
   }
 
   public async clickSelectPriorityMenu() {
@@ -155,7 +158,7 @@ export class EditProductPage extends PageBase {
   }
 
   public async fetchProductPriority() {
-    return this.productPriorityValue.getAttribute('value')
+    return await this.productPriorityValue.getAttribute('value')
   }
 
   public async clickSelectDesignerMenu() {
@@ -163,7 +166,7 @@ export class EditProductPage extends PageBase {
   }
 
   public async fetchProductDesigner() {
-    return this.productDesignerValue.getAttribute('value')
+    return await this.productDesignerValue.getAttribute('value')
   }
 
   public async clickSelectTagMenu() {
@@ -171,7 +174,7 @@ export class EditProductPage extends PageBase {
   }
 
   public async fetchProductTag() {
-    return this.productTagValue.getAttribute('value')
+    return await this.productTagValue.getAttribute('value')
   }
 
   public async getProductValue(item: ProductValues) {
@@ -328,5 +331,9 @@ export class EditProductPage extends PageBase {
 
   public isCommentDeleted() {
     return this.commentDeleted
+  }
+
+  public async isTimelineStatusChanged(fromStatus: ProductStatus, toStatus: ProductStatus) {
+    return this.timelineStatusChanged(fromStatus, toStatus).isVisible()
   }
 }
