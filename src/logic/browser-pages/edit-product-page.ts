@@ -120,7 +120,12 @@ export class EditProductPage extends PageBase {
 
   public async clickSave() {
     await this.saveBtn.click()
-    await this.page.waitForResponse(response => response.url().includes('api/products/update/') && response.status() === 200)
+    await this.page.waitForResponse(
+      response => response.url().includes('/api/products/') && response.status() === 200 && response.request().method() === 'GET',
+    )
+    await this.page.waitForResponse(
+      response => response.url().includes('/api/products/update/') && response.status() === 200 && response.request().method() === 'PUT',
+    )
     await this.waitForProductUpdatedAlert()
   }
 
@@ -248,14 +253,14 @@ export class EditProductPage extends PageBase {
 
   public async uploadImage(uploadImage: ProductFiles, gtin: string, prefix: string) {
     const path = configProvider.walmartAutomationGeneratePath + gtin + '/'
-    const filePaths = (await getAllFiles(path)).filter(image => image.includes(prefix)).map(file => path + '/' + file)
-    if (filePaths.length > 1) throw new Error(`Upload file: ${filePaths}, Non-multiple file input can only accept single file.`)
+    const filePaths = (await getAllFiles(path)).filter(image => image.includes(prefix) && !image.includes('invalid')).map(file => path + '/' + file)
     await this.uploadImageInput(uploadImage).setInputFiles(filePaths)
     await this.page.waitForResponse(response => response.url().includes('api/upload/') && response.status() === 200)
     await this.uploadComplete(uploadImage).waitFor({ state: 'visible' })
   }
 
   public async deleteFile(file: ProductFiles | Product3dModel) {
+    await this.deleteFileBtn(file).hover()
     await this.deleteFileBtn(file).click()
     await this.uploadComplete(file).waitFor({ state: 'detached' }) // Todo: A real bug with a low priority.
   }

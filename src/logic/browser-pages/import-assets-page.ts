@@ -13,14 +13,14 @@ export class ImportAssetsPage extends PageBase {
   private infoButton = (button: AssetsButtons, uploads: number) => this.page.locator(`//button[text()='${button} (${uploads})']`)
 
   private uploadFilesInput: Locator
-  private startImportBtn: Locator
+  private startBtn: Locator
   private exportBtn: Locator
   private closeBtn: Locator
 
   constructor(page: Page) {
     super(page)
     this.uploadFilesInput = page.locator("//input[@type='file']")
-    this.startImportBtn = page.locator("//button[text()='Start Import']")
+    this.startBtn = page.locator("//button[text()='Start']")
     this.exportBtn = page.locator("//button[text()='Export']")
     this.closeBtn = page.locator("//button[text()='Close']")
   }
@@ -36,8 +36,8 @@ export class ImportAssetsPage extends PageBase {
     return this.baseUrl
   }
 
-  public async clickStartImport() {
-    await this.startImportBtn.click()
+  public async clickStart() {
+    await this.startBtn.click()
   }
 
   public async clickExport() {
@@ -59,7 +59,7 @@ export class ImportAssetsPage extends PageBase {
     const filePaths = images.map(file => path + '/' + file)
     await this.uploadFilesInput.setInputFiles(filePaths)
     await this.page.waitForResponse(response => response.url().endsWith('/list') && response.status() === 200)
-    await this.clickStartImport()
+    await this.clickStart()
     await this.clickClose()
   }
 

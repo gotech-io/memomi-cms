@@ -5,7 +5,7 @@ import { getAllFiles } from '../utils.js'
 
 export class ImportProductsPage extends PageBase {
   private uploadFilesInput: Locator
-  private startImportBtn: Locator
+  private startBtn: Locator
   private closeBtn: Locator
   private loadedColumns: Locator
   private selectedColumns: Locator
@@ -15,7 +15,7 @@ export class ImportProductsPage extends PageBase {
   constructor(page: Page) {
     super(page)
     this.uploadFilesInput = page.locator("//input[@type='file']")
-    this.startImportBtn = page.locator("//button[text()='Start Import']")
+    this.startBtn = page.locator("//button[text()='Start']")
     this.closeBtn = page.locator("//button[text()='Close']")
     this.loadedColumns = page.locator("//div[contains(@class, 'MuiCardHeader') and ./div//span[text()='Loaded Columns']]//input")
     this.selectedColumns = page.locator("//div[contains(@class, 'MuiCardHeader') and ./div//span[text()='Selected Columns']]//input")
@@ -32,8 +32,8 @@ export class ImportProductsPage extends PageBase {
     return this.baseUrl
   }
 
-  public async clickStartImport() {
-    await this.startImportBtn.click()
+  public async clickStart() {
+    await this.startBtn.click()
   }
 
   public async clickClose() {
@@ -52,7 +52,7 @@ export class ImportProductsPage extends PageBase {
     await this.selectedColumns.click()
     await this.nextBtn.click()
 
-    await this.clickStartImport()
+    await this.clickStart()
     await this.clickClose()
   }
 }
