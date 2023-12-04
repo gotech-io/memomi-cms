@@ -260,7 +260,6 @@ export class EditProductPage extends PageBase {
   }
 
   public async deleteFile(file: ProductFiles | Product3dModel) {
-    await this.deleteFileBtn(file).hover()
     await this.deleteFileBtn(file).click()
     await this.uploadComplete(file).waitFor({ state: 'detached' }) // Todo: A real bug with a low priority.
   }

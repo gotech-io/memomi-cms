@@ -73,6 +73,9 @@ export class WalmartGlassesPage extends PageBase {
 
   public async clickEditLine(columns: { colId: WalmartGlassesColumns; text: string }[]) {
     await this.page.locator(buildRowLocator(columns) + "//button[@aria-label='Edit']").click()
+    await this.page.waitForResponse(
+      response => response.url().includes('/api/products/') && response.status() === 200 && response.request().method() === 'GET',
+    )
   }
 
   public async fillSearchFreeText(text: string) {
