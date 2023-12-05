@@ -45,7 +45,13 @@ export class ImportProductsPage extends PageBase {
     const files = (await getAllFiles(path)).filter(image => image.includes('.csv'))
     const filePaths = files.map(file => path + '/' + file)
 
-    await this.page.waitForResponse(response => response.url().includes('/api') && response.status() === 200)
+    await this.page.waitForResponse(
+      response =>
+        response.url().includes('https://cmsdevserverapi.azurewebsites.net/api/schema/') &&
+        response.status() === 200 &&
+        response.request().method() == 'GET',
+    )
+
     await this.uploadFilesInput.setInputFiles(filePaths)
     await this.loadedColumns.click()
     await this.addBtn.click()
