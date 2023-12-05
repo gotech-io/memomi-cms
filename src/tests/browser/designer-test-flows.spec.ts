@@ -20,6 +20,7 @@ import { ProductValues } from '../../logic/enum/product-values.js'
 import { getProductFilesList, getRandomProductFile, ProductFiles } from '../../logic/enum/product-files.js'
 import { Product3dModel } from '../../logic/enum/product-3d-model.js'
 import { ExportAssetsPopup } from '../../logic/browser-pages/export-assets-popup.js'
+import { LoginResponse } from '../../logic/api/response/login-response.js'
 
 test.describe('Designer test flows', () => {
   let loginPage: LoginPage
@@ -28,6 +29,7 @@ test.describe('Designer test flows', () => {
   let editProductPage: EditProductPage
   let importAssetsPage: ImportAssetsPage
   let loginApi: UsersApi
+  let loginApiRes: LoginResponse
   let productsApi: ProductsApi
   let walmartAutoProduct: { text: string; colId: WalmartGlassesColumns }[]
   let productGtin: string
@@ -75,7 +77,7 @@ test.describe('Designer test flows', () => {
       loginApi = await testContext.getApi(UsersApi)
       productsApi = await testContext.getApi(ProductsApi)
 
-      const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+      loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
       await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
       const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
 
@@ -120,7 +122,7 @@ test.describe('Designer test flows', () => {
       productsApi = await testContext.getApi(ProductsApi)
       walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
 
-      const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+      loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
       await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
 
       walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
@@ -168,7 +170,7 @@ test.describe('Designer test flows', () => {
     })
 
     test('Product gtin value', async () => {
-      expect.soft(await editProductPage.getProductValue(ProductValues.GTIN)).toEqual(productGtin)
+      expect(await editProductPage.getProductValue(ProductValues.GTIN)).toEqual(productGtin)
     })
   })
 
@@ -182,7 +184,7 @@ test.describe('Designer test flows', () => {
       productsApi = await testContext.getApi(ProductsApi)
       walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
 
-      const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+      loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
       await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
 
       walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
@@ -251,7 +253,7 @@ test.describe('Designer test flows', () => {
       randomProductFile = getRandomProductFile()
 
       await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGtin)
-      const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+      loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
       await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
 
       walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
@@ -307,7 +309,7 @@ test.describe('Designer test flows', () => {
       walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
 
       await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGtin)
-      const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+      loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
       await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
 
       walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
@@ -347,6 +349,8 @@ test.describe('Designer test flows', () => {
 
   test.describe('Edit product, Validation', () => {
     const fillComment: string = 'Automation comment'
+    let productImageMap: { [productFile: string]: string }
+    let randomProductFile: ProductFiles
 
     test.beforeEach(async ({ testContext }) => {
       testContext.addTearDownAction(() => {
@@ -357,7 +361,10 @@ test.describe('Designer test flows', () => {
       productsApi = await testContext.getApi(ProductsApi)
       walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
 
-      const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+      productImageMap = Object.fromEntries(Object.entries(ProductFiles).map(([key, value]) => [value, `_${key.toLowerCase()}.jpg`]))
+      randomProductFile = getRandomProductFile()
+
+      loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
       await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
 
       walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
@@ -366,19 +373,45 @@ test.describe('Designer test flows', () => {
 
       editProductPage = await testContext.getPage(EditProductPage)
       await editProductPage.clickTab(ProductTabs.Validation)
-      await editProductPage.addComment(fillComment)
     })
 
     test('Add comment', async () => {
+      await editProductPage.addComment(fillComment)
       await expect.soft(editProductPage.isCommentVisible(fillComment)).toBeVisible()
       expect.soft(await editProductPage.fetchComments()).toEqual(1)
     })
 
     test('Delete comment', async () => {
+      await editProductPage.addComment(fillComment)
       await editProductPage.deleteComment(fillComment)
       await expect.soft(editProductPage.isCommentVisible(fillComment)).toBeHidden()
       await expect.soft(editProductPage.isCommentDeleted()).toBeVisible()
       expect.soft(await editProductPage.fetchComments()).toEqual(0) // Todo: A real bug with a low priority.
+    })
+
+    test('Comments container visibility', async () => {
+      expect(await editProductPage.isCommentsContainerVisible()).toBeTruthy()
+    })
+
+    test('Status container visibility', async () => {
+      expect(await editProductPage.isStatusContainerVisible()).toBeTruthy()
+    })
+
+    test('Full Screen container visibility', async () => {
+      expect(await editProductPage.isFullScreenContainerVisible()).toBeTruthy()
+    })
+
+    test('Images container visibility', async ({ testContext }) => {
+      testContext.addTearDownAction(async () => {
+        await deleteFolder(configProvider.walmartAutomationGeneratePath + productGtin)
+      })
+
+      await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGtin)
+      await editProductPage.clickTab(ProductTabs.Images)
+      await editProductPage.uploadImage(randomProductFile, productGtin, productImageMap[randomProductFile])
+      await editProductPage.clickSave()
+      await editProductPage.clickTab(ProductTabs.Validation)
+      expect(await editProductPage.isImagesContainerVisible()).toBeTruthy()
     })
   })
 
@@ -395,7 +428,7 @@ test.describe('Designer test flows', () => {
       productsApi = await testContext.getApi(ProductsApi)
       walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
 
-      const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+      loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
       await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
 
       walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)

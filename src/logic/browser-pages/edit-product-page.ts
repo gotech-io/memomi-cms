@@ -81,6 +81,12 @@ export class EditProductPage extends PageBase {
   private addBtn: Locator
   private numComment: Locator
   private commentDeleted: Locator
+  private statusBtn: Locator
+  private selectStatusDropdown: Locator
+  private imageBtn: Locator
+  private imageNavBtn: Locator
+  private fullScreenBtn: Locator
+  private closeFullScreenBtn: Locator
 
   constructor(page: Page) {
     super(page)
@@ -106,6 +112,12 @@ export class EditProductPage extends PageBase {
     this.addBtn = page.locator("//button[text()='Add']")
     this.numComment = this.commentsBtn.locator('//span[text()]')
     this.commentDeleted = page.locator("//div//span[text()='Comment deleted ']")
+    this.statusBtn = page.locator("//button[@aria-label='Status']")
+    this.selectStatusDropdown = page.locator("//div[@id='status-select-status']")
+    this.imageBtn = page.locator("//button[@aria-label='Images']")
+    this.imageNavBtn = page.locator('//div[./button and ./a[@href]]')
+    this.fullScreenBtn = page.locator("//button[@aria-label='Full screen']")
+    this.closeFullScreenBtn = page.locator("//button[@aria-label='close']")
   }
 
   async initPage(): Promise<void> {
@@ -319,6 +331,13 @@ export class EditProductPage extends PageBase {
     return this.getComment(comment)
   }
 
+  public async isCommentsContainerVisible() {
+    if (!(await this.addCommentBtn.isVisible())) {
+      await this.commentsBtn.click()
+    }
+    return this.addCommentBtn.isVisible()
+  }
+
   public async fetchComments() {
     const comment = await this.numComment.textContent()
     return comment !== null ? parseInt(comment, 10) : undefined
@@ -335,5 +354,20 @@ export class EditProductPage extends PageBase {
 
   public async isTimelineStatusChanged(fromStatus: ProductStatus, toStatus: ProductStatus) {
     return this.timelineStatusChanged(fromStatus, toStatus).isVisible()
+  }
+
+  public async isStatusContainerVisible() {
+    if (!(await this.selectStatusDropdown.isVisible())) await this.statusBtn.click()
+    return this.selectStatusDropdown.isVisible()
+  }
+
+  public async isImagesContainerVisible() {
+    if (!(await this.imageNavBtn.isVisible())) await this.imageBtn.click()
+    return this.imageNavBtn.isVisible()
+  }
+
+  public async isFullScreenContainerVisible() {
+    if (!(await this.closeFullScreenBtn.isVisible())) await this.fullScreenBtn.click()
+    return this.closeFullScreenBtn.isVisible()
   }
 }
