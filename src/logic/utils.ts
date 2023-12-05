@@ -117,6 +117,11 @@ export const deleteFolder = async (path: string): Promise<void> => {
   }
 }
 
+export const deleteZipFile = async (filePath: string): Promise<void> => {
+  const unlinkAsync = promisify(fs.unlink)
+  await unlinkAsync(filePath + '.zip')
+}
+
 export const generateProductGtin = (): string => {
   return configProvider.walmartAutomationProduct + '-' + randomString(5)
 }

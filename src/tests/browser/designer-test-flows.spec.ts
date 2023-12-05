@@ -5,7 +5,7 @@ import { WalmartGlassesColumns } from '../../logic/enum/walmart-glasses-columns.
 import { LoginPage } from '../../logic/browser-pages/login-page.js'
 import { configProvider } from '../../config/index.js'
 import { DropdownItems } from '../../logic/enum/dropdown-items.js'
-import { deleteFolder, duplicateFolder, generateProductGtin, getAllFiles, unzipFiles } from '../../logic/utils.js'
+import { deleteFolder, deleteZipFile, duplicateFolder, generateProductGtin, getAllFiles, unzipFiles } from '../../logic/utils.js'
 import fs from 'fs'
 import { ImportAssetsPage } from '../../logic/browser-pages/import-assets-page.js'
 import { EditProductPage } from '../../logic/browser-pages/edit-product-page.js'
@@ -42,6 +42,11 @@ test.describe('Designer test flows', () => {
 
   test.describe('Walmart glasses', () => {
     test('All files can be found after unzipping', async ({ testContext }) => {
+      testContext.addTearDownAction(async () => {
+        await deleteFolder(configProvider.walmartAutomationGeneratePath + specificProductGtin)
+        await deleteZipFile(configProvider.walmartAutomationGeneratePath + specificProductGtin)
+      })
+
       const specificProductGtin = '00010164351979'
       const productFiles: string[] = JSON.parse(fs.readFileSync(configProvider.walmartAutomationProductFiles, 'utf8')).files
 
