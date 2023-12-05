@@ -72,7 +72,7 @@ test.describe('Admin test flows', () => {
       )
 
       walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
-      await walmartGlassesPage.menuChoice(DropdownItems.Import)
+      await walmartGlassesPage.pickMenuItem(DropdownItems.Import)
 
       const importProductsPage = await testContext.getPage(ImportProductsPage)
       await importProductsPage.importCSV(productGtin)

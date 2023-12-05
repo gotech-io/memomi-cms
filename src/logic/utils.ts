@@ -68,7 +68,14 @@ export const buildRowLocator = (
     colId: WalmartGlassesColumns | ApparelSunglassesColumns
     text: string
   }[],
-): string => `//div[@role="row" and ${columns.map(column => `./div[@col-id="${column.colId}" and text()="${column.text}"]`).join(' and ')}]`
+  includeSelectedRow: boolean = false,
+): string => {
+  const selectedRowCondition = includeSelectedRow ? "contains(@class, 'ag-row-selected') and " : ''
+
+  return `//div[@role="row" and ${selectedRowCondition}${columns
+    .map(column => `./div[@col-id="${column.colId}" and text()="${column.text}"]`)
+    .join(' and ')}]`
+}
 
 export const randomString = (length: number): string => {
   const characters = '0123456789abcdefghijklmnopqrstuvwxyz'

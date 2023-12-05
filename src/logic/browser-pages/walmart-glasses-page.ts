@@ -69,6 +69,7 @@ export class WalmartGlassesPage extends PageBase {
 
   public async clickCheckRow(columns: { colId: WalmartGlassesColumns; text: string }[]) {
     await this.page.locator(buildRowLocator(columns) + '//input').click()
+    await this.page.locator(buildRowLocator(columns, true) + '//input').waitFor({ state: 'attached' })
   }
 
   public async clickEditLine(columns: { colId: WalmartGlassesColumns; text: string }[]) {
@@ -138,7 +139,7 @@ export class WalmartGlassesPage extends PageBase {
     await this.dropDownMenuBtn.click()
   }
 
-  public async menuChoice(item: DropdownItems) {
+  public async pickMenuItem(item: DropdownItems) {
     await this.clickMenu()
     await this.dropDownMenuItem(item).click()
   }

@@ -52,7 +52,7 @@ test.describe('Designer test flows', () => {
 
       walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
       await walmartGlassesPage.clickCheckRow([{ colId: WalmartGlassesColumns.GTIN, text: specificProductGtin }])
-      await walmartGlassesPage.menuChoice(DropdownItems.ExportAssets)
+      await walmartGlassesPage.pickMenuItem(DropdownItems.ExportAssets)
 
       const exportAssetsPopup = await testContext.getPage(ExportAssetsPopup)
       const selectAssets = [...getProductFilesList(), Product3dModel.STL]
@@ -84,7 +84,7 @@ test.describe('Designer test flows', () => {
       const images = files.filter(image => image.includes('.jpg') && !image.includes('invalid'))
 
       walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
-      await walmartGlassesPage.menuChoice(DropdownItems.ImportAssets)
+      await walmartGlassesPage.pickMenuItem(DropdownItems.ImportAssets)
 
       importAssetsPage = await testContext.getPage(ImportAssetsPage)
       await importAssetsPage.importAssets(productGtin)
@@ -102,7 +102,7 @@ test.describe('Designer test flows', () => {
 
     test('Upload image of missing product', async ({ testContext }) => {
       walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
-      await walmartGlassesPage.menuChoice(DropdownItems.ImportAssets)
+      await walmartGlassesPage.pickMenuItem(DropdownItems.ImportAssets)
 
       importAssetsPage = await testContext.getPage(ImportAssetsPage)
       await importAssetsPage.importNotFoundProduct()
