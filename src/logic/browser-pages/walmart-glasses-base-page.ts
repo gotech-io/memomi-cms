@@ -68,8 +68,14 @@ export class WalmartGlassesBasePage extends PageBase {
   }
 
   public async clickCheckRow(columns: { colId: WalmartGlassesColumns; text: string }[]) {
-    await this.page.locator(buildRowLocator(columns) + '//input').click()
-    await this.page.locator(buildRowLocator(columns, true) + '//input').waitFor({ state: 'attached' })
+    const locatorSuffix: string = "//div[@class='ag-selection-checkbox']"
+    const clickRowLocator: Locator = this.page.locator(buildRowLocator(columns) + locatorSuffix)
+    const includeSelectedRow: Locator = this.page.locator(buildRowLocator(columns, true) + locatorSuffix)
+
+    if ((await clickRowLocator.isVisible()) && (await clickRowLocator.isEnabled())) {
+      await clickRowLocator.click()
+      await includeSelectedRow.waitFor({ state: 'attached' })
+    }
   }
 
   public async clickEditLine(columns: { colId: WalmartGlassesColumns; text: string }[]) {
@@ -156,5 +162,15 @@ export class WalmartGlassesBasePage extends PageBase {
   public async waitForLoadingCenterDetachment() {
     await this.loadingCenter.waitFor({ state: 'attached', timeout: 30000 })
     await this.loadingCenter.waitFor({ state: 'detached', timeout: 30000 })
+  }
+
+  public async waitForPageResponses() {
+    const endpoints = ['/names', '/select']
+
+    for (const endpoint of endpoints) {
+      await this.page.waitForResponse(
+        response => response.url().endsWith(endpoint) && response.status() === 200 && response.request().method() === 'GET',
+      )
+    }
   }
 }

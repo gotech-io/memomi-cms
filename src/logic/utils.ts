@@ -105,7 +105,12 @@ export const initializeProductFolder = async (sourceFolderPath: string, suffix: 
 }
 
 export const deleteFolder = async (path: string): Promise<void> => {
-  if (await fs.promises.stat(path).then(stats => stats.isDirectory())) {
+  const folderExists = await fs.promises
+    .stat(path)
+    .then(stats => stats.isDirectory())
+    .catch(() => false)
+
+  if (folderExists) {
     const files = await fs.promises.readdir(path)
 
     await Promise.all(
@@ -126,7 +131,13 @@ export const deleteFolder = async (path: string): Promise<void> => {
 
 export const deleteZipFile = async (filePath: string): Promise<void> => {
   const unlinkAsync = promisify(fs.unlink)
-  await unlinkAsync(filePath + '.zip')
+  const statAsync = promisify(fs.stat)
+
+  const fileExists = await statAsync(filePath + '.zip')
+    .then(() => true)
+    .catch(() => false)
+
+  if (fileExists) await unlinkAsync(filePath + '.zip')
 }
 
 export const generateProductGtin = (): string => {
