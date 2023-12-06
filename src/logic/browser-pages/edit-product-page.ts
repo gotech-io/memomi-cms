@@ -1,7 +1,7 @@
 import { Locator, Page } from '@playwright/test'
 import { PageBase } from '@testomate/framework'
 import { ProductTabs } from '../enum/product-tabs.js'
-import { ProductStatus } from '../enum/product-status.js'
+import { getProductStatus, ProductStatus } from '../enum/product-status.js'
 import { ProductValues } from '../enum/product-values.js'
 import { ProductPriority } from '../enum/product-priority.js'
 import { configProvider } from '../../config/index.js'
@@ -58,6 +58,9 @@ export class EditProductPage extends PageBase {
 
   private timelineStatusChanged = (fromStatus: ProductStatus, toStatus: ProductStatus) =>
     this.page.locator(`//div[./h1[text()='Status changed'] and ./p[text()="Changed from '${fromStatus}' to '${toStatus}'"]]`)
+
+  private disabledStatus = (status: ProductStatus) =>
+    this.page.locator(`//li[contains(@class, 'MuiButtonBase-root MuiMenuItem-root Mui-disabled') and @data-value='${status}']`)
 
   private saveBtn: Locator
   private closeBtn: Locator
@@ -369,5 +372,18 @@ export class EditProductPage extends PageBase {
   public async isFullScreenContainerVisible() {
     if (!(await this.closeFullScreenBtn.isVisible())) await this.fullScreenBtn.click()
     return this.closeFullScreenBtn.isVisible()
+  }
+
+  public async fetchEnabledStatus() {
+    const enabledStatus: ProductStatus[] = []
+    const productStatus = getProductStatus()
+
+    if (await this.trackingSelectStatusMenu.isVisible()) await this.clickSelectStatusMenu()
+
+    for (const status of productStatus) {
+      if (!(await this.disabledStatus(status).isVisible())) enabledStatus.push(status)
+    }
+
+    return enabledStatus
   }
 }

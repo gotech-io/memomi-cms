@@ -89,7 +89,7 @@ export const randomString = (length: number): string => {
   return result
 }
 
-export const duplicateFolder = async (sourceFolderPath: string, suffix: string): Promise<void> => {
+export const initializeProductFolder = async (sourceFolderPath: string, suffix: string): Promise<void> => {
   const destinationFolderPath = `downloads/${suffix}`
   await fs.promises.mkdir(destinationFolderPath)
   const files = await fs.promises.readdir(sourceFolderPath)

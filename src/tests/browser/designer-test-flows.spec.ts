@@ -5,7 +5,7 @@ import { WalmartGlassesColumns } from '../../logic/enum/walmart-glasses-columns.
 import { LoginPage } from '../../logic/browser-pages/login-page.js'
 import { configProvider } from '../../config/index.js'
 import { DropdownItems } from '../../logic/enum/dropdown-items.js'
-import { deleteFolder, deleteZipFile, duplicateFolder, generateProductGtin, getAllFiles, unzipFiles } from '../../logic/utils.js'
+import { deleteFolder, deleteZipFile, initializeProductFolder, generateProductGtin, getAllFiles, unzipFiles } from '../../logic/utils.js'
 import fs from 'fs'
 import { ImportAssetsPage } from '../../logic/browser-pages/import-assets-page.js'
 import { EditProductPage } from '../../logic/browser-pages/edit-product-page.js'
@@ -81,7 +81,7 @@ test.describe('Designer test flows', () => {
       await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
       const walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
 
-      await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGtin)
+      await initializeProductFolder(configProvider.walmartAutomationResourcesPath, productGtin)
       const files = await getAllFiles(configProvider.walmartAutomationGeneratePath + productGtin + '/')
       const images = files.filter(image => image.includes('.jpg') && !image.includes('invalid'))
 
@@ -131,6 +131,10 @@ test.describe('Designer test flows', () => {
 
       editProductPage = await testContext.getPage(EditProductPage)
       await editProductPage.clickTab(ProductTabs.Tracking)
+    })
+
+    test('Enabled status', async () => {
+      expect(await editProductPage.fetchEnabledStatus()).toEqual([ProductStatus.InDesign])
     })
 
     test('Change product status', async () => {
@@ -252,7 +256,7 @@ test.describe('Designer test flows', () => {
       productImageMap = Object.fromEntries(Object.entries(ProductFiles).map(([key, value]) => [value, `_${key.toLowerCase()}.jpg`]))
       randomProductFile = getRandomProductFile()
 
-      await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGtin)
+      await initializeProductFolder(configProvider.walmartAutomationResourcesPath, productGtin)
       loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
       await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
 
@@ -308,7 +312,7 @@ test.describe('Designer test flows', () => {
       productsApi = await testContext.getApi(ProductsApi)
       walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
 
-      await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGtin)
+      await initializeProductFolder(configProvider.walmartAutomationResourcesPath, productGtin)
       loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
       await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
 
@@ -406,7 +410,7 @@ test.describe('Designer test flows', () => {
         await deleteFolder(configProvider.walmartAutomationGeneratePath + productGtin)
       })
 
-      await duplicateFolder(configProvider.walmartAutomationResourcesPath, productGtin)
+      await initializeProductFolder(configProvider.walmartAutomationResourcesPath, productGtin)
       await editProductPage.clickTab(ProductTabs.Images)
       await editProductPage.uploadImage(randomProductFile, productGtin, productImageMap[randomProductFile])
       await editProductPage.clickSave()
