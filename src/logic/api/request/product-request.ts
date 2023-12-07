@@ -1,7 +1,9 @@
+import { ProductStatus } from '../../enum/product-status.js'
+
 export interface ProductRequest {
   _id: string
   schemaId: string
-  status: string
+  status: ProductStatus
   gtin: string
   timelineEvents: TimelineEvent[]
 }
@@ -15,10 +17,10 @@ interface TimelineEvent {
 
 export const productRequest = (gtin: string): ProductRequest => {
   return {
-    _id: 'auto',
+    _id: gtin,
     schemaId: '64c6b54145a76223cc2c600d',
-    status: 'Unassigned',
-    gtin,
+    status: ProductStatus.Unassigned,
+    gtin: gtin,
     timelineEvents: [
       {
         changeType: 'Created',

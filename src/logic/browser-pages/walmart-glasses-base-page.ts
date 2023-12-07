@@ -72,7 +72,9 @@ export class WalmartGlassesBasePage extends PageBase {
     const clickRowLocator: Locator = this.page.locator(buildRowLocator(columns) + locatorSuffix)
     const includeSelectedRow: Locator = this.page.locator(buildRowLocator(columns, true) + locatorSuffix)
 
-    if ((await clickRowLocator.isVisible()) && (await clickRowLocator.isEnabled())) {
+    await clickRowLocator.waitFor()
+
+    if (await clickRowLocator.isVisible()) {
       await clickRowLocator.click()
       await includeSelectedRow.waitFor({ state: 'attached' })
     }

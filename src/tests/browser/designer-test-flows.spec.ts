@@ -44,16 +44,29 @@ test.describe('Designer test flows', () => {
 
   test.describe('Walmart glasses', () => {
     test('All files can be found after unzipping', async ({ testContext }) => {
+      test.setTimeout(120 * 1000)
       testContext.addTearDownAction(async () => {
-        await deleteFolder(configProvider.walmartAutomationGeneratePath + specificProductGtin)
-        await deleteZipFile(configProvider.walmartAutomationGeneratePath + specificProductGtin)
+        await deleteFolder(configProvider.walmartAutomationGeneratePath + productGtin)
+        await deleteZipFile(configProvider.walmartAutomationGeneratePath + productGtin)
       })
 
-      const specificProductGtin = '00010164351979'
+      loginApi = await testContext.getApi(UsersApi)
+      productsApi = await testContext.getApi(ProductsApi)
+
+      loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+      await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
+
       const productFiles: string[] = JSON.parse(fs.readFileSync(configProvider.walmartAutomationProductFiles, 'utf8')).files
+      await initializeProductFolder(configProvider.walmartAutomationResourcesPath, productGtin)
 
       walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
-      await walmartGlassesPage.clickCheckRow([{ colId: WalmartGlassesColumns.GTIN, text: specificProductGtin }])
+      await walmartGlassesPage.pickMenuItem(DropdownItems.ImportAssets)
+
+      importAssetsPage = await testContext.getPage(ImportAssetsPage)
+      await importAssetsPage.importAssets(productGtin)
+
+      await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGtin)
+      await walmartGlassesPage.clickCheckRow([{ colId: WalmartGlassesColumns.GTIN, text: productGtin }])
       await walmartGlassesPage.pickMenuItem(DropdownItems.ExportAssets)
 
       const exportAssetsPopup = await testContext.getPage(ExportAssetsPopup)
@@ -63,7 +76,7 @@ test.describe('Designer test flows', () => {
 
       productFiles.forEach(file => {
         expect
-          .soft(zipFiles.includes(specificProductGtin + '/' + specificProductGtin + file), `The ZIP file does not contain an ${file} file`)
+          .soft(zipFiles.includes(productGtin + '/' + productGtin + file), `The ZIP file does not contain an ${productGtin + file} file`)
           .toBeTruthy()
       })
     })
@@ -120,10 +133,10 @@ test.describe('Designer test flows', () => {
 
       loginApi = await testContext.getApi(UsersApi)
       productsApi = await testContext.getApi(ProductsApi)
-      walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
 
       loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
       await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
+      walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
 
       walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
       await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGtin)
@@ -186,10 +199,10 @@ test.describe('Designer test flows', () => {
 
       loginApi = await testContext.getApi(UsersApi)
       productsApi = await testContext.getApi(ProductsApi)
-      walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
 
       loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
       await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
+      walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
 
       walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
       await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGtin)
@@ -252,13 +265,15 @@ test.describe('Designer test flows', () => {
 
       loginApi = await testContext.getApi(UsersApi)
       productsApi = await testContext.getApi(ProductsApi)
+
+      loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+      await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
       walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
+
       productImageMap = Object.fromEntries(Object.entries(ProductFiles).map(([key, value]) => [value, `_${key.toLowerCase()}.jpg`]))
       randomProductFile = getRandomProductFile()
 
       await initializeProductFolder(configProvider.walmartAutomationResourcesPath, productGtin)
-      loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
-      await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
 
       walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
       await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGtin)
@@ -310,11 +325,12 @@ test.describe('Designer test flows', () => {
 
       loginApi = await testContext.getApi(UsersApi)
       productsApi = await testContext.getApi(ProductsApi)
+
+      loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+      await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
       walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
 
       await initializeProductFolder(configProvider.walmartAutomationResourcesPath, productGtin)
-      loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
-      await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
 
       walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
       await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGtin)
@@ -363,13 +379,13 @@ test.describe('Designer test flows', () => {
 
       loginApi = await testContext.getApi(UsersApi)
       productsApi = await testContext.getApi(ProductsApi)
+
+      loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+      await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
       walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
 
       productImageMap = Object.fromEntries(Object.entries(ProductFiles).map(([key, value]) => [value, `_${key.toLowerCase()}.jpg`]))
       randomProductFile = getRandomProductFile()
-
-      loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
-      await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
 
       walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
       await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGtin)
@@ -430,10 +446,10 @@ test.describe('Designer test flows', () => {
 
       loginApi = await testContext.getApi(UsersApi)
       productsApi = await testContext.getApi(ProductsApi)
-      walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
 
       loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
       await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
+      walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
 
       walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
       await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGtin)
