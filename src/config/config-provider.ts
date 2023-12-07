@@ -31,6 +31,7 @@ const ConfigSchemaZod = z.object({
   walmartAutomationInvalidProduct: z.string(),
   walmartAutomationResourcesPath: z.string(),
   walmartAutomationGeneratePath: z.string(),
+  automationDesigner: z.string(),
 })
 
 // Config values
@@ -47,4 +48,5 @@ const config: ConfigSchemaInput = {
   walmartAutomationInvalidProduct: process.env.WALMART_AUTOMATION_INVALID_PRODUCT || 'walmart-invalid_angle.jpg',
   walmartAutomationResourcesPath: process.env.WALMART_AUTOMATION_RESOURCES_PATH || 'src/tests/browser/resources/walmart_auto_glass',
   walmartAutomationGeneratePath: process.env.WALMART_AUTOMATION_GENERATE_PATH || 'downloads/',
+  automationDesigner: process.env.AUTOMATION_DESIGNER || 'auto-designer',
 }

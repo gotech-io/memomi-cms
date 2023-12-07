@@ -169,12 +169,12 @@ test.describe('Designer test flows', () => {
     })
 
     test('Change product designer', async () => {
-      await editProductPage.setProductDesigner('Olga (designer)')
+      await editProductPage.setProductDesigner(configProvider.automationDesigner)
       await editProductPage.clickSaveThenClose()
 
       await walmartGlassesPage.clickEditLine(walmartAutoProduct)
       await editProductPage.clickTab(ProductTabs.Tracking)
-      expect(await editProductPage.fetchProductDesigner()).toEqual('Olga (designer)')
+      expect(await editProductPage.fetchProductDesigner()).toEqual(configProvider.automationDesigner)
     })
 
     test('Change product tag', async () => {
@@ -464,6 +464,41 @@ test.describe('Designer test flows', () => {
       await editProductPage.clickSave()
       await editProductPage.clickTab(ProductTabs.Timeline)
       expect(await editProductPage.isTimelineStatusChanged(actualStatus, updateStatus)).toBeTruthy()
+    })
+  })
+
+  test.describe('Product, Edit designer', () => {
+    test.beforeEach(async ({ testContext }) => {
+      testContext.addTearDownAction(() => {
+        return productsApi.deleteProduct(productGtin, loginApiRes.item.token)
+      })
+
+      loginApi = await testContext.getApi(UsersApi)
+      productsApi = await testContext.getApi(ProductsApi)
+
+      loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+      await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
+      walmartAutoProduct = [{ colId: WalmartGlassesColumns.GTIN, text: productGtin }]
+
+      walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
+      await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGtin)
+      await walmartGlassesPage.clickEditLine(walmartAutoProduct)
+
+      editProductPage = await testContext.getPage(EditProductPage)
+      await editProductPage.clickTab(ProductTabs.Tracking)
+      await editProductPage.setProductDesigner(configProvider.automationDesigner)
+      await editProductPage.clickSaveThenClose()
+    })
+
+    test('Assigned to me', async () => {
+      await walmartGlassesPage.clickAssignedToMe()
+      await expect(
+        walmartGlassesPage.tableRowData([
+          { colId: WalmartGlassesColumns.GTIN, text: productGtin },
+          { colId: WalmartGlassesColumns.Designer, text: configProvider.automationDesigner },
+          { colId: WalmartGlassesColumns.UpdatedBy, text: configProvider.automationDesigner },
+        ]),
+      ).toBeVisible()
     })
   })
 })
