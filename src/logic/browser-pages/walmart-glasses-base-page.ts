@@ -137,6 +137,9 @@ export class WalmartGlassesBasePage extends PageBase {
     await this.clickCreateNewProduct()
     await this.fillNewProductId(id)
     await this.clickCreate()
+    await this.page.waitForResponse(
+      response => response.url().includes('/api/products') && response.status() === 201 && response.request().method() === 'POST',
+    )
   }
 
   public async clickOk() {

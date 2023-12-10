@@ -14,6 +14,7 @@ import { ProductTabs } from '../../logic/enum/product-tabs.js'
 import { DropdownItems } from '../../logic/enum/dropdown-items.js'
 import { ImportProductsPage } from '../../logic/browser-pages/import-products-page.js'
 import { ProductValues } from '../../logic/enum/product-values.js'
+import { ProductStatus } from '../../logic/enum/product-status.js'
 
 test.describe('Admin test flows', () => {
   let loginPage: LoginPage
@@ -31,6 +32,34 @@ test.describe('Admin test flows', () => {
     dashboardPage = await testContext.getPage(DashboardPage)
     await dashboardPage.clickWalmartGlasses()
     productGtin = generateProductGtin()
+  })
+
+  test('Create new product', async ({ testContext }) => {
+    testContext.addTearDownAction(() => {
+      return productsApi.deleteProduct(productGtin, loginApiRes.item.token)
+    })
+
+    loginApi = await testContext.getApi(UsersApi)
+    productsApi = await testContext.getApi(ProductsApi)
+
+    const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+
+    walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
+    await walmartGlassesPage.createNewProduct(productGtin)
+    await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, productGtin)
+    await walmartGlassesPage.clickRefresh()
+    await expect(
+      walmartGlassesPage.tableRowData([
+        {
+          colId: WalmartGlassesColumns.GTIN,
+          text: productGtin,
+        },
+        {
+          colId: WalmartGlassesColumns.Status,
+          text: ProductStatus.Unassigned,
+        },
+      ]),
+    ).toBeVisible()
   })
 
   test.describe('Import values from CSV file', () => {
