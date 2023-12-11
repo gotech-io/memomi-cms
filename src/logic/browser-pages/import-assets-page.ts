@@ -27,6 +27,7 @@ export class ImportAssetsPage extends PageBase {
 
   async initPage(): Promise<void> {
     await super.initPage()
+    await this.page.waitForResponse(response => response.url().endsWith('/ids') && response.status() === 200)
   }
 
   get pageUrl(): string {
@@ -53,7 +54,6 @@ export class ImportAssetsPage extends PageBase {
   }
 
   public async importAssets(gtin: string) {
-    await this.page.waitForResponse(response => response.url().endsWith('/ids') && response.status() === 200)
     const path = configProvider.walmartAutomationGeneratePath + gtin + '/'
     const images = (await getAllFiles(path)).filter(image => !image.includes('invalid') && !image.includes('.DS_Store'))
     const filePaths = images.map(file => path + '/' + file)

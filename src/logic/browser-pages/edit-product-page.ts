@@ -202,31 +202,23 @@ export class EditProductPage extends PageBase {
   }
 
   public async setProductStatus(status: ProductStatus) {
-    if (await this.trackingSelectStatusMenu.isVisible()) {
-      await this.clickSelectStatusMenu()
-      await this.productStatusItems(status).click()
-    }
+    await this.clickSelectStatusMenu()
+    await this.productStatusItems(status).click()
   }
 
   public async setProductPriority(priority: ProductPriority) {
-    if (await this.trackingSelectPriorityMenu.isVisible()) {
-      await this.clickSelectPriorityMenu()
-      await this.productPriorityItems(priority).click()
-    }
+    await this.clickSelectPriorityMenu()
+    await this.productPriorityItems(priority).click()
   }
 
   public async setProductDesigner(designer: string) {
-    if (await this.trackingSelectDesignerMenu.isVisible()) {
-      await this.clickSelectDesignerMenu()
-      await this.productDesignerItems(designer).click()
-    }
+    await this.clickSelectDesignerMenu()
+    await this.productDesignerItems(designer).click()
   }
 
   public async setProductTag(tag: string) {
-    if (await this.trackingSelectTagMenu.isVisible()) {
-      await this.clickSelectTagMenu()
-      await this.productTagItems(tag).click()
-    }
+    await this.clickSelectTagMenu()
+    await this.productTagItems(tag).click()
   }
 
   public isProductImageVisible(image: string) {

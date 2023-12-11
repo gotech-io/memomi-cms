@@ -1,5 +1,3 @@
-import { WalmartGlassesColumns } from './enum/walmart-glasses-columns.js'
-import { ApparelSunglassesColumns } from './enum/apparel-sunglasses-columns.js'
 import * as fs from 'fs'
 import * as path from 'path'
 import AdmZip from 'adm-zip'
@@ -63,20 +61,6 @@ export const unzipFiles = async (): Promise<string[]> => {
   return extractedFileNames
 }
 
-export const buildRowLocator = (
-  columns: {
-    colId: WalmartGlassesColumns | ApparelSunglassesColumns
-    text: string
-  }[],
-  includeSelectedRow: boolean = false,
-): string => {
-  const selectedRowCondition = includeSelectedRow ? "contains(@class, 'ag-row-selected') and " : ''
-
-  return `//div[@role="row" and ${selectedRowCondition}${columns
-    .map(column => `./div[@col-id="${column.colId}" and text()="${column.text}"]`)
-    .join(' and ')}]`
-}
-
 export const randomString = (length: number): string => {
   const characters = '0123456789abcdefghijklmnopqrstuvwxyz'
   let result = ''
@@ -90,14 +74,14 @@ export const randomString = (length: number): string => {
 }
 
 export const initializeProductFolder = async (sourceFolderPath: string, suffix: string): Promise<void> => {
-  const destinationFolderPath = `downloads/${suffix}`
+  const destinationFolderPath = configProvider.walmartAutomationGeneratePath + suffix
   await fs.promises.mkdir(destinationFolderPath)
   const files = await fs.promises.readdir(sourceFolderPath)
 
   await Promise.all(
     files.map(async file => {
       const sourceFilePath = path.join(sourceFolderPath, file)
-      const destinationFileName = file.replace('walmart-automation', suffix)
+      const destinationFileName = file.replace(configProvider.walmartAutomationProduct, suffix)
       const destinationFilePath = path.join(destinationFolderPath, destinationFileName)
       await fs.promises.copyFile(sourceFilePath, destinationFilePath)
     }),
@@ -161,7 +145,7 @@ export const waitForStringInResult = async <T>(action: () => Promise<T>, expecte
 }
 
 export const createCSV = async (csvFilePath: string, csvHeader: CSVHeader[], CSVData: CSVData[]) => {
-  const fullCsvFilePath = `downloads/${csvFilePath}/${csvFilePath}.csv`
+  const fullCsvFilePath = `${configProvider.walmartAutomationGeneratePath}${csvFilePath}/${csvFilePath}.csv`
   const directoryPath = path.dirname(fullCsvFilePath)
 
   if (!fs.existsSync(directoryPath)) fs.mkdirSync(directoryPath, { recursive: true })

@@ -2,7 +2,7 @@ import { Locator, Page } from '@playwright/test'
 import { PageBase } from '@testomate/framework'
 import { WalmartGlassesColumns } from '../enum/walmart-glasses-columns.js'
 import { DropdownItems } from '../enum/dropdown-items.js'
-import { buildRowLocator } from '../utils.js'
+import { ApparelSunglassesColumns } from '../enum/apparel-sunglasses-columns.js'
 
 export class WalmartGlassesBasePage extends PageBase {
   private walmartGlassesColumn = (column: WalmartGlassesColumns) =>
@@ -18,6 +18,22 @@ export class WalmartGlassesBasePage extends PageBase {
 
   private productExistAlert = (gtin: string) =>
     this.page.locator(`//div[contains(@class, 'Alert-message') and contains(text(), "product Id '${gtin}' already exists")]`)
+
+  private buildRow = (
+    columns: {
+      colId: WalmartGlassesColumns
+      text: string
+    }[],
+    includeSelectedRow: boolean = false,
+  ) => this.page.locator(this.buildRowLocator(columns, includeSelectedRow))
+
+  private selectionCheckboxSuffix = (
+    columns: {
+      colId: WalmartGlassesColumns
+      text: string
+    }[],
+    includeSelectedRow: boolean = false,
+  ) => this.buildRow(columns, includeSelectedRow).locator("//div[@class='ag-selection-checkbox']")
 
   private searchFreeText: Locator
   private assignedToMeBtn: Locator
@@ -56,13 +72,27 @@ export class WalmartGlassesBasePage extends PageBase {
     await this.waitForLoadingCenterDetachment()
   }
 
+  public buildRowLocator = (
+    columns: {
+      colId: WalmartGlassesColumns | ApparelSunglassesColumns
+      text: string
+    }[],
+    includeSelectedRow: boolean = false,
+  ): string => {
+    const selectedRowCondition = includeSelectedRow ? "contains(@class, 'ag-row-selected') and " : ''
+
+    return `//div[@role="row" and ${selectedRowCondition}${columns
+      .map(column => `./div[@col-id="${column.colId}" and text()="${column.text}"]`)
+      .join(' and ')}]`
+  }
+
   get pageUrl(): string {
     if (!this.baseUrl) throw new Error('Base url is not set')
     return this.baseUrl
   }
 
   public tableRowData(columns: { colId: WalmartGlassesColumns; text: string }[]) {
-    return this.page.locator(buildRowLocator(columns))
+    return this.buildRow(columns)
   }
 
   public async tableColumnData(gtin: string, colId: WalmartGlassesColumns) {
@@ -71,20 +101,16 @@ export class WalmartGlassesBasePage extends PageBase {
   }
 
   public async clickCheckRow(columns: { colId: WalmartGlassesColumns; text: string }[]) {
-    const locatorSuffix: string = "//div[@class='ag-selection-checkbox']"
-    const clickRowLocator: Locator = this.page.locator(buildRowLocator(columns) + locatorSuffix)
-    const includeSelectedRow: Locator = this.page.locator(buildRowLocator(columns, true) + locatorSuffix)
+    const checkboxRowLocator: Locator = this.selectionCheckboxSuffix(columns)
+    const includeSelectedRow: Locator = this.selectionCheckboxSuffix(columns, true)
 
-    await clickRowLocator.waitFor()
-
-    if (await clickRowLocator.isVisible()) {
-      await clickRowLocator.click()
-      await includeSelectedRow.waitFor({ state: 'attached' })
-    }
+    await checkboxRowLocator.waitFor()
+    await checkboxRowLocator.click()
+    await includeSelectedRow.waitFor({ state: 'attached' })
   }
 
   public async clickEditLine(columns: { colId: WalmartGlassesColumns; text: string }[]) {
-    await this.page.locator(buildRowLocator(columns) + "//button[@aria-label='Edit']").click()
+    await this.buildRow(columns).locator("//button[@aria-label='Edit']").click()
     await this.page.waitForResponse(
       response => response.url().includes('/api/products/') && response.status() === 200 && response.request().method() === 'GET',
     )

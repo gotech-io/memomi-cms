@@ -2,6 +2,7 @@ import { Locator, Page } from '@playwright/test'
 import { PageBase } from '@testomate/framework'
 import { ProductFiles } from '../enum/product-files.js'
 import { Product3dModel } from '../enum/product-3d-model.js'
+import { configProvider } from '../../config/index.js'
 
 export class ExportAssetsPopup extends PageBase {
   private exportAsset = (asset: ProductFiles | Product3dModel) => this.page.locator(`//li[@role='option' and text()='${asset}']`)
@@ -48,6 +49,7 @@ export class ExportAssetsPopup extends PageBase {
     const downloadPromise = this.page.waitForEvent('download')
     await this.clickStart()
     const download = await downloadPromise
-    await download.saveAs('./downloads/' + download.suggestedFilename())
+    await download.saveAs('./' + configProvider.walmartAutomationGeneratePath + download.suggestedFilename())
+    await download.delete()
   }
 }
