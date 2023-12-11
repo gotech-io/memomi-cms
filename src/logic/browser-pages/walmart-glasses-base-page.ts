@@ -16,6 +16,9 @@ export class WalmartGlassesBasePage extends PageBase {
   private columnData = (gtin: string, colId: WalmartGlassesColumns) =>
     this.page.locator(`//div[@role="row" and ./div[@col-id="gtin" and text()="${gtin}"]]//div[@col-id='${colId}']`)
 
+  private productExistAlert = (gtin: string) =>
+    this.page.locator(`//div[contains(@class, 'Alert-message') and contains(text(), "product Id '${gtin}' already exists")]`)
+
   private searchFreeText: Locator
   private assignedToMeBtn: Locator
   private previewBtn: Locator
@@ -137,9 +140,6 @@ export class WalmartGlassesBasePage extends PageBase {
     await this.clickCreateNewProduct()
     await this.fillNewProductId(id)
     await this.clickCreate()
-    await this.page.waitForResponse(
-      response => response.url().includes('/api/products') && response.status() === 201 && response.request().method() === 'POST',
-    )
   }
 
   public async clickOk() {
@@ -177,5 +177,10 @@ export class WalmartGlassesBasePage extends PageBase {
         response => response.url().endsWith(endpoint) && response.status() === 200 && response.request().method() === 'GET',
       )
     }
+  }
+
+  public async isProductExistAlertVisible(gtin: string) {
+    await this.productExistAlert(gtin).waitFor()
+    return this.productExistAlert(gtin)
   }
 }

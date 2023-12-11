@@ -48,6 +48,7 @@ test.describe('Designer test flows', () => {
       testContext.addTearDownAction(async () => {
         await deleteFolder(configProvider.walmartAutomationGeneratePath + productGtin)
         await deleteZipFile(configProvider.walmartAutomationGeneratePath + productGtin)
+        return productsApi.deleteProduct(productGtin, loginApiRes.item.token)
       })
 
       loginApi = await testContext.getApi(UsersApi)
