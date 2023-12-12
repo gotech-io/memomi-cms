@@ -7,15 +7,15 @@ import { configProvider } from '../../config/index.js'
 export class ExportAssetsPopup extends PageBase {
   private exportAsset = (asset: ProductFiles | Product3dModel) => this.page.locator(`//li[@role='option' and text()='${asset}']`)
 
-  private selectExportDropdown: Locator
-  private startBtn: Locator
-  private closeBtn: Locator
+  private _selectExportDropdown: Locator
+  private _startBtn: Locator
+  private _closeBtn: Locator
 
   constructor(page: Page) {
     super(page)
-    this.selectExportDropdown = page.locator("//div[./input[@id='select-export']]")
-    this.startBtn = page.locator("//button[text()='Start']")
-    this.closeBtn = page.locator("//button[text()='Close']")
+    this._selectExportDropdown = page.locator("//div[./input[@id='select-export']]")
+    this._startBtn = page.locator("//button[text()='Start']")
+    this._closeBtn = page.locator("//button[text()='Close']")
   }
 
   async initPage(): Promise<void> {
@@ -28,15 +28,15 @@ export class ExportAssetsPopup extends PageBase {
   }
 
   public async clickSelectExportDropdown() {
-    await this.selectExportDropdown.click()
+    await this._selectExportDropdown.click()
   }
 
   public async clickStart() {
-    await this.startBtn.click()
+    await this._startBtn.click()
   }
 
   public async clickClose() {
-    await this.closeBtn.click()
+    await this._closeBtn.click()
   }
 
   public async selectAssets(assets: (ProductFiles | Product3dModel)[]) {

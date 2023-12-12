@@ -11,13 +11,13 @@ export class UsersPage extends PageBase {
 
   private deleteUserBtn = (email: string, name: string) => this.userRowData(email, name).locator("//button[@aria-label='Delete']")
 
-  private searchInput: Locator
-  private loadingCenter: Locator
+  private _searchInput: Locator
+  private _loadingCenter: Locator
 
   constructor(page: Page) {
     super(page)
-    this.searchInput = page.locator("//input[@id='outlined-name']")
-    this.loadingCenter = page.locator("//span[@class='ag-overlay-loading-center']")
+    this._searchInput = page.locator("//input[@id='outlined-name']")
+    this._loadingCenter = page.locator("//span[@class='ag-overlay-loading-center']")
   }
 
   async initPage(): Promise<void> {
@@ -43,11 +43,11 @@ export class UsersPage extends PageBase {
   }
 
   public async fillSearchInput(input: string) {
-    await this.searchInput.fill(input)
+    await this._searchInput.fill(input)
   }
 
   public async waitForLoadingCenterDetachment() {
-    await this.loadingCenter.waitFor({ state: 'attached', timeout: 30000 })
-    await this.loadingCenter.waitFor({ state: 'detached', timeout: 30000 })
+    await this._loadingCenter.waitFor({ state: 'attached', timeout: 30000 })
+    await this._loadingCenter.waitFor({ state: 'detached', timeout: 30000 })
   }
 }

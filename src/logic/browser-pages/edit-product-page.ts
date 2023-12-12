@@ -62,65 +62,65 @@ export class EditProductPage extends PageBase {
   private disabledStatus = (status: ProductStatus) =>
     this.page.locator(`//li[contains(@class, 'MuiButtonBase-root MuiMenuItem-root Mui-disabled') and @data-value='${status}']`)
 
-  private saveBtn: Locator
-  private closeBtn: Locator
-  private unlockBtn: Locator
-  private trackingSelectStatusMenu: Locator
-  private trackingSelectPriorityMenu: Locator
-  private trackingSelectDesignerMenu: Locator
-  private trackingSelectTagMenu: Locator
-  private materialType: Locator
-  private teflonId: Locator
-  private frameType: Locator
-  private hingeType: Locator
-  private productUpdatedAlert: Locator
-  private productStatusValue: Locator
-  private productPriorityValue: Locator
-  private productDesignerValue: Locator
-  private productTagValue: Locator
-  private commentsBtn: Locator
-  private addCommentBtn: Locator
-  private addCommentInput: Locator
-  private addBtn: Locator
-  private numComment: Locator
-  private commentDeleted: Locator
-  private statusBtn: Locator
-  private selectStatusDropdown: Locator
-  private imageBtn: Locator
-  private imageNavBtn: Locator
-  private fullScreenBtn: Locator
-  private closeFullScreenBtn: Locator
+  private _saveBtn: Locator
+  private _closeBtn: Locator
+  private _unlockBtn: Locator
+  private _trackingSelectStatusMenu: Locator
+  private _trackingSelectPriorityMenu: Locator
+  private _trackingSelectDesignerMenu: Locator
+  private _trackingSelectTagMenu: Locator
+  private _materialType: Locator
+  private _teflonId: Locator
+  private _frameType: Locator
+  private _hingeType: Locator
+  private _productUpdatedAlert: Locator
+  private _productStatusValue: Locator
+  private _productPriorityValue: Locator
+  private _productDesignerValue: Locator
+  private _productTagValue: Locator
+  private _commentsBtn: Locator
+  private _addCommentBtn: Locator
+  private _addCommentInput: Locator
+  private _addBtn: Locator
+  private _numComment: Locator
+  private _commentDeleted: Locator
+  private _statusBtn: Locator
+  private _selectStatusDropdown: Locator
+  private _imageBtn: Locator
+  private _imageNavBtn: Locator
+  private _fullScreenBtn: Locator
+  private _closeFullScreenBtn: Locator
 
   constructor(page: Page) {
     super(page)
-    this.saveBtn = page.locator("//button[text()='Save']")
-    this.closeBtn = page.locator("//button[text()='Close']")
-    this.unlockBtn = page.locator("//button[text()='Unlock']")
-    this.trackingSelectStatusMenu = page.locator("//div[@id='status-select-status']")
-    this.trackingSelectPriorityMenu = page.locator("//div[@id='value-list-select-priority']")
-    this.trackingSelectDesignerMenu = page.locator("//div[@id='outlined-adornment-designer']")
-    this.trackingSelectTagMenu = page.locator("//div[@id='value-list-select-tag']")
-    this.materialType = page.locator("//input[@id='text-form-materialTypeFront']")
-    this.teflonId = page.locator("//input[@id='text-form-teflonId']")
-    this.frameType = page.locator("//input[@id='text-form-frameType']")
-    this.hingeType = page.locator("//input[@id='text-form-hingeType']")
-    this.productUpdatedAlert = page.locator("//div[contains(@class, 'message css') and text()='Product updated']")
-    this.productStatusValue = page.locator("//div[./div[@id='status-select-status']]//input[@name='status']")
-    this.productPriorityValue = page.locator("//div[./div[@id='value-list-select-priority']]//input[@name='priority']")
-    this.productDesignerValue = page.locator("//div[./div[@id='outlined-adornment-designer']]//input[@name='designer']")
-    this.productTagValue = page.locator("//div[./div[@id='value-list-select-tag']]//input[@name='tag']")
-    this.commentsBtn = page.locator("//button[@aria-label='Comments']")
-    this.addCommentBtn = page.locator("//button[text()='Add Comment']")
-    this.addCommentInput = page.locator("//input[@placeholder='Add comment']")
-    this.addBtn = page.locator("//button[text()='Add']")
-    this.numComment = this.commentsBtn.locator('//span[text()]')
-    this.commentDeleted = page.locator("//div//span[text()='Comment deleted ']")
-    this.statusBtn = page.locator("//button[@aria-label='Status']")
-    this.selectStatusDropdown = page.locator("//div[@id='status-select-status']")
-    this.imageBtn = page.locator("//button[@aria-label='Images']")
-    this.imageNavBtn = page.locator('//div[./button and ./a[@href]]')
-    this.fullScreenBtn = page.locator("//button[@aria-label='Full screen']")
-    this.closeFullScreenBtn = page.locator("//button[@aria-label='close']")
+    this._saveBtn = page.locator("//button[text()='Save']")
+    this._closeBtn = page.locator("//button[text()='Close']")
+    this._unlockBtn = page.locator("//button[text()='Unlock']")
+    this._trackingSelectStatusMenu = page.locator("//div[@id='status-select-status']")
+    this._trackingSelectPriorityMenu = page.locator("//div[@id='value-list-select-priority']")
+    this._trackingSelectDesignerMenu = page.locator("//div[@id='outlined-adornment-designer']")
+    this._trackingSelectTagMenu = page.locator("//div[@id='value-list-select-tag']")
+    this._materialType = page.locator("//input[@id='text-form-materialTypeFront']")
+    this._teflonId = page.locator("//input[@id='text-form-teflonId']")
+    this._frameType = page.locator("//input[@id='text-form-frameType']")
+    this._hingeType = page.locator("//input[@id='text-form-hingeType']")
+    this._productUpdatedAlert = page.locator("//div[contains(@class, 'message css') and text()='Product updated']")
+    this._productStatusValue = page.locator("//div[./div[@id='status-select-status']]//input[@name='status']")
+    this._productPriorityValue = page.locator("//div[./div[@id='value-list-select-priority']]//input[@name='priority']")
+    this._productDesignerValue = page.locator("//div[./div[@id='outlined-adornment-designer']]//input[@name='designer']")
+    this._productTagValue = page.locator("//div[./div[@id='value-list-select-tag']]//input[@name='tag']")
+    this._commentsBtn = page.locator("//button[@aria-label='Comments']")
+    this._addCommentBtn = page.locator("//button[text()='Add Comment']")
+    this._addCommentInput = page.locator("//input[@placeholder='Add comment']")
+    this._addBtn = page.locator("//button[text()='Add']")
+    this._numComment = this._commentsBtn.locator('//span[text()]')
+    this._commentDeleted = page.locator("//div//span[text()='Comment deleted ']")
+    this._statusBtn = page.locator("//button[@aria-label='Status']")
+    this._selectStatusDropdown = page.locator("//div[@id='status-select-status']")
+    this._imageBtn = page.locator("//button[@aria-label='Images']")
+    this._imageNavBtn = page.locator('//div[./button and ./a[@href]]')
+    this._fullScreenBtn = page.locator("//button[@aria-label='Full screen']")
+    this._closeFullScreenBtn = page.locator("//button[@aria-label='close']")
   }
 
   async initPage(): Promise<void> {
@@ -137,7 +137,7 @@ export class EditProductPage extends PageBase {
   }
 
   public async clickSave() {
-    await this.saveBtn.click()
+    await this._saveBtn.click()
     await this.page.waitForResponse(
       response => response.url().includes('/api/products/') && response.status() === 200 && response.request().method() === 'GET',
     )
@@ -153,43 +153,43 @@ export class EditProductPage extends PageBase {
   }
 
   public async clickClose() {
-    await this.closeBtn.click()
+    await this._closeBtn.click()
   }
 
   public async clickUnlock() {
-    if (await this.unlockBtn.isVisible()) await this.unlockBtn.click()
+    if (await this._unlockBtn.isVisible()) await this._unlockBtn.click()
   }
 
   public async clickSelectStatusMenu() {
-    await this.trackingSelectStatusMenu.click()
+    await this._trackingSelectStatusMenu.click()
   }
 
   public async fetchProductStatus() {
-    return await this.productStatusValue.getAttribute('value')
+    return await this._productStatusValue.getAttribute('value')
   }
 
   public async clickSelectPriorityMenu() {
-    await this.trackingSelectPriorityMenu.click()
+    await this._trackingSelectPriorityMenu.click()
   }
 
   public async fetchProductPriority() {
-    return await this.productPriorityValue.getAttribute('value')
+    return await this._productPriorityValue.getAttribute('value')
   }
 
   public async clickSelectDesignerMenu() {
-    await this.trackingSelectDesignerMenu.click()
+    await this._trackingSelectDesignerMenu.click()
   }
 
   public async fetchProductDesigner() {
-    return await this.productDesignerValue.getAttribute('value')
+    return await this._productDesignerValue.getAttribute('value')
   }
 
   public async clickSelectTagMenu() {
-    await this.trackingSelectTagMenu.click()
+    await this._trackingSelectTagMenu.click()
   }
 
   public async fetchProductTag() {
-    return await this.productTagValue.getAttribute('value')
+    return await this._productTagValue.getAttribute('value')
   }
 
   public async getProductValue(item: ProductValues) {
@@ -226,39 +226,39 @@ export class EditProductPage extends PageBase {
   }
 
   public async setMaterialType(type: string) {
-    await this.materialType.fill(type)
+    await this._materialType.fill(type)
   }
 
   public async getMaterialType() {
-    return await this.materialType.getAttribute('value')
+    return await this._materialType.getAttribute('value')
   }
 
   public async setTeflonId(id: string) {
-    await this.teflonId.fill(id)
+    await this._teflonId.fill(id)
   }
 
   public async getTeflonId() {
-    return await this.teflonId.getAttribute('value')
+    return await this._teflonId.getAttribute('value')
   }
 
   public async setFrameType(type: string) {
-    await this.frameType.fill(type)
+    await this._frameType.fill(type)
   }
 
   public async getFrameType() {
-    return await this.frameType.getAttribute('value')
+    return await this._frameType.getAttribute('value')
   }
 
   public async setHingeType(type: string) {
-    await this.hingeType.fill(type)
+    await this._hingeType.fill(type)
   }
 
   public async getHingeType() {
-    return await this.hingeType.getAttribute('value')
+    return await this._hingeType.getAttribute('value')
   }
 
   public async waitForProductUpdatedAlert() {
-    await this.productUpdatedAlert.waitFor({ state: 'visible' })
+    await this._productUpdatedAlert.waitFor({ state: 'visible' })
   }
 
   public async uploadImage(uploadImage: ProductFiles, gtin: string, prefix: string) {
@@ -314,12 +314,12 @@ export class EditProductPage extends PageBase {
   }
 
   public async addComment(comment: string) {
-    if (!(await this.addCommentBtn.isVisible())) {
-      await this.commentsBtn.click()
+    if (!(await this._addCommentBtn.isVisible())) {
+      await this._commentsBtn.click()
     }
-    await this.addCommentBtn.click()
-    await this.addCommentInput.fill(comment)
-    await this.addBtn.click()
+    await this._addCommentBtn.click()
+    await this._addCommentInput.fill(comment)
+    await this._addBtn.click()
   }
 
   public isCommentVisible(comment: string) {
@@ -327,24 +327,24 @@ export class EditProductPage extends PageBase {
   }
 
   public async isCommentsContainerVisible() {
-    if (!(await this.addCommentBtn.isVisible())) {
-      await this.commentsBtn.click()
+    if (!(await this._addCommentBtn.isVisible())) {
+      await this._commentsBtn.click()
     }
-    return this.addCommentBtn.isVisible()
+    return this._addCommentBtn.isVisible()
   }
 
   public async fetchComments() {
-    const comment = await this.numComment.textContent()
+    const comment = await this._numComment.textContent()
     return comment !== null ? parseInt(comment, 10) : undefined
   }
 
   public async deleteComment(comment: string) {
     await this.deleteCommentBtn(comment).click()
-    await this.commentDeleted.waitFor({ state: 'attached' })
+    await this._commentDeleted.waitFor({ state: 'attached' })
   }
 
   public isCommentDeleted() {
-    return this.commentDeleted
+    return this._commentDeleted
   }
 
   public async isTimelineStatusChanged(fromStatus: ProductStatus, toStatus: ProductStatus) {
@@ -352,25 +352,25 @@ export class EditProductPage extends PageBase {
   }
 
   public async isStatusContainerVisible() {
-    if (!(await this.selectStatusDropdown.isVisible())) await this.statusBtn.click()
-    return this.selectStatusDropdown.isVisible()
+    if (!(await this._selectStatusDropdown.isVisible())) await this._statusBtn.click()
+    return this._selectStatusDropdown.isVisible()
   }
 
   public async isImagesContainerVisible() {
-    if (!(await this.imageNavBtn.isVisible())) await this.imageBtn.click()
-    return this.imageNavBtn.isVisible()
+    if (!(await this._imageNavBtn.isVisible())) await this._imageBtn.click()
+    return this._imageNavBtn.isVisible()
   }
 
   public async isFullScreenContainerVisible() {
-    if (!(await this.closeFullScreenBtn.isVisible())) await this.fullScreenBtn.click()
-    return this.closeFullScreenBtn.isVisible()
+    if (!(await this._closeFullScreenBtn.isVisible())) await this._fullScreenBtn.click()
+    return this._closeFullScreenBtn.isVisible()
   }
 
   public async fetchEnabledStatus() {
     const enabledStatus: ProductStatus[] = []
     const productStatus = getProductStatus()
 
-    if (await this.trackingSelectStatusMenu.isVisible()) await this.clickSelectStatusMenu()
+    if (await this._trackingSelectStatusMenu.isVisible()) await this.clickSelectStatusMenu()
 
     for (const status of productStatus) {
       if (!(await this.disabledStatus(status).isVisible())) enabledStatus.push(status)
