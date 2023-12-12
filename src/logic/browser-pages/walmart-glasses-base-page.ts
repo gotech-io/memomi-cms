@@ -209,4 +209,19 @@ export class WalmartGlassesBasePage extends PageBase {
     await this.productExistAlert(gtin).waitFor()
     return this.productExistAlert(gtin)
   }
+
+  public async deleteProduct(
+    column: WalmartGlassesColumns,
+    gtin: string,
+    columns: {
+      colId: WalmartGlassesColumns
+      text: string
+    }[],
+  ) {
+    await this.filterByColumn(column, gtin)
+    await this.clickCheckRow(columns)
+    await this.clickMenu()
+    await this.dropDownMenuItem(DropdownItems.Delete).click()
+    await this.okBtn.click()
+  }
 }
