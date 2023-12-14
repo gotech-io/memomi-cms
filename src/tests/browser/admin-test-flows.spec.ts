@@ -14,6 +14,7 @@ import { ProductTabs } from '../../logic/enum/product-tabs.js'
 import { DropdownItems } from '../../logic/enum/dropdown-items.js'
 import { ImportProductsPage } from '../../logic/browser-pages/import-products-page.js'
 import { ProductValues } from '../../logic/enum/product-values.js'
+import { ProductStatus } from '../../logic/enum/product-status.js'
 
 test.describe('Admin test flows', () => {
   let loginPage: LoginPage
@@ -47,6 +48,40 @@ test.describe('Admin test flows', () => {
     walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
     await walmartGlassesPage.createNewProduct(productGtin)
     await expect(await walmartGlassesPage.isProductExistAlertVisible(productGtin)).toBeVisible()
+  })
+
+  test('Changing the status of multiple products at once', async ({ testContext }) => {
+    testContext.addTearDownAction(async () => {
+      await Promise.all(productsGtin.map(productGtin => productsApi.deleteProduct(productGtin, loginApiRes.item.token)))
+    })
+
+    const productsGtin = [generateProductGtin(), generateProductGtin()]
+
+    loginApi = await testContext.getApi(UsersApi)
+    productsApi = await testContext.getApi(ProductsApi)
+
+    const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+    await Promise.all(productsGtin.map(productGtin => productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)))
+
+    walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
+    await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, configProvider.walmartAutomationProduct)
+
+    for (const productGtin of productsGtin) {
+      await walmartGlassesPage.clickCheckRow([{ colId: WalmartGlassesColumns.GTIN, text: productGtin }])
+    }
+
+    await walmartGlassesPage.changeStatus(ProductStatus.InDesign)
+
+    for (const productGtin of productsGtin) {
+      await expect
+        .soft(
+          walmartGlassesPage.tableRowData([
+            { colId: WalmartGlassesColumns.GTIN, text: productGtin },
+            { colId: WalmartGlassesColumns.Status, text: ProductStatus.InDesign },
+          ]),
+        )
+        .toBeVisible()
+    }
   })
 
   test.describe('Import values from CSV file', () => {

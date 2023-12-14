@@ -3,6 +3,7 @@ import { PageBase } from '@testomate/framework'
 import { WalmartGlassesColumns } from '../enum/walmart-glasses-columns.js'
 import { DropdownItems } from '../enum/dropdown-items.js'
 import { ApparelSunglassesColumns } from '../enum/apparel-sunglasses-columns.js'
+import { ProductStatus } from '../enum/product-status.js'
 
 export class WalmartGlassesBasePage extends PageBase {
   private walmartGlassesColumn = (column: WalmartGlassesColumns) =>
@@ -35,6 +36,8 @@ export class WalmartGlassesBasePage extends PageBase {
     includeSelectedRow: boolean = false,
   ) => this.buildRow(columns, includeSelectedRow).locator("//div[@class='ag-selection-checkbox']")
 
+  private productStatusItems = (status: ProductStatus) => this.page.locator(`//ul[@role='listbox']//li[text()='${status}']`)
+
   private _searchFreeText: Locator
   private _assignedToMeBtn: Locator
   private _previewBtn: Locator
@@ -48,6 +51,7 @@ export class WalmartGlassesBasePage extends PageBase {
   private _okBtn: Locator
   private _newProductId: Locator
   private _createBtn: Locator
+  private _select: Locator
 
   constructor(page: Page) {
     super(page)
@@ -64,6 +68,7 @@ export class WalmartGlassesBasePage extends PageBase {
     this._okBtn = page.locator("//button[text()='OK']")
     this._newProductId = page.locator("//input[@id='name']")
     this._createBtn = page.locator("//button[text()='Create']")
+    this._select = page.locator("//div[@id='select']")
   }
 
   async initPage(): Promise<void> {
@@ -223,5 +228,16 @@ export class WalmartGlassesBasePage extends PageBase {
     await this.clickMenu()
     await this.dropDownMenuItem(DropdownItems.Delete).click()
     await this._okBtn.click()
+  }
+
+  public async changeStatus(status: ProductStatus) {
+    await this.pickMenuItem(DropdownItems.ChangeStatus)
+    await this._select.click()
+    await this.productStatusItems(status).click()
+    await this._okBtn.click()
+    await this.page.waitForResponse(
+      response => response.url().endsWith('/status') && response.status() === 200 && response.request().method() === 'POST',
+    )
+    await this.waitForLoadingCenterDetachment()
   }
 }
