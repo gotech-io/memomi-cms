@@ -23,6 +23,10 @@ export class DashboardPage extends PageBase {
   private _hideInactiveUsersBtn: Locator
   private _userSettings: Locator
   private _logoutBtn: Locator
+  private _walmartGlassesCount: Locator
+  private _apparelSunglasses: Locator
+  private _functionalHealthReadingGlasses: Locator
+  private _statusDistribution: Locator
 
   constructor(page: Page) {
     super(page)
@@ -46,6 +50,10 @@ export class DashboardPage extends PageBase {
     this._hideInactiveUsersBtn = page.locator("//button[text()='Hide inactive users']")
     this._userSettings = page.locator("//div[contains(@class, 'MuiChip-outlinedPrimary')]")
     this._logoutBtn = page.locator("//p[text()='Logout']")
+    this._walmartGlassesCount = page.locator("//label//span[contains(text(), 'Walmart Glasses')]")
+    this._apparelSunglasses = page.locator("//label//span[contains(text(), 'Apparel - Sunglasses')]")
+    this._functionalHealthReadingGlasses = page.locator("//label//span[contains(text(), 'Functional Health - Reading Glasses')]")
+    this._statusDistribution = page.locator("//div//span[contains(text(), 'Status Distribution')]")
   }
 
   async initPage(): Promise<void> {
@@ -134,5 +142,35 @@ export class DashboardPage extends PageBase {
 
   public async clickHideInactiveUsers() {
     await this._hideInactiveUsersBtn.click()
+  }
+
+  public async fetchGlassesCount(walmartGlasses: string) {
+    const regexPattern = /^(.*?) \(Count: (\d+)\)$/
+    const match = regexPattern.exec(walmartGlasses)
+    return match ? parseInt(match[2], 10) ?? 0 : 0
+  }
+
+  public async walmartGlassesCount() {
+    return String(await this._walmartGlassesCount.textContent())
+  }
+
+  public async apparelSunglassesCount() {
+    return String(await this._apparelSunglasses.textContent())
+  }
+
+  public async functionalHealthReadingGlasses() {
+    return String(await this._functionalHealthReadingGlasses.textContent())
+  }
+
+  public async fetchStatusDistribution() {
+    const statusDistribution = String(await this._statusDistribution.textContent())
+    const regexPattern = /Status Distribution \((\d+)\)/
+    const match = regexPattern.exec(statusDistribution)
+
+    if (match && match[1]) {
+      return parseInt(match[1], 10)
+    } else {
+      return null
+    }
   }
 }
