@@ -1,9 +1,14 @@
 import { Locator, Page } from '@playwright/test'
 import { PageBase } from '@testomate/framework'
 import { AdminMailbox } from '../enum/admin-mailbox.js'
+import { ProductList } from '../enum/product-list.js'
 
 export class DashboardPage extends PageBase {
   private adminMailBoxCategory = (category: AdminMailbox) => this.page.locator(`//div//p[text()='${category}'`)
+  private unCheckProduct = (product: ProductList) =>
+    this.page.locator(`//label[./span[contains(text(), '${product}')]]//span[contains(@class, 'checked') and ./input]`)
+
+  private productCount = (product: ProductList) => this.page.locator(`//label//span[contains(text(), '${product}')]`)
 
   private _cmsVersion: Locator
   private _connectedUserBtn: Locator
@@ -23,9 +28,6 @@ export class DashboardPage extends PageBase {
   private _hideInactiveUsersBtn: Locator
   private _userSettings: Locator
   private _logoutBtn: Locator
-  private _walmartGlassesCount: Locator
-  private _apparelSunglasses: Locator
-  private _functionalHealthReadingGlasses: Locator
   private _statusDistribution: Locator
 
   constructor(page: Page) {
@@ -50,9 +52,6 @@ export class DashboardPage extends PageBase {
     this._hideInactiveUsersBtn = page.locator("//button[text()='Hide inactive users']")
     this._userSettings = page.locator("//div[contains(@class, 'MuiChip-outlinedPrimary')]")
     this._logoutBtn = page.locator("//p[text()='Logout']")
-    this._walmartGlassesCount = page.locator("//label//span[contains(text(), 'Walmart Glasses')]")
-    this._apparelSunglasses = page.locator("//label//span[contains(text(), 'Apparel - Sunglasses')]")
-    this._functionalHealthReadingGlasses = page.locator("//label//span[contains(text(), 'Functional Health - Reading Glasses')]")
     this._statusDistribution = page.locator("//div//span[contains(text(), 'Status Distribution')]")
   }
 
@@ -150,16 +149,8 @@ export class DashboardPage extends PageBase {
     return match ? parseInt(match[2], 10) ?? 0 : 0
   }
 
-  public async walmartGlassesCount() {
-    return String(await this._walmartGlassesCount.textContent())
-  }
-
-  public async apparelSunglassesCount() {
-    return String(await this._apparelSunglasses.textContent())
-  }
-
-  public async functionalHealthReadingGlasses() {
-    return String(await this._functionalHealthReadingGlasses.textContent())
+  public async fetchProductCount(product: ProductList) {
+    return String(await this.productCount(product).textContent())
   }
 
   public async fetchStatusDistribution() {
@@ -172,5 +163,9 @@ export class DashboardPage extends PageBase {
     } else {
       return null
     }
+  }
+
+  public async clickUncheckProduct(product: ProductList) {
+    await this.unCheckProduct(product).click()
   }
 }
