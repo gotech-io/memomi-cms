@@ -84,6 +84,40 @@ test.describe('Admin test flows', () => {
     }
   })
 
+  test('Changing the designer of multiple products at once', async ({ testContext }) => {
+    testContext.addTearDownAction(async () => {
+      await Promise.all(productsGtin.map(productGtin => productsApi.deleteProduct(productGtin, loginApiRes.item.token)))
+    })
+
+    const productsGtin = [generateProductGtin(), generateProductGtin()]
+
+    loginApi = await testContext.getApi(UsersApi)
+    productsApi = await testContext.getApi(ProductsApi)
+
+    const loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+    await Promise.all(productsGtin.map(productGtin => productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)))
+
+    walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
+    await walmartGlassesPage.filterByColumn(WalmartGlassesColumns.GTIN, configProvider.walmartAutomationProduct)
+
+    for (const productGtin of productsGtin) {
+      await walmartGlassesPage.clickCheckRow([{ colId: WalmartGlassesColumns.GTIN, text: productGtin }])
+    }
+
+    await walmartGlassesPage.changeDesigner()
+
+    for (const productGtin of productsGtin) {
+      await expect
+        .soft(
+          walmartGlassesPage.tableRowData([
+            { colId: WalmartGlassesColumns.GTIN, text: productGtin },
+            { colId: WalmartGlassesColumns.Designer, text: configProvider.automationDesigner },
+          ]),
+        )
+        .toBeVisible()
+    }
+  })
+
   test.describe('Import values from CSV file', () => {
     const IOSRotation = {
       [ProductValues.IOSRotationX]: 3,

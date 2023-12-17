@@ -4,6 +4,7 @@ import { WalmartGlassesColumns } from '../enum/walmart-glasses-columns.js'
 import { DropdownItems } from '../enum/dropdown-items.js'
 import { ApparelSunglassesColumns } from '../enum/apparel-sunglasses-columns.js'
 import { ProductStatus } from '../enum/product-status.js'
+import { configProvider } from '../../config/index.js'
 
 export class WalmartGlassesBasePage extends PageBase {
   private walmartGlassesColumn = (column: WalmartGlassesColumns) =>
@@ -37,6 +38,8 @@ export class WalmartGlassesBasePage extends PageBase {
   ) => this.buildRow(columns, includeSelectedRow).locator("//div[@class='ag-selection-checkbox']")
 
   private productStatusItems = (status: ProductStatus) => this.page.locator(`//ul[@role='listbox']//li[text()='${status}']`)
+
+  private productDesigner = (designer: string) => this.page.locator(`//ul[@role='listbox']//li[text()='${designer}']`)
 
   private _searchFreeText: Locator
   private _assignedToMeBtn: Locator
@@ -237,6 +240,17 @@ export class WalmartGlassesBasePage extends PageBase {
     await this._okBtn.click()
     await this.page.waitForResponse(
       response => response.url().endsWith('/status') && response.status() === 200 && response.request().method() === 'POST',
+    )
+    await this.waitForLoadingCenterDetachment()
+  }
+
+  public async changeDesigner() {
+    await this.pickMenuItem(DropdownItems.ChangeDesigner)
+    await this._select.click()
+    await this.productDesigner(configProvider.automationDesigner).click()
+    await this._okBtn.click()
+    await this.page.waitForResponse(
+      response => response.url().endsWith('/designer') && response.status() === 200 && response.request().method() === 'POST',
     )
     await this.waitForLoadingCenterDetachment()
   }
