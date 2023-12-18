@@ -15,7 +15,7 @@ import { loginRequest } from '../../logic/api/request/login-request.js'
 import { ProductsApi } from '../../logic/api/products-api.js'
 import { productRequest } from '../../logic/api/request/product-request.js'
 import { ProductStatus } from '../../logic/enum/product-status.js'
-import { ProductPriority } from '../../logic/enum/product-priority.js'
+import { randomProductPriority } from '../../logic/enum/product-priority.js'
 import { ProductValues } from '../../logic/enum/product-values.js'
 import { getProductFilesList, getRandomProductFile, ProductFiles } from '../../logic/enum/product-files.js'
 import { Product3dModel } from '../../logic/enum/product-3d-model.js'
@@ -162,12 +162,13 @@ test.describe('@Designer test flows', () => {
     })
 
     test('Change product priority', async () => {
-      await editProductPage.setProductPriority(ProductPriority.P3)
+      const randomPriority = randomProductPriority()
+      await editProductPage.setProductPriority(randomPriority)
       await editProductPage.clickSaveThenClose()
 
       await walmartGlassesPage.clickEditLine(walmartAutoProduct)
       await editProductPage.clickTab(ProductTabs.Tracking)
-      expect(await editProductPage.fetchProductPriority()).toEqual(ProductPriority.P3)
+      expect(await editProductPage.fetchProductPriority()).toEqual(randomPriority)
     })
 
     test('Change product designer', async () => {

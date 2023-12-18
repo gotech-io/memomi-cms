@@ -68,4 +68,9 @@ test.describe('@Api tests', () => {
     const apparelSunglasses = await adminApi.apparelSunglasses(loginToken)
     expect(apparelSunglasses.statusCode).toEqual(200)
   })
+
+  test('Functional Health - Reading Glasses', async () => {
+    const functionalHealthReadingGlasses = await adminApi.functionalHealthReadingGlasses(loginToken)
+    expect(functionalHealthReadingGlasses.statusCode).toEqual(200)
+  })
 })
