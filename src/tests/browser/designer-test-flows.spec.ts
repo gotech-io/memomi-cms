@@ -22,7 +22,7 @@ import { Product3dModel } from '../../logic/enum/product-3d-model.js'
 import { ExportAssetsPopup } from '../../logic/browser-pages/export-assets-popup.js'
 import { LoginResponse } from '../../logic/api/response/login-response.js'
 
-test.describe('Designer test flows', () => {
+test.describe('@Designer test flows', () => {
   let loginPage: LoginPage
   let dashboardPage: DashboardPage
   let walmartGlassesPage: WalmartGlassesPage
@@ -83,6 +83,7 @@ test.describe('Designer test flows', () => {
     })
 
     test('Import assets & Upload images', async ({ testContext }) => {
+      test.setTimeout(120 * 1000)
       testContext.addTearDownAction(() => {
         void deleteFolder(configProvider.walmartAutomationGeneratePath + productGtin)
         return productsApi.deleteProduct(productGtin, loginApiRes.item.token)

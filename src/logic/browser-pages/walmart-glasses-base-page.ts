@@ -76,8 +76,10 @@ export class WalmartGlassesBasePage extends PageBase {
 
   async initPage(): Promise<void> {
     await super.initPage()
+    await this.page.waitForResponse(
+      response => response.url().endsWith('/select') && response.status() === 200 && response.request().method() === 'GET',
+    )
     if (await this._tableBtn.isVisible()) await this.clickTable()
-    await this.waitForLoadingCenterDetachment()
   }
 
   public buildRowLocator = (

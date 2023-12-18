@@ -16,7 +16,7 @@ import { ImportProductsPage } from '../../logic/browser-pages/import-products-pa
 import { ProductValues } from '../../logic/enum/product-values.js'
 import { ProductStatus } from '../../logic/enum/product-status.js'
 
-test.describe('Admin test flows', () => {
+test.describe('@Admin test flows', () => {
   let loginPage: LoginPage
   let dashboardPage: DashboardPage
   let walmartGlassesPage: WalmartGlassesPage

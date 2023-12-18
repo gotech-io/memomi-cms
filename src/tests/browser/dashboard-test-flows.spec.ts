@@ -4,7 +4,7 @@ import { DashboardPage } from '../../logic/browser-pages/dashboard-page.js'
 import { configProvider } from '../../config/index.js'
 import { ProductList } from '../../logic/enum/product-list.js'
 
-test.describe('Dashboard test flows', () => {
+test.describe('@Dashboard test flows', () => {
   let loginPage: LoginPage
   let dashboardPage: DashboardPage
 

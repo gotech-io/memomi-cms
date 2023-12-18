@@ -9,10 +9,34 @@ export class UsersApi extends ApiBase {
   }
 
   get apiEndpointUrl(): string {
-    return 'https://cmsdevserverapi.azurewebsites.net/api/users'
+    return 'https://cmsdevserverapi.azurewebsites.net/api'
   }
 
   public async login(loginRequest: LoginRequest): Promise<APIResponse<LoginResponse>> {
-    return this.post<LoginResponse>(`${this.apiEndpointUrl}/login`, { data: loginRequest })
+    return this.post<LoginResponse>(`${this.apiEndpointUrl}/users/login`, { data: loginRequest })
+  }
+
+  public async users(token: string): Promise<APIResponse<void>> {
+    return this.get(`${this.apiEndpointUrl}/users`, { headers: { Authorization: `Bearer ${token}` } })
+  }
+
+  public async schemas(token: string): Promise<APIResponse<void>> {
+    return this.get(`${this.apiEndpointUrl}/schema`, { headers: { Authorization: `Bearer ${token}` } })
+  }
+
+  public async containers(token: string): Promise<APIResponse<void>> {
+    return this.get(`${this.apiEndpointUrl}/storage-management/containers`, { headers: { Authorization: `Bearer ${token}` } })
+  }
+
+  public async settings(token: string): Promise<APIResponse<void>> {
+    return this.get(`${this.apiEndpointUrl}/settings`, { headers: { Authorization: `Bearer ${token}` } })
+  }
+
+  public async walmartGlasses(token: string): Promise<APIResponse<void>> {
+    return this.get(`${this.apiEndpointUrl}/schema/64c6b54145a76223cc2c600d`, { headers: { Authorization: `Bearer ${token}` } })
+  }
+
+  public async apparelSunglasses(token: string): Promise<APIResponse<void>> {
+    return this.get(`${this.apiEndpointUrl}/schema/650c113d122fd8663d36e2c2`, { headers: { Authorization: `Bearer ${token}` } })
   }
 }
