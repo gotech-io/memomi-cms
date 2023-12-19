@@ -21,6 +21,7 @@ export class DashboardPage extends PageBase {
   private _productsMailboxClose: Locator
   private _productsWalmartGlasses: Locator
   private _productsApparelSunglasses: Locator
+  private _functionalHealthReadingGlasses: Locator
   private _showAllStatuesBtn: Locator
   private _hideUnusedStatusesBtn: Locator
   private _manageUsersBtn: Locator
@@ -45,6 +46,7 @@ export class DashboardPage extends PageBase {
     this._productsMailboxClose = page.locator("//div[contains(@class, 'MuiListItemButton-gutters ')]//p[text()='Products']")
     this._productsWalmartGlasses = page.locator("//div//span[text()='Walmart Glasses']")
     this._productsApparelSunglasses = page.locator("//div//span[text()='Apparel - Sunglasses']")
+    this._functionalHealthReadingGlasses = page.locator("//div//span[text()='Functional Health - Reading Glasses']")
     this._showAllStatuesBtn = page.locator("//button[text()='Show all statues']")
     this._hideUnusedStatusesBtn = page.locator("//button[text()='Hide unused statuses']")
     this._manageUsersBtn = page.locator("//button[text()='Manage users']")
@@ -123,6 +125,11 @@ export class DashboardPage extends PageBase {
     await this._productsApparelSunglasses.click()
   }
 
+  public async clickFunctionalHealthReadingGlasses() {
+    await this.openProductsMailbox()
+    await this._functionalHealthReadingGlasses.click()
+  }
+
   public async clickShowAllStatues() {
     await this._showAllStatuesBtn.click()
   }
@@ -167,5 +174,9 @@ export class DashboardPage extends PageBase {
 
   public async clickUncheckProduct(product: ProductList) {
     await this.unCheckProduct(product).click()
+  }
+
+  public async getUrl() {
+    return this.page.url()
   }
 }

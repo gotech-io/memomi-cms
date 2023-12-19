@@ -3,6 +3,7 @@ import { LoginPage } from '../../logic/browser-pages/login-page.js'
 import { DashboardPage } from '../../logic/browser-pages/dashboard-page.js'
 import { configProvider } from '../../config/index.js'
 import { ProductList } from '../../logic/enum/product-list.js'
+import { ProductId } from '../../logic/enum/product-id.js'
 
 test.describe('@Dashboard test flows', () => {
   let loginPage: LoginPage
@@ -28,5 +29,22 @@ test.describe('@Dashboard test flows', () => {
     await dashboardPage.clickUncheckProduct(ProductList.FunctionalHealthReadingGlasses)
     const walmartCount = await dashboardPage.fetchGlassesCount(await dashboardPage.fetchProductCount(ProductList.WalmartGlasses))
     expect(walmartCount).toEqual(await dashboardPage.fetchStatusDistribution())
+  })
+
+  test.describe('Redirect URLs', () => {
+    test('Walmart Glasses Url', async () => {
+      await dashboardPage.clickWalmartGlasses()
+      expect(await dashboardPage.getUrl()).toContain(ProductId.WalmartGlasses)
+    })
+
+    test('Apparel Sunglasses Url', async () => {
+      await dashboardPage.clickApparelSunglasses()
+      expect(await dashboardPage.getUrl()).toContain(ProductId.ApparelSunglasses)
+    })
+
+    test('Functional Health - Reading Glasses Url', async () => {
+      await dashboardPage.clickFunctionalHealthReadingGlasses()
+      expect(await dashboardPage.getUrl()).toContain(ProductId.FunctionalHealthReadingGlasses)
+    })
   })
 })
