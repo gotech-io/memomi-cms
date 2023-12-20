@@ -39,6 +39,7 @@ lerna-debug.log*
 playwright-report
 test-results
 allure-results
+downloads
 
 .yarn/cache
 .yarn/install-state.gz

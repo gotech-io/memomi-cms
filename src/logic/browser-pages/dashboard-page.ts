@@ -21,6 +21,8 @@ export class DashboardPage extends PageBase {
   private manageUsersBtn: Locator
   private showAllUsersBtn: Locator
   private hideInactiveUsersBtn: Locator
+  private userSettings: Locator
+  private logoutBtn: Locator
 
   constructor(page: Page) {
     super(page)
@@ -42,6 +44,8 @@ export class DashboardPage extends PageBase {
     this.manageUsersBtn = page.locator("//button[text()='Manage users']")
     this.showAllUsersBtn = page.locator("//button[text()='Show all users']")
     this.hideInactiveUsersBtn = page.locator("//button[text()='Hide inactive users']")
+    this.userSettings = page.locator("//div[contains(@class, 'MuiChip-outlinedPrimary')]")
+    this.logoutBtn = page.locator("//p[text()='Logout']")
   }
 
   async initPage(): Promise<void> {
@@ -63,6 +67,19 @@ export class DashboardPage extends PageBase {
   public async clickAdminMailBoxCategory(category: AdminMailbox) {
     await this.openAdminMailbox()
     await this.adminMailBoxCategory(category).click()
+  }
+
+  public async clickUserSettings() {
+    await this.userSettings.click()
+  }
+
+  public async clickLogout() {
+    await this.logoutBtn.click()
+  }
+
+  public async performLogout() {
+    await this.clickUserSettings()
+    await this.clickLogout()
   }
 
   public async clickWalmartGlassesLink() {

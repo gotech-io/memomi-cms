@@ -10,7 +10,7 @@ setup.beforeAll(async () => {
 
 setup('Authenticate', async ({ testContext, workerContext }) => {
   const loginPage = await testContext.getPage(LoginPage, { shouldNavigate: true })
-  await loginPage.performSignIn(configProvider.cmsAdminUser, configProvider.cmsPassword)
+  await loginPage.performSignIn(configProvider.cmsAdmin, configProvider.cmsPassword)
   await testContext.getPage(DashboardPage)
   const storageState = await testContext.getStorageState()
   workerContext.setStorageState(storageState)

@@ -11,3 +11,7 @@ export enum ProductStatus {
   Excluded = 'Excluded',
   DesignDone = 'Design Done',
 }
+
+export const getProductStatus = (): ProductStatus[] => {
+  return Object.values(ProductStatus)
+}

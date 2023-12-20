@@ -1,5 +1,5 @@
 export enum WalmartGlassesColumns {
-  _ID = "_id",
+  _ID = '_id',
   LastUpdate = 'updatedAt',
   UpdatedBy = 'updatedBy',
   GTIN = 'gtin',
@@ -9,7 +9,7 @@ export enum WalmartGlassesColumns {
   MerchantsQc = 'siteOpsQc',
   Priority = 'priority',
   Calibration = 'calibrationName',
-  Tag = 'Tag',
+  Tag = 'tag',
   ItemDescription = 'itemDescription',
   SubcategoryDescription = 'subcategoryDescription',
   FrameType = 'frameType',

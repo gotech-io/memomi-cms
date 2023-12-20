@@ -30,17 +30,19 @@ export default initializeFrameworkConfig({
   playwright: {
     testDir: './src/tests/',
     fullyParallel: true,
-    timeout: 120 * 1000,
+    timeout: 60 * 1000,
     forbidOnly: false,
     retries: 0,
     workers: 1,
     use: {
       viewport: { width: 1920, height: 1080 },
       trace: 'retain-on-failure',
+      screenshot: 'only-on-failure',
       headless: false,
     },
     reporter: [
       ['dot'],
+      ['html', { open: 'never' }],
       // [
       //     'allure-playwright',
       //     {
