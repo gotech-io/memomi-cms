@@ -4,6 +4,7 @@ import { DashboardPage } from '../../logic/browser-pages/dashboard-page.js'
 import { configProvider } from '../../config/index.js'
 import { ProductList } from '../../logic/enum/product-list.js'
 import { ProductId } from '../../logic/enum/product-id.js'
+import { AdminMailbox } from '../../logic/enum/admin-mailbox.js'
 
 test.describe('@Dashboard test flows', () => {
   let loginPage: LoginPage
@@ -13,6 +14,11 @@ test.describe('@Dashboard test flows', () => {
     loginPage = await testContext.getPage(LoginPage, { shouldNavigate: true })
     await loginPage.performSignIn(configProvider.cmsAdmin, configProvider.cmsPassword)
     dashboardPage = await testContext.getPage(DashboardPage)
+  })
+
+  test('Show all users', async () => {
+    await dashboardPage.clickShowAllUsers()
+    expect(await dashboardPage.allTeamMembers()).toEqual(await dashboardPage.fetchAllTeamMembers())
   })
 
   test('Products count', async () => {
@@ -32,12 +38,26 @@ test.describe('@Dashboard test flows', () => {
   })
 
   test.describe('Redirect URLs', () => {
-    test('Walmart Glasses Url', async () => {
+    const adminTestCases: { option: AdminMailbox; route: string }[] = [
+      { option: AdminMailbox.Users, route: 'user-list' },
+      { option: AdminMailbox.Schemas, route: 'schemas' },
+      { option: AdminMailbox.Containers, route: 'containers' },
+      { option: AdminMailbox.Calibrations, route: 'calibrations' },
+    ]
+
+    adminTestCases.forEach(({ option, route }) => {
+      test(`Redirects to Correct URL - ${option}`, async () => {
+        await dashboardPage.clickAdminOption(option)
+        expect(await dashboardPage.getUrl()).toContain(route)
+      })
+    })
+
+    test('Walmart Glasses Button Redirects to Correct URL', async () => {
       await dashboardPage.clickWalmartGlasses()
       expect(await dashboardPage.getUrl()).toContain(ProductId.WalmartGlasses)
     })
 
-    test('Apparel Sunglasses Url', async () => {
+    test('Apparel Sunglasses Button Redirects to Correct URL', async () => {
       await dashboardPage.clickApparelSunglasses()
       expect(await dashboardPage.getUrl()).toContain(ProductId.ApparelSunglasses)
     })

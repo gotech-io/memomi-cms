@@ -5,10 +5,13 @@ import { ProductList } from '../enum/product-list.js'
 
 export class DashboardPage extends PageBase {
   private adminMailBoxCategory = (category: AdminMailbox) => this.page.locator(`//div//p[text()='${category}'`)
+
   private unCheckProduct = (product: ProductList) =>
     this.page.locator(`//label[./span[contains(text(), '${product}')]]//span[contains(@class, 'checked') and ./input]`)
 
   private productCount = (product: ProductList) => this.page.locator(`//label//span[contains(text(), '${product}')]`)
+
+  private adminMailbox = (option: AdminMailbox) => this.page.locator(`//a//div//p[text()='${option}']`)
 
   private _cmsVersion: Locator
   private _connectedUserBtn: Locator
@@ -30,6 +33,9 @@ export class DashboardPage extends PageBase {
   private _userSettings: Locator
   private _logoutBtn: Locator
   private _statusDistribution: Locator
+  private _activeTeamMembers: Locator
+  private _allTeamMembers: Locator
+  private _allTeamMembersTitle: Locator
 
   constructor(page: Page) {
     super(page)
@@ -55,6 +61,15 @@ export class DashboardPage extends PageBase {
     this._userSettings = page.locator("//div[contains(@class, 'MuiChip-outlinedPrimary')]")
     this._logoutBtn = page.locator("//p[text()='Logout']")
     this._statusDistribution = page.locator("//div//span[contains(text(), 'Status Distribution')]")
+    this._activeTeamMembers = page.locator(
+      "//div[contains(@class, 'MuiPaper-rounded') and ./div//span[contains(text(), 'Active Team members')]]" +
+        " //div[contains(@class, 'MuiGrid-spacing-xs-3')]//div[contains(@class, 'MuiGrid-grid-xs-12 css')]",
+    )
+    this._allTeamMembers = page.locator(
+      "//div[contains(@class, 'MuiPaper-root MuiPaper-elevation MuiPaper-rounded') and ./div//span[contains(text(), 'All Team members')]]" +
+        "//div[contains(@class, 'MuiGrid-spacing-xs-3')]//div[contains(@class, 'MuiGrid-grid-xs-12')]",
+    )
+    this._allTeamMembersTitle = page.locator("//div//span[contains(text(), 'All Team members')]")
   }
 
   async initPage(): Promise<void> {
@@ -176,7 +191,25 @@ export class DashboardPage extends PageBase {
     await this.unCheckProduct(product).click()
   }
 
+  public async clickAdminOption(option: AdminMailbox) {
+    await this.openAdminMailbox()
+    await this.adminMailbox(option).click()
+  }
+
   public async getUrl() {
     return this.page.url()
+  }
+
+  public async activeTeamMembers() {
+    return await this._activeTeamMembers.count()
+  }
+
+  public async allTeamMembers() {
+    return await this._allTeamMembers.count()
+  }
+
+  public async fetchAllTeamMembers(): Promise<number | null> {
+    const match = String(await this._allTeamMembersTitle.textContent()).match(/\((\d+)\)/)
+    return match ? parseInt(match[1], 10) || null : null
   }
 }
