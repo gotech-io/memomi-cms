@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc --sourceMap --declarationMap",
     "format": "prettier --write \"{src,apps,libs,test}/**/*.ts\"",
-    "all-tests": "testomate test",
+    "all-tests": "testomate test --headed",
     "all-tests-parallel": "testomate test --workers=5",
     "admin-tests": "testomate test --grep @Admin",
     "designer-tests": "testomate test --grep @Designer",
