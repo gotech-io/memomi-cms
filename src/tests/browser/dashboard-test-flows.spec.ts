@@ -62,9 +62,14 @@ test.describe('@Dashboard test flows', () => {
       expect(await dashboardPage.getUrl()).toContain(ProductId.ApparelSunglasses)
     })
 
-    test('Functional Health - Reading Glasses Url', async () => {
+    test('Functional Health - Reading Glasses Button Redirects to Correct URL', async () => {
       await dashboardPage.clickFunctionalHealthReadingGlasses()
       expect(await dashboardPage.getUrl()).toContain(ProductId.FunctionalHealthReadingGlasses)
+    })
+
+    test('Manage Users Button Redirects to Correct URL', async () => {
+      await dashboardPage.clickManageUsers()
+      expect(await dashboardPage.getUrl()).toContain('user-list')
     })
   })
 })
