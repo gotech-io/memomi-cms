@@ -23,9 +23,9 @@ test.describe('@Dashboard test flows', () => {
 
   test('Products count', async () => {
     const [walmartCount, apparelCount, functionalCount] = await Promise.all([
-      await dashboardPage.fetchGlassesCount(await dashboardPage.fetchProductCount(ProductList.WalmartGlasses)),
-      await dashboardPage.fetchGlassesCount(await dashboardPage.fetchProductCount(ProductList.ApparelSunglasses)),
-      await dashboardPage.fetchGlassesCount(await dashboardPage.fetchProductCount(ProductList.FunctionalHealthReadingGlasses)),
+      await dashboardPage.fetchProductCount(ProductList.WalmartGlasses),
+      await dashboardPage.fetchProductCount(ProductList.ApparelSunglasses),
+      await dashboardPage.fetchProductCount(ProductList.FunctionalHealthReadingGlasses),
     ])
     expect(walmartCount + apparelCount + functionalCount).toEqual(await dashboardPage.fetchStatusDistribution())
   })
@@ -33,7 +33,7 @@ test.describe('@Dashboard test flows', () => {
   test('Uncheck products', async () => {
     await dashboardPage.clickUncheckProduct(ProductList.ApparelSunglasses)
     await dashboardPage.clickUncheckProduct(ProductList.FunctionalHealthReadingGlasses)
-    const walmartCount = await dashboardPage.fetchGlassesCount(await dashboardPage.fetchProductCount(ProductList.WalmartGlasses))
+    const walmartCount = await dashboardPage.fetchProductCount(ProductList.WalmartGlasses)
     expect(walmartCount).toEqual(await dashboardPage.fetchStatusDistribution())
   })
 

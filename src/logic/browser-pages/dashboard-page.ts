@@ -172,7 +172,7 @@ export class DashboardPage extends PageBase {
   }
 
   public async fetchProductCount(product: ProductList) {
-    return String(await this.productCount(product).textContent())
+    return await this.fetchGlassesCount(String(await this.productCount(product).textContent()))
   }
 
   public async fetchStatusDistribution() {
