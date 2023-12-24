@@ -42,6 +42,29 @@ test.describe('@Designer test flows', () => {
     productGtin = generateProductGtin()
   })
 
+  test('Search free text', async ({ testContext }) => {
+    testContext.addTearDownAction(() => {
+      return productsApi.deleteProduct(productGtin, loginApiRes.item.token)
+    })
+
+    loginApi = await testContext.getApi(UsersApi)
+    productsApi = await testContext.getApi(ProductsApi)
+
+    loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+    await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
+
+    walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
+    await walmartGlassesPage.fillSearchFreeText(productGtin)
+    await expect(
+      walmartGlassesPage.tableRowData([
+        {
+          colId: WalmartGlassesColumns.GTIN,
+          text: productGtin,
+        },
+      ]),
+    ).toBeVisible()
+  })
+
   test.describe('Walmart glasses', () => {
     test('All files can be found after unzipping', async ({ testContext }) => {
       test.setTimeout(120 * 1000)
@@ -410,6 +433,12 @@ test.describe('@Designer test flows', () => {
       await expect.soft(editProductPage.isCommentVisible(fillComment)).toBeHidden()
       await expect.soft(editProductPage.isCommentDeleted()).toBeVisible()
       expect.soft(await editProductPage.fetchComments()).toEqual(0) // Todo: A real bug with a low priority.
+    })
+
+    test('Done comment', async () => {
+      await editProductPage.addComment(fillComment)
+      await editProductPage.doneComment(fillComment)
+      await expect(editProductPage.doneCommentStatus(fillComment)).toBeVisible()
     })
 
     test('Comments container visibility', async () => {

@@ -56,6 +56,18 @@ export class EditProductPage extends PageBase {
       `//div[contains(@class, 'MuiBox-root css')]//div[contains(@class, 'MuiGrid-container MuiGrid-spacing-xs-0') and ./div//div[text()='${comment}']]//button`,
     )
 
+  private doneCommentBtn = (comment: string) =>
+    this.page.locator(
+      `//div[contains(@class, 'MuiBox-root css')]//div[contains(@class, 'MuiGrid-container MuiGrid-spacing-xs-0') and
+       ./div//div[text()='${comment}']]//div//label//span//input`,
+    )
+
+  private doneCommentSelected = (comment: string) =>
+    this.page.locator(
+      `//div[contains(@class, 'MuiBox-root css')]//div[contains(@class, 'MuiGrid-container MuiGrid-spacing-xs-0') and
+       ./div//div[text()='${comment}']]//div//label//span//*[local-name()='svg' and @data-testid='CheckBoxIcon']`,
+    )
+
   private timelineStatusChanged = (fromStatus: ProductStatus, toStatus: ProductStatus) =>
     this.page.locator(`//div[./h1[text()='Status changed'] and ./p[text()="Changed from '${fromStatus}' to '${toStatus}'"]]`)
 
@@ -377,5 +389,13 @@ export class EditProductPage extends PageBase {
     }
 
     return enabledStatus
+  }
+
+  public async doneComment(comment: string) {
+    await this.doneCommentBtn(comment).click()
+  }
+
+  public doneCommentStatus(comment: string) {
+    return this.doneCommentSelected(comment)
   }
 }

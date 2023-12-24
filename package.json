@@ -20,7 +20,7 @@
     "docker-compose:down": "docker-compose down"
   },
   "dependencies": {
-    "@testomate/framework": "0.0.31",
+    "@testomate/framework": "0.0.32",
     "csv-writer": "^1.6.0",
     "dotenv": "^16.3.1",
     "drizzle-orm": "0.28.6",
