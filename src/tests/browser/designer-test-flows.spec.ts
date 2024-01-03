@@ -15,14 +15,14 @@ import { loginRequest } from '../../logic/api/request/login-request.js'
 import { ProductsApi } from '../../logic/api/products-api.js'
 import { productRequest } from '../../logic/api/request/product-request.js'
 import { ProductStatus } from '../../logic/enum/product-status.js'
-import { ProductPriority } from '../../logic/enum/product-priority.js'
+import { randomProductPriority } from '../../logic/enum/product-priority.js'
 import { ProductValues } from '../../logic/enum/product-values.js'
 import { getProductFilesList, getRandomProductFile, ProductFiles } from '../../logic/enum/product-files.js'
 import { Product3dModel } from '../../logic/enum/product-3d-model.js'
 import { ExportAssetsPopup } from '../../logic/browser-pages/export-assets-popup.js'
 import { LoginResponse } from '../../logic/api/response/login-response.js'
 
-test.describe('Designer test flows', () => {
+test.describe('@Designer test flows', () => {
   let loginPage: LoginPage
   let dashboardPage: DashboardPage
   let walmartGlassesPage: WalmartGlassesPage
@@ -40,6 +40,29 @@ test.describe('Designer test flows', () => {
     dashboardPage = await testContext.getPage(DashboardPage)
     await dashboardPage.clickWalmartGlasses()
     productGtin = generateProductGtin()
+  })
+
+  test('Search free text', async ({ testContext }) => {
+    testContext.addTearDownAction(() => {
+      return productsApi.deleteProduct(productGtin, loginApiRes.item.token)
+    })
+
+    loginApi = await testContext.getApi(UsersApi)
+    productsApi = await testContext.getApi(ProductsApi)
+
+    loginApiRes = await (await loginApi.login(loginRequest(configProvider.cmsSystem, configProvider.cmsPassword))).getJsonData()
+    await productsApi.createProduct(productRequest(productGtin), loginApiRes.item.token)
+
+    walmartGlassesPage = await testContext.getPage(WalmartGlassesPage)
+    await walmartGlassesPage.fillSearchFreeText(productGtin)
+    await expect(
+      walmartGlassesPage.tableRowData([
+        {
+          colId: WalmartGlassesColumns.GTIN,
+          text: productGtin,
+        },
+      ]),
+    ).toBeVisible()
   })
 
   test.describe('Walmart glasses', () => {
@@ -83,6 +106,7 @@ test.describe('Designer test flows', () => {
     })
 
     test('Import assets & Upload images', async ({ testContext }) => {
+      test.setTimeout(120 * 1000)
       testContext.addTearDownAction(() => {
         void deleteFolder(configProvider.walmartAutomationGeneratePath + productGtin)
         return productsApi.deleteProduct(productGtin, loginApiRes.item.token)
@@ -161,12 +185,13 @@ test.describe('Designer test flows', () => {
     })
 
     test('Change product priority', async () => {
-      await editProductPage.setProductPriority(ProductPriority.P3)
+      const randomPriority = randomProductPriority()
+      await editProductPage.setProductPriority(randomPriority)
       await editProductPage.clickSaveThenClose()
 
       await walmartGlassesPage.clickEditLine(walmartAutoProduct)
       await editProductPage.clickTab(ProductTabs.Tracking)
-      expect(await editProductPage.fetchProductPriority()).toEqual(ProductPriority.P3)
+      expect(await editProductPage.fetchProductPriority()).toEqual(randomPriority)
     })
 
     test('Change product designer', async () => {
@@ -408,6 +433,12 @@ test.describe('Designer test flows', () => {
       await expect.soft(editProductPage.isCommentVisible(fillComment)).toBeHidden()
       await expect.soft(editProductPage.isCommentDeleted()).toBeVisible()
       expect.soft(await editProductPage.fetchComments()).toEqual(0) // Todo: A real bug with a low priority.
+    })
+
+    test('Done comment', async () => {
+      await editProductPage.addComment(fillComment)
+      await editProductPage.doneComment(fillComment)
+      await expect(editProductPage.doneCommentStatus(fillComment)).toBeVisible()
     })
 
     test('Comments container visibility', async () => {

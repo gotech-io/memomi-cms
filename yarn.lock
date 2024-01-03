@@ -350,14 +350,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testomate/framework@npm:0.0.31":
-  version: 0.0.31
-  resolution: "@testomate/framework@npm:0.0.31"
+"@testomate/framework@npm:0.0.32":
+  version: 0.0.32
+  resolution: "@testomate/framework@npm:0.0.32"
   dependencies:
     drizzle-orm: 0.28.6
     envalid: ^7.3.1
     http-status-codes: ^2.2.0
-    imapflow: ^1.0.147
+    imapflow: ^1.0.133
     mongoose: ^7.3.4
     mysql2: ^3.5.1
     nodemailer: ^6.9.3
@@ -365,7 +365,7 @@ __metadata:
     winston: ^3.10.0
     zod: ^3.22.2
     zx: ^7.2.3
-  checksum: 0155c0c081672077782d365100061efeaf75c6b601ce61301c310ee4ff5c534efd9a95c934b6a70ea37fe1c3f94e8b8d5f694bbe000108f55ce558b7ac8c3bac
+  checksum: dae03ec8600118d3748f5cada1a996463ae2dbfc26ffd55e4c88996757e5cfdf350caea0843a518fce92168e85c16e0865e7ab2b1a5ada3455b07017c7beb607
   languageName: node
   linkType: hard
 
@@ -375,7 +375,7 @@ __metadata:
   dependencies:
     "@playwright/test": 1.38.1
     "@testomate/cli": 0.0.26
-    "@testomate/framework": 0.0.31
+    "@testomate/framework": 0.0.32
     "@types/adm-zip": ^0.5.4
     "@types/imapflow": ^1.0.13
     "@types/node": 18.17.1
@@ -2896,7 +2896,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"imapflow@npm:^1.0.133, imapflow@npm:^1.0.147":
+"imapflow@npm:^1.0.133":
   version: 1.0.147
   resolution: "imapflow@npm:1.0.147"
   dependencies:

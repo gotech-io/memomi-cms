@@ -1,51 +1,75 @@
 import { Locator, Page } from '@playwright/test'
 import { PageBase } from '@testomate/framework'
 import { AdminMailbox } from '../enum/admin-mailbox.js'
+import { ProductList } from '../enum/product-list.js'
 
 export class DashboardPage extends PageBase {
   private adminMailBoxCategory = (category: AdminMailbox) => this.page.locator(`//div//p[text()='${category}'`)
 
-  private cmsVersion: Locator
-  private connectedUserBtn: Locator
-  private walmartGlassesLinkBtn: Locator
-  private apparelSunglassesLinkBtn: Locator
-  private toggleMenuBtn: Locator
-  private adminMailboxOpen: Locator
-  private adminMailboxClose: Locator
-  private productsMailboxOpen: Locator
-  private productsMailboxClose: Locator
-  private productsWalmartGlasses: Locator
-  private productsApparelSunglasses: Locator
-  private showAllStatuesBtn: Locator
-  private hideUnusedStatusesBtn: Locator
-  private manageUsersBtn: Locator
-  private showAllUsersBtn: Locator
-  private hideInactiveUsersBtn: Locator
-  private userSettings: Locator
-  private logoutBtn: Locator
+  private unCheckProduct = (product: ProductList) =>
+    this.page.locator(`//label[./span[contains(text(), '${product}')]]//span[contains(@class, 'checked') and ./input]`)
+
+  private productCount = (product: ProductList) => this.page.locator(`//label//span[contains(text(), '${product}')]`)
+
+  private adminMailbox = (option: AdminMailbox) => this.page.locator(`//a//div//p[text()='${option}']`)
+
+  private _cmsVersion: Locator
+  private _connectedUserBtn: Locator
+  private _walmartGlassesLinkBtn: Locator
+  private _apparelSunglassesLinkBtn: Locator
+  private _toggleMenuBtn: Locator
+  private _adminMailboxOpen: Locator
+  private _adminMailboxClose: Locator
+  private _productsMailboxOpen: Locator
+  private _productsMailboxClose: Locator
+  private _productsWalmartGlasses: Locator
+  private _productsApparelSunglasses: Locator
+  private _functionalHealthReadingGlasses: Locator
+  private _showAllStatuesBtn: Locator
+  private _hideUnusedStatusesBtn: Locator
+  private _manageUsersBtn: Locator
+  private _showAllUsersBtn: Locator
+  private _hideInactiveUsersBtn: Locator
+  private _userSettings: Locator
+  private _logoutBtn: Locator
+  private _statusDistribution: Locator
+  private _activeTeamMembers: Locator
+  private _allTeamMembers: Locator
+  private _allTeamMembersTitle: Locator
 
   constructor(page: Page) {
     super(page)
-    this.cmsVersion = page.locator("//h5[contains(@class, 'MuiTypography-root MuiTypography-h5')]")
-    this.connectedUserBtn = page.locator("//div[contains(@class, 'outlinedPrimary css-9n40nr')]//div[contains(@class, 'Avatar')]")
-    this.walmartGlassesLinkBtn = page.locator("//div[contains(@class, 'grid-xs-12 css') and .//span[contains(text(), 'Walmart Glasses')]]//button")
-    this.apparelSunglassesLinkBtn = page.locator(
+    this._cmsVersion = page.locator("//h5[contains(@class, 'MuiTypography-root MuiTypography-h5')]")
+    this._connectedUserBtn = page.locator("//div[contains(@class, 'outlinedPrimary css-9n40nr')]//div[contains(@class, 'Avatar')]")
+    this._walmartGlassesLinkBtn = page.locator("//div[contains(@class, 'grid-xs-12 css') and .//span[contains(text(), 'Walmart Glasses')]]//button")
+    this._apparelSunglassesLinkBtn = page.locator(
       "//div[contains(@class, 'grid-xs-12 css') and .//span[contains(text(), 'Apparel - Sunglasses')]]//button",
     )
-    this.toggleMenuBtn = page.locator("//button[@class='MuiButtonBase-root css-1cpn4ow']")
-    this.adminMailboxOpen = page.locator("//div[contains(@class, 'MuiListItemButton-gutters Mui-selected')]//h5[text()='Admin']")
-    this.adminMailboxClose = page.locator("//div[contains(@class, 'MuiListItemButton-gutters ')]//p[text()='Admin']")
-    this.productsMailboxOpen = page.locator("//div[contains(@class, 'MuiListItemButton-gutters ')]//h5[text()='Products']")
-    this.productsMailboxClose = page.locator("//div[contains(@class, 'MuiListItemButton-gutters ')]//p[text()='Products']")
-    this.productsWalmartGlasses = page.locator("//div//span[text()='Walmart Glasses']")
-    this.productsApparelSunglasses = page.locator("//div//span[text()='Apparel - Sunglasses']")
-    this.showAllStatuesBtn = page.locator("//button[text()='Show all statues']")
-    this.hideUnusedStatusesBtn = page.locator("//button[text()='Hide unused statuses']")
-    this.manageUsersBtn = page.locator("//button[text()='Manage users']")
-    this.showAllUsersBtn = page.locator("//button[text()='Show all users']")
-    this.hideInactiveUsersBtn = page.locator("//button[text()='Hide inactive users']")
-    this.userSettings = page.locator("//div[contains(@class, 'MuiChip-outlinedPrimary')]")
-    this.logoutBtn = page.locator("//p[text()='Logout']")
+    this._toggleMenuBtn = page.locator("//button[@class='MuiButtonBase-root css-1cpn4ow']")
+    this._adminMailboxOpen = page.locator("//div[contains(@class, 'MuiListItemButton-gutters Mui-selected')]//h5[text()='Admin']")
+    this._adminMailboxClose = page.locator("//div[contains(@class, 'MuiListItemButton-gutters ')]//p[text()='Admin']")
+    this._productsMailboxOpen = page.locator("//div[contains(@class, 'MuiListItemButton-gutters ')]//h5[text()='Products']")
+    this._productsMailboxClose = page.locator("//div[contains(@class, 'MuiListItemButton-gutters ')]//p[text()='Products']")
+    this._productsWalmartGlasses = page.locator("//div//span[text()='Walmart Glasses']")
+    this._productsApparelSunglasses = page.locator("//div//span[text()='Apparel - Sunglasses']")
+    this._functionalHealthReadingGlasses = page.locator("//div//span[text()='Functional Health - Reading Glasses']")
+    this._showAllStatuesBtn = page.locator("//button[text()='Show all statues']")
+    this._hideUnusedStatusesBtn = page.locator("//button[text()='Hide unused statuses']")
+    this._manageUsersBtn = page.locator("//button[text()='Manage users']")
+    this._showAllUsersBtn = page.locator("//button[text()='Show all users']")
+    this._hideInactiveUsersBtn = page.locator("//button[text()='Hide inactive users']")
+    this._userSettings = page.locator("//div[contains(@class, 'MuiChip-outlinedPrimary')]")
+    this._logoutBtn = page.locator("//p[text()='Logout']")
+    this._statusDistribution = page.locator("//div//span[contains(text(), 'Status Distribution')]")
+    this._activeTeamMembers = page.locator(
+      "//div[contains(@class, 'MuiPaper-rounded') and ./div//span[contains(text(), 'Active Team members')]]" +
+        " //div[contains(@class, 'MuiGrid-spacing-xs-3')]//div[contains(@class, 'MuiGrid-grid-xs-12 css')]",
+    )
+    this._allTeamMembers = page.locator(
+      "//div[contains(@class, 'MuiPaper-root MuiPaper-elevation MuiPaper-rounded') and ./div//span[contains(text(), 'All Team members')]]" +
+        "//div[contains(@class, 'MuiGrid-spacing-xs-3')]//div[contains(@class, 'MuiGrid-grid-xs-12')]",
+    )
+    this._allTeamMembersTitle = page.locator("//div//span[contains(text(), 'All Team members')]")
   }
 
   async initPage(): Promise<void> {
@@ -60,7 +84,7 @@ export class DashboardPage extends PageBase {
   }
 
   public async getCMSVersion() {
-    const version = await this.cmsVersion.textContent()
+    const version = await this._cmsVersion.textContent()
     return version ? (version.match(/CMS Version: (\d+\.\d+(\.\d+)*)/) || [])[1] : null
   }
 
@@ -70,11 +94,11 @@ export class DashboardPage extends PageBase {
   }
 
   public async clickUserSettings() {
-    await this.userSettings.click()
+    await this._userSettings.click()
   }
 
   public async clickLogout() {
-    await this.logoutBtn.click()
+    await this._logoutBtn.click()
   }
 
   public async performLogout() {
@@ -83,56 +107,109 @@ export class DashboardPage extends PageBase {
   }
 
   public async clickWalmartGlassesLink() {
-    await this.walmartGlassesLinkBtn.click()
+    await this._walmartGlassesLinkBtn.click()
   }
 
   public async clickApparelSunglassesLink() {
-    await this.apparelSunglassesLinkBtn.click()
+    await this._apparelSunglassesLinkBtn.click()
   }
 
   public async clickUserMenu() {
-    await this.connectedUserBtn.click()
+    await this._connectedUserBtn.click()
   }
 
   public async clickToggleMenuBtn() {
-    await this.toggleMenuBtn.click()
+    await this._toggleMenuBtn.click()
   }
 
   public async openAdminMailbox() {
-    if (!(await this.adminMailboxOpen.isVisible())) await this.adminMailboxClose.click()
+    if (!(await this._adminMailboxOpen.isVisible())) await this._adminMailboxClose.click()
   }
 
   public async openProductsMailbox() {
-    if (!(await this.productsMailboxOpen.isVisible())) await this.productsMailboxClose.click()
+    if (!(await this._productsMailboxOpen.isVisible())) await this._productsMailboxClose.click()
   }
 
   public async clickWalmartGlasses() {
     await this.openProductsMailbox()
-    await this.productsWalmartGlasses.click()
+    await this._productsWalmartGlasses.click()
   }
 
   public async clickApparelSunglasses() {
     await this.openProductsMailbox()
-    await this.productsApparelSunglasses.click()
+    await this._productsApparelSunglasses.click()
+  }
+
+  public async clickFunctionalHealthReadingGlasses() {
+    await this.openProductsMailbox()
+    await this._functionalHealthReadingGlasses.click()
   }
 
   public async clickShowAllStatues() {
-    await this.showAllStatuesBtn.click()
+    await this._showAllStatuesBtn.click()
   }
 
   public async clickHideUnusedStatuses() {
-    await this.hideUnusedStatusesBtn.click()
+    await this._hideUnusedStatusesBtn.click()
   }
 
   public async clickManageUsers() {
-    await this.manageUsersBtn.click()
+    await this._manageUsersBtn.click()
   }
 
   public async clickShowAllUsers() {
-    await this.showAllUsersBtn.click()
+    await this._showAllUsersBtn.click()
   }
 
   public async clickHideInactiveUsers() {
-    await this.hideInactiveUsersBtn.click()
+    await this._hideInactiveUsersBtn.click()
+  }
+
+  public async fetchGlassesCount(walmartGlasses: string) {
+    const regexPattern = /^(.*?) \(Count: (\d+)\)$/
+    const match = regexPattern.exec(walmartGlasses)
+    return match ? parseInt(match[2], 10) ?? 0 : 0
+  }
+
+  public async fetchProductCount(product: ProductList) {
+    return await this.fetchGlassesCount(String(await this.productCount(product).textContent()))
+  }
+
+  public async fetchStatusDistribution() {
+    const statusDistribution = String(await this._statusDistribution.textContent())
+    const regexPattern = /Status Distribution \((\d+)\)/
+    const match = regexPattern.exec(statusDistribution)
+
+    if (match && match[1]) {
+      return parseInt(match[1], 10)
+    } else {
+      return null
+    }
+  }
+
+  public async clickUncheckProduct(product: ProductList) {
+    await this.unCheckProduct(product).click()
+  }
+
+  public async clickAdminOption(option: AdminMailbox) {
+    await this.openAdminMailbox()
+    await this.adminMailbox(option).click()
+  }
+
+  public async getUrl() {
+    return this.page.url()
+  }
+
+  public async activeTeamMembers() {
+    return await this._activeTeamMembers.count()
+  }
+
+  public async allTeamMembers() {
+    return await this._allTeamMembers.count()
+  }
+
+  public async fetchAllTeamMembers(): Promise<number | null> {
+    const match = String(await this._allTeamMembersTitle.textContent()).match(/\((\d+)\)/)
+    return match ? parseInt(match[1], 10) || null : null
   }
 }

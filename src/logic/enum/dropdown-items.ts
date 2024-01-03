@@ -11,4 +11,5 @@ export enum DropdownItems {
   ChangeDesigner = 'Change Designer',
   ChangeMerchantsQc = 'Change MerchantsQc',
   ChangeStatus = 'Change Status',
+  Delete = 'Delete',
 }

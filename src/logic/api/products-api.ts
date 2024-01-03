@@ -25,8 +25,8 @@ export class ProductsApi extends ApiBase {
     })
   }
 
-  public async deleteProduct(gtin: string, token: string): Promise<void> {
-    await this.delete(`${this.apiEndpointUrl}/${gtin}`, {
+  public async deleteProduct(gtin: string, token: string): Promise<APIResponse<void>> {
+    return this.delete(`${this.apiEndpointUrl}/${gtin}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
   }

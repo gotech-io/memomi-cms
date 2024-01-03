@@ -8,15 +8,19 @@
   "scripts": {
     "build": "tsc --sourceMap --declarationMap",
     "format": "prettier --write \"{src,apps,libs,test}/**/*.ts\"",
-    "test": "testomate test",
-    "all-tests": "testomate test --workers=5",
+    "all-tests": "testomate test --headed",
+    "all-tests-parallel": "testomate test --workers=5",
+    "admin-tests": "testomate test --grep @Admin",
+    "designer-tests": "testomate test --grep @Designer",
+    "dashboard-tests": "testomate test --grep @Dashboard",
+    "api-tests": "testomate test --grep @Api",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "lint:fix": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "docker-compose:up": "docker-compose up -d",
     "docker-compose:down": "docker-compose down"
   },
   "dependencies": {
-    "@testomate/framework": "0.0.31",
+    "@testomate/framework": "0.0.32",
     "csv-writer": "^1.6.0",
     "dotenv": "^16.3.1",
     "drizzle-orm": "0.28.6",

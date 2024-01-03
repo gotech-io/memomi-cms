@@ -3,6 +3,8 @@ import { PageBase } from '@testomate/framework'
 import { WalmartGlassesColumns } from '../enum/walmart-glasses-columns.js'
 import { DropdownItems } from '../enum/dropdown-items.js'
 import { ApparelSunglassesColumns } from '../enum/apparel-sunglasses-columns.js'
+import { ProductStatus } from '../enum/product-status.js'
+import { configProvider } from '../../config/index.js'
 
 export class WalmartGlassesBasePage extends PageBase {
   private walmartGlassesColumn = (column: WalmartGlassesColumns) =>
@@ -27,41 +29,49 @@ export class WalmartGlassesBasePage extends PageBase {
     includeSelectedRow: boolean = false,
   ) => this.buildRowLocator(columns, includeSelectedRow).locator("//div[@class='ag-selection-checkbox']")
 
-  private searchFreeText: Locator
-  private assignedToMeBtn: Locator
-  private previewBtn: Locator
-  private tableBtn: Locator
-  private refreshBtn: Locator
-  private createNewProductBtn: Locator
-  private dropDownMenuBtn: Locator
-  private mainCheckbox: Locator
-  private loadingCenter: Locator
-  private firstRow: Locator
-  private okBtn: Locator
-  private newProductId: Locator
-  private createBtn: Locator
+  private productStatusItems = (status: ProductStatus) => this.page.locator(`//ul[@role='listbox']//li[text()='${status}']`)
+
+  private productDesigner = (designer: string) => this.page.locator(`//ul[@role='listbox']//li[text()='${designer}']`)
+
+  private _searchFreeText: Locator
+  private _assignedToMeBtn: Locator
+  private _previewBtn: Locator
+  private _tableBtn: Locator
+  private _refreshBtn: Locator
+  private _createNewProductBtn: Locator
+  private _dropDownMenuBtn: Locator
+  private _mainCheckbox: Locator
+  private _loadingCenter: Locator
+  private _firstRow: Locator
+  private _okBtn: Locator
+  private _newProductId: Locator
+  private _createBtn: Locator
+  private _select: Locator
 
   constructor(page: Page) {
     super(page)
-    this.searchFreeText = page.locator("//label[@id='outlined-search-label']") // !
-    this.assignedToMeBtn = page.locator("//button[text()='Assigned to me']") //
-    this.previewBtn = page.locator("//button[text()='Preview']")
-    this.tableBtn = page.locator("//button[text()='Table']")
-    this.refreshBtn = page.locator("//button[text()='Refresh']")
-    this.createNewProductBtn = page.locator("//button[@id='add-button']")
-    this.dropDownMenuBtn = page.locator("//button[@id='menu-button']")
-    this.mainCheckbox = page.locator("//div[@class='ag-header-row ag-header-row-column']//div[@col-id='_id']//input")
-    this.loadingCenter = page.locator("//span[@class='ag-overlay-loading-center']")
-    this.firstRow = page.locator("//div[@role='row' and @row-index=0]")
-    this.okBtn = page.locator("//button[text()='OK']")
-    this.newProductId = page.locator("//input[@id='name']")
-    this.createBtn = page.locator("//button[text()='Create']")
+    this._searchFreeText = page.locator("//label[@id='outlined-search-label']") // !
+    this._assignedToMeBtn = page.locator("//button[text()='Assigned to me']") //
+    this._previewBtn = page.locator("//button[text()='Preview']")
+    this._tableBtn = page.locator("//button[text()='Table']")
+    this._refreshBtn = page.locator("//button[text()='Refresh']")
+    this._createNewProductBtn = page.locator("//button[@id='add-button']")
+    this._dropDownMenuBtn = page.locator("//button[@id='menu-button']")
+    this._mainCheckbox = page.locator("//div[@class='ag-header-row ag-header-row-column']//div[@col-id='_id']//input")
+    this._loadingCenter = page.locator("//span[@class='ag-overlay-loading-center']")
+    this._firstRow = page.locator("//div[@role='row' and @row-index=0]")
+    this._okBtn = page.locator("//button[text()='OK']")
+    this._newProductId = page.locator("//input[@id='name']")
+    this._createBtn = page.locator("//button[text()='Create']")
+    this._select = page.locator("//div[@id='select']")
   }
 
   async initPage(): Promise<void> {
     await super.initPage()
-    if (await this.tableBtn.isVisible()) await this.clickTable()
-    await this.waitForLoadingCenterDetachment()
+    await this.page.waitForResponse(
+      response => response.url().endsWith('/select') && response.status() === 200 && response.request().method() === 'GET',
+    )
+    if (await this._tableBtn.isVisible()) await this.clickTable()
   }
 
   private buildRowLocator = (
@@ -111,7 +121,7 @@ export class WalmartGlassesBasePage extends PageBase {
   }
 
   public async fillSearchFreeText(text: string) {
-    await this.searchFreeText.fill(text)
+    await this._searchFreeText.fill(text)
   }
 
   public async getColumnIndex(column: WalmartGlassesColumns) {
@@ -120,7 +130,7 @@ export class WalmartGlassesBasePage extends PageBase {
 
   public async scrollToVisibleColumn(column: WalmartGlassesColumns, deltaX: number = 150) {
     while (!(await this.walmartGlassesColumn(column).isVisible())) {
-      await this.firstRow.hover()
+      await this._firstRow.hover()
       await this.page.mouse.wheel(deltaX, 0)
     }
   }
@@ -133,27 +143,27 @@ export class WalmartGlassesBasePage extends PageBase {
   }
 
   public async clickAssignedToMe() {
-    await this.assignedToMeBtn.click()
+    await this._assignedToMeBtn.click()
   }
 
   public async clickPreview() {
-    await this.previewBtn.click()
+    await this._previewBtn.click()
   }
 
   public async clickTable() {
-    await this.tableBtn.click()
+    await this._tableBtn.click()
   }
 
   public async clickCreateNewProduct() {
-    await this.createNewProductBtn.click()
+    await this._createNewProductBtn.click()
   }
 
   public async clickCreate() {
-    await this.createBtn.click()
+    await this._createBtn.click()
   }
 
   public async fillNewProductId(id: string) {
-    await this.newProductId.fill(id)
+    await this._newProductId.fill(id)
   }
 
   public async createNewProduct(id: string) {
@@ -163,11 +173,11 @@ export class WalmartGlassesBasePage extends PageBase {
   }
 
   public async clickOk() {
-    await this.okBtn.click()
+    await this._okBtn.click()
   }
 
   public async clickMenu() {
-    await this.dropDownMenuBtn.click()
+    await this._dropDownMenuBtn.click()
   }
 
   public async pickMenuItem(item: DropdownItems) {
@@ -176,17 +186,17 @@ export class WalmartGlassesBasePage extends PageBase {
   }
 
   public async clickMainCheckbox() {
-    await this.mainCheckbox.click()
+    await this._mainCheckbox.click()
   }
 
   public async clickRefresh() {
-    await this.refreshBtn.click()
+    await this._refreshBtn.click()
     await this.initPage()
   }
 
   public async waitForLoadingCenterDetachment() {
-    await this.loadingCenter.waitFor({ state: 'attached', timeout: 30000 })
-    await this.loadingCenter.waitFor({ state: 'detached', timeout: 30000 })
+    await this._loadingCenter.waitFor({ state: 'attached', timeout: 30000 })
+    await this._loadingCenter.waitFor({ state: 'detached', timeout: 30000 })
   }
 
   public async waitForPageResponses() {
@@ -202,5 +212,42 @@ export class WalmartGlassesBasePage extends PageBase {
   public async isProductExistAlertVisible(gtin: string) {
     await this.productExistAlert(gtin).waitFor()
     return this.productExistAlert(gtin)
+  }
+
+  public async deleteProduct(
+    column: WalmartGlassesColumns,
+    gtin: string,
+    columns: {
+      colId: WalmartGlassesColumns
+      text: string
+    }[],
+  ) {
+    await this.filterByColumn(column, gtin)
+    await this.clickCheckRow(columns)
+    await this.clickMenu()
+    await this.dropDownMenuItem(DropdownItems.Delete).click()
+    await this._okBtn.click()
+  }
+
+  public async changeStatus(status: ProductStatus) {
+    await this.pickMenuItem(DropdownItems.ChangeStatus)
+    await this._select.click()
+    await this.productStatusItems(status).click()
+    await this._okBtn.click()
+    await this.page.waitForResponse(
+      response => response.url().endsWith('/status') && response.status() === 200 && response.request().method() === 'POST',
+    )
+    await this.waitForLoadingCenterDetachment()
+  }
+
+  public async changeDesigner() {
+    await this.pickMenuItem(DropdownItems.ChangeDesigner)
+    await this._select.click()
+    await this.productDesigner(configProvider.automationDesigner).click()
+    await this._okBtn.click()
+    await this.page.waitForResponse(
+      response => response.url().endsWith('/designer') && response.status() === 200 && response.request().method() === 'POST',
+    )
+    await this.waitForLoadingCenterDetachment()
   }
 }

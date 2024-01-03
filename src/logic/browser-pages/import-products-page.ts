@@ -4,23 +4,23 @@ import { configProvider } from '../../config/index.js'
 import { getAllFiles } from '../utils.js'
 
 export class ImportProductsPage extends PageBase {
-  private uploadFilesInput: Locator
-  private startBtn: Locator
-  private closeBtn: Locator
-  private loadedColumns: Locator
-  private selectedColumns: Locator
-  private addBtn: Locator
-  private nextBtn: Locator
+  private _uploadFilesInput: Locator
+  private _startBtn: Locator
+  private _closeBtn: Locator
+  private _loadedColumns: Locator
+  private _selectedColumns: Locator
+  private _addBtn: Locator
+  private _nextBtn: Locator
 
   constructor(page: Page) {
     super(page)
-    this.uploadFilesInput = page.locator("//input[@type='file']")
-    this.startBtn = page.locator("//button[text()='Start']")
-    this.closeBtn = page.locator("//button[text()='Close']")
-    this.loadedColumns = page.locator("//div[contains(@class, 'MuiCardHeader') and ./div//span[text()='Loaded Columns']]//input")
-    this.selectedColumns = page.locator("//div[contains(@class, 'MuiCardHeader') and ./div//span[text()='Selected Columns']]//input")
-    this.addBtn = page.locator("//button[text()='Add']")
-    this.nextBtn = page.locator("//button[text()='Next']")
+    this._uploadFilesInput = page.locator("//input[@type='file']")
+    this._startBtn = page.locator("//button[text()='Start']")
+    this._closeBtn = page.locator("//button[text()='Close']")
+    this._loadedColumns = page.locator("//div[contains(@class, 'MuiCardHeader') and ./div//span[text()='Loaded Columns']]//input")
+    this._selectedColumns = page.locator("//div[contains(@class, 'MuiCardHeader') and ./div//span[text()='Selected Columns']]//input")
+    this._addBtn = page.locator("//button[text()='Add']")
+    this._nextBtn = page.locator("//button[text()='Next']")
   }
 
   async initPage(): Promise<void> {
@@ -33,11 +33,11 @@ export class ImportProductsPage extends PageBase {
   }
 
   public async clickStart() {
-    await this.startBtn.click()
+    await this._startBtn.click()
   }
 
   public async clickClose() {
-    await this.closeBtn.click()
+    await this._closeBtn.click()
   }
 
   public async importCSV(gtin: string) {
@@ -52,11 +52,11 @@ export class ImportProductsPage extends PageBase {
         response.request().method() == 'GET',
     )
 
-    await this.uploadFilesInput.setInputFiles(filePaths)
-    await this.loadedColumns.click()
-    await this.addBtn.click()
-    await this.selectedColumns.click()
-    await this.nextBtn.click()
+    await this._uploadFilesInput.setInputFiles(filePaths)
+    await this._loadedColumns.click()
+    await this._addBtn.click()
+    await this._selectedColumns.click()
+    await this._nextBtn.click()
 
     await this.clickStart()
     await this.clickClose()

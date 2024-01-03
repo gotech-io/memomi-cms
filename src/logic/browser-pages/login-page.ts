@@ -2,15 +2,15 @@ import { Locator, Page } from '@playwright/test'
 import { PageBase } from '@testomate/framework'
 
 export class LoginPage extends PageBase {
-  private emailInput: Locator
-  private passwordInput: Locator
-  private signInBtn: Locator
+  private _emailInput: Locator
+  private _passwordInput: Locator
+  private _signInBtn: Locator
 
   constructor(page: Page) {
     super(page)
-    this.emailInput = page.locator("//input[@type='email']")
-    this.passwordInput = page.locator("//input[@type='password']")
-    this.signInBtn = page.locator("//button[@type='submit']")
+    this._emailInput = page.locator("//input[@type='email']")
+    this._passwordInput = page.locator("//input[@type='password']")
+    this._signInBtn = page.locator("//button[@type='submit']")
   }
 
   async initPage(): Promise<void> {
@@ -23,15 +23,15 @@ export class LoginPage extends PageBase {
   }
 
   public async fillEmailAddress(email: string) {
-    await this.emailInput.fill(email)
+    await this._emailInput.fill(email)
   }
 
   public async fillPassword(password: string) {
-    await this.passwordInput.fill(password)
+    await this._passwordInput.fill(password)
   }
 
   public async clickSignIn() {
-    await this.signInBtn.click()
+    await this._signInBtn.click()
   }
 
   public async performSignIn(email: string, password: string) {

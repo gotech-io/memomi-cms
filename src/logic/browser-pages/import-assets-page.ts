@@ -12,17 +12,17 @@ export class ImportAssetsPage extends PageBase {
 
   private infoButton = (button: AssetsButtons, uploads: number) => this.page.locator(`//button[text()='${button} (${uploads})']`)
 
-  private uploadFilesInput: Locator
-  private startBtn: Locator
-  private exportBtn: Locator
-  private closeBtn: Locator
+  private _uploadFilesInput: Locator
+  private _startBtn: Locator
+  private _exportBtn: Locator
+  private _closeBtn: Locator
 
   constructor(page: Page) {
     super(page)
-    this.uploadFilesInput = page.locator("//input[@type='file']")
-    this.startBtn = page.locator("//button[text()='Start']")
-    this.exportBtn = page.locator("//button[text()='Export']")
-    this.closeBtn = page.locator("//button[text()='Close']")
+    this._uploadFilesInput = page.locator("//input[@type='file']")
+    this._startBtn = page.locator("//button[text()='Start']")
+    this._exportBtn = page.locator("//button[text()='Export']")
+    this._closeBtn = page.locator("//button[text()='Close']")
   }
 
   async initPage(): Promise<void> {
@@ -38,15 +38,15 @@ export class ImportAssetsPage extends PageBase {
   }
 
   public async clickStart() {
-    await this.startBtn.click()
+    await this._startBtn.click()
   }
 
   public async clickExport() {
-    await this.exportBtn.click()
+    await this._exportBtn.click()
   }
 
   public async clickClose() {
-    await this.closeBtn.click()
+    await this._closeBtn.click()
   }
 
   public isProductNotFound(image: string) {
@@ -57,7 +57,7 @@ export class ImportAssetsPage extends PageBase {
     const path = configProvider.walmartAutomationGeneratePath + gtin + '/'
     const images = (await getAllFiles(path)).filter(image => !image.includes('invalid') && !image.includes('.DS_Store'))
     const filePaths = images.map(file => path + '/' + file)
-    await this.uploadFilesInput.setInputFiles(filePaths)
+    await this._uploadFilesInput.setInputFiles(filePaths)
     await this.page.waitForResponse(response => response.url().endsWith('/list') && response.status() === 200)
     await this.clickStart()
     await this.clickClose()
@@ -66,7 +66,7 @@ export class ImportAssetsPage extends PageBase {
   public async importNotFoundProduct() {
     const path = configProvider.walmartAutomationResourcesPath
     const filePaths = (await getAllFiles(path)).filter(image => image.includes('invalid')).map(file => path + '/' + file)
-    await this.uploadFilesInput.setInputFiles(filePaths)
+    await this._uploadFilesInput.setInputFiles(filePaths)
     await this.infoButton(AssetsButtons.Errors, filePaths.length).waitFor({ state: 'attached' })
   }
 }
